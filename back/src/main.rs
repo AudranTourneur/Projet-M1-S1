@@ -1,5 +1,6 @@
 mod auth;
 mod overview;
+mod volumes;
 
 #[macro_use] extern crate rocket;
 use bollard::Docker;
@@ -36,5 +37,5 @@ fn hello(name: &str, age: u8) -> String {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![get_version, hello, auth::auth_handler, overview::overview_handler])
+    rocket::build().mount("/", routes![get_version, hello, auth::auth_handler, overview::overview_handler, volumes::volumes_handler])
 }
