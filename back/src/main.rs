@@ -1,3 +1,5 @@
+mod auth;
+
 #[macro_use] extern crate rocket;
 use bollard::Docker;
 use rocket::serde::{Serialize, Deserialize, json::Json};
@@ -33,5 +35,5 @@ fn hello(name: &str, age: u8) -> String {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![get_version, hello])
+    rocket::build().mount("/", routes![get_version, hello, auth::auth_handler])
 }
