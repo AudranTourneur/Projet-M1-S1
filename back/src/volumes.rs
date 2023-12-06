@@ -40,10 +40,6 @@ fn get_value_from_static_map(key: &str) -> Option<u64> {
     // Mutex is automatically released when `map` goes out of scope
 }
 
-// fn get_volume_size(vol: Volume) -> u64 {
-//     0
-// }
-
 fn get_volume_size(vol: Volume) -> u64 {
     let name = vol.name.clone();
     let mountpoint = vol.mountpoint.clone();
@@ -56,13 +52,9 @@ fn get_volume_size(vol: Volume) -> u64 {
 
     println!("Calculating size for mountpoint {}", mountpoint);
 
-    let metadata = std::fs::metadata(mountpoint.clone());
-        if metadata.is_err() {
-        println!("Error getting metadata for mountpoint {}, error = {}", mountpoint.clone(), metadata.err().unwrap());
-            return 0;
-        }
+    let size = fs_extra::dir::get_size(mountpoint.clone()).unwrap_or(0);
 
-    let size = metadata.unwrap().len();
+    println!("Size for mountpoint {} is {}", mountpoint, size);
 
     update_static_map(name, size);
 
