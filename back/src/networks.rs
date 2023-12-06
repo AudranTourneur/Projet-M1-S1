@@ -20,6 +20,7 @@ pub async fn networks_handler() -> Json<NetworkResponse> {
     let base_networks = &docker.list_networks::<String>(None).await.unwrap();
 
     let my_networks : Vec<Network> = base_networks.iter().map(|network| {
+        network.clone().containers.clone().unwrap_or_default();
         let image_data = Network {
             id: network.id.clone().unwrap_or("UNDEFINED".to_string()),
             name: network.name.clone().unwrap_or("UNDEFINED".to_string()),
