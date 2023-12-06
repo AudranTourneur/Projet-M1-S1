@@ -33,7 +33,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
             id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
             name: container.names.clone().unwrap(),
             image: container.image.clone().unwrap(),
-            network: container.network_settings.clone().unwrap().networks.clone().unwrap().keys().collect(),
+            network: container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect(),
             volume: ran_string.to_string(),
             status: container.status.clone().unwrap(),
             ports: ran_string.to_string()
