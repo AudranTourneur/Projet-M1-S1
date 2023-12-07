@@ -7,7 +7,7 @@ pub struct Container {
     name: Vec<String>,
     image: String,
     network: String,
-    volume: String,
+    volume: Vec<String>,
     status: String,
     ports: String,
 }
@@ -25,19 +25,18 @@ pub async fn containers_handler() -> Json<ContainerList> {
         ..Default::default()
     })).await.unwrap();
 
-    //
     let ran_string = "test";
 
     let listed_containers: Vec<Container> = containers.iter().map(|container| {
+
         let container_data = Container {
             id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
             name: container.names.clone().unwrap(),
             image: container.image.clone().unwrap(),
             network: container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect(),
-            volume: ran_string.to_string(),
+            volume: volume_names,  //line to modify
             status: container.status.clone().unwrap(),
-            ports: ran_string.to_string()
-            //ports: container.ports.clone().iter().map(|port| format!("{} -> {}", port.private_port, port.public_port)).collect::<Vec<String>>().join(","),
+            ports: ran_string.to_string(),
         };
         container_data
     }).collect();
