@@ -1,5 +1,5 @@
-use rocket::serde::{Serialize, Deserialize, json::Json};
-use bollard::{Docker, container::ListContainersOptions};
+use bollard::{container::ListContainersOptions, Docker};
+use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct Container {
@@ -20,29 +20,48 @@ pub struct ContainerList {
 #[get("/containers")]
 pub async fn containers_handler() -> Json<ContainerList> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
-    let containers = &docker.list_containers::<String>(Some(ListContainersOptions::<String> {
-        all: true,
-        ..Default::default()
-    })).await.unwrap();
+    let containers = &docker
+        .list_containers::<String>(Some(ListContainersOptions::<String> {
+            all: true,
+            ..Default::default()
+        }))
+        .await
+        .unwrap();
 
     let ran_string = "test";
 
-    let listed_containers: Vec<Container> = containers.iter().map(|container| {
-        let  volume_name: Vec<String> = container.mounts.clone().unwrap_or_default().iter().map(|volume| {
-            volume.name.clone().unwrap_or_default()
-        }).collect();
+    let listed_containers: Vec<Container> = containers
+        .iter()
+        .map(|container| {
+            let volume_name: Vec<String> = container
+                .mounts
+                .clone()
+                .unwrap_or_default()
+                .iter()
+                .map(|volume| volume.name.clone().unwrap_or_default())
+                .collect();
 
-        let container_data = Container {
-            id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
-            name: container.names.clone().unwrap(),
-            image: container.image.clone().unwrap(),
-            volume: volume_name,
-            network: container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect(),
-            status: container.status.clone().unwrap(),
-            ports: ran_string.to_string(),
-        };
-        container_data
-    }).collect();
+            let container_data = Container {
+                id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
+                name: container.names.clone().unwrap(),
+                image: container.image.clone().unwrap(),
+                volume: volume_name,
+                network: container
+                    .network_settings
+                    .clone()
+                    .unwrap()
+                    .networks
+                    .clone()
+                    .unwrap()
+                    .keys()
+                    .cloned()
+                    .collect(),
+                status: container.status.clone().unwrap(),
+                ports: ran_string.to_string(),
+            };
+            container_data
+        })
+        .collect();
 
     let res = ContainerList {
         final_containers: listed_containers,

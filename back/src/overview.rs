@@ -1,5 +1,5 @@
-use bollard::{Docker, image::ListImagesOptions};
-use rocket::serde::{Serialize, Deserialize, json::Json};
+use bollard::{image::ListImagesOptions, Docker};
+use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct OverviewResponse {
@@ -16,13 +16,18 @@ pub async fn overview_handler() -> Json<OverviewResponse> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
     let version_object = docker.version().await.unwrap();
-    let linux_version = version_object.kernel_version.unwrap_or("UNDEFINED".to_string());
+    let linux_version = version_object
+        .kernel_version
+        .unwrap_or("UNDEFINED".to_string());
     let docker_version = version_object.version.unwrap_or("UNDEFINED".to_string());
 
-    let images = &docker.list_images(Some(ListImagesOptions::<String> {
-        all: true,
-        ..Default::default()
-    })).await.unwrap();
+    let images = &docker
+        .list_images(Some(ListImagesOptions::<String> {
+            all: true,
+            ..Default::default()
+        }))
+        .await
+        .unwrap();
 
     let number_of_images = images.len() as i32;
 

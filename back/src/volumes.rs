@@ -1,8 +1,7 @@
-
-use std::collections::HashMap;
+use bollard::{service::Volume, Docker};
 use lazy_static::lazy_static;
-use bollard::{Docker, service::Volume};
-use rocket::serde::{Serialize, Deserialize, json::Json};
+use rocket::serde::{json::Json, Deserialize, Serialize};
+use std::collections::HashMap;
 use std::sync::Mutex;
 
 #[derive(Serialize, Deserialize)]
@@ -17,7 +16,6 @@ pub struct VolumeData {
 pub struct VolumeResponse {
     pub volumes: Vec<VolumeData>,
 }
-
 
 // Define the static HashMap inside a lazy_static block
 lazy_static! {
@@ -43,7 +41,7 @@ fn get_value_from_static_map(key: &str) -> Option<u64> {
 fn get_volume_size(vol: Volume) -> u64 {
     let name = vol.name.clone();
     let mountpoint = vol.mountpoint.clone();
-    
+
     let maybe_size = get_value_from_static_map(&name);
 
     if maybe_size.is_some() {
@@ -67,15 +65,20 @@ pub async fn volumes_handler() -> Json<VolumeResponse> {
 
     let volumes = docker.list_volumes::<String>(None).await.unwrap();
 
-    let mut volumes_data: Vec<VolumeData> = volumes.volumes.unwrap().iter().map(|volume| {
-        let volume_data = VolumeData {
-            name: volume.name.clone(),
-            created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
-            mountpoint: volume.mountpoint.clone(),
-            size: get_volume_size(volume.clone()),
-        };
-        volume_data
-    }).collect();
+    let mut volumes_data: Vec<VolumeData> = volumes
+        .volumes
+        .unwrap()
+        .iter()
+        .map(|volume| {
+            let volume_data = VolumeData {
+                name: volume.name.clone(),
+                created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
+                mountpoint: volume.mountpoint.clone(),
+                size: get_volume_size(volume.clone()),
+            };
+            volume_data
+        })
+        .collect();
 
     volumes_data.sort_by(|a, b| a.name.cmp(&b.name));
 

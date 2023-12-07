@@ -9,5 +9,3 @@ pub struct User {
     pub password: String,
     pub salt: String,
 }
-
-
