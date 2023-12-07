@@ -28,13 +28,16 @@ pub async fn containers_handler() -> Json<ContainerList> {
     let ran_string = "test";
 
     let listed_containers: Vec<Container> = containers.iter().map(|container| {
+        let  volume_name: Vec<String> = container.mounts.clone().unwrap_or_default().iter().map(|volume| {
+            volume.name.clone().unwrap_or_default()
+        }).collect();
 
         let container_data = Container {
             id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
             name: container.names.clone().unwrap(),
             image: container.image.clone().unwrap(),
+            volume: volume_name,
             network: container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect(),
-            volume: volume_names,  //line to modify
             status: container.status.clone().unwrap(),
             ports: ran_string.to_string(),
         };
