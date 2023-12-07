@@ -4,6 +4,9 @@ mod volumes;
 mod images;
 mod networks;
 mod containers;
+mod schema;
+mod models;
+mod stats;
 
 #[macro_use] extern crate rocket;
 use bollard::Docker;
@@ -39,6 +42,13 @@ fn hello(name: &str, age: u8) -> String {
 }
 
 #[launch]
-fn rocket() -> _ {
-    rocket::build().mount("/", routes![get_version, hello, auth::auth_handler, overview::overview_handler, volumes::volumes_handler, images::images_handler, networks::networks_handler, containers::containers_handler])
+async fn rocket() -> _ {
+    println!("Starting docker stats");
+    stats::start_statistics_listeners().await;
+    println!("Ending stats");
+
+    let app = rocket::build().mount("/", routes![get_version, hello, auth::auth_handler, overview::overview_handler, volumes::volumes_handler, images::images_handler, networks::networks_handler, containers::containers_handler]);
+
+        app
 }
+
