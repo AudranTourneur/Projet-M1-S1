@@ -2,6 +2,7 @@ use bollard::Docker;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Network {
     id: String,
     name: String,
@@ -9,6 +10,7 @@ pub struct Network {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct NetworkResponse {
     networks: Vec<Network>,
 }

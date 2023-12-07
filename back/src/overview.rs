@@ -2,6 +2,7 @@ use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OverviewResponse {
     version_docker: String,
     version_linux: String,

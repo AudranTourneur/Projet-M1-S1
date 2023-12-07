@@ -5,8 +5,9 @@ mod models;
 mod networks;
 mod overview;
 mod schema;
-mod stats;
+//mod stats;
 mod volumes;
+mod topology;
 
 #[macro_use]
 extern crate rocket;
@@ -25,13 +26,16 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
     )
 }
 
+/*
 async fn spawn_statistics_subsystem() {
     stats::start_statistics_listeners().await;
 }
+*/
 
 #[rocket::main]
 async fn main() {
     let app = create_rocket_app();
-    rocket::tokio::spawn(app.launch());
-    spawn_statistics_subsystem().await;
+    let _ = app.launch().await;
+    //rocket::tokio::spawn(app.launch());
+    //spawn_statistics_subsystem().await;
 }

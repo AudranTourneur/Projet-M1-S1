@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VolumeData {
     pub name: String,
     pub created_at: String,
@@ -13,6 +14,7 @@ pub struct VolumeData {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VolumeResponse {
     pub volumes: Vec<VolumeData>,
 }

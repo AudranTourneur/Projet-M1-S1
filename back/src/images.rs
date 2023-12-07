@@ -2,6 +2,7 @@ use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Image {
     id: String,
     size: i64,
@@ -9,6 +10,7 @@ pub struct Image {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ImageResponse {
     images: Vec<Image>,
 }

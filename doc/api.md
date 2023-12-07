@@ -54,8 +54,20 @@ Response:
 
 
 ## GET /volumes
+{
+    volumes: { 
+        name: string,
+        size: number, // bytes
+        created: number, // timestamp ms
+    }
+}
 
 ## GET /volumes/:id
+{ 
+    name: string,
+    size: number, // bytes
+    created: number, // timestamp ms
+}
 
 ## GET /volumes/:id/download
 

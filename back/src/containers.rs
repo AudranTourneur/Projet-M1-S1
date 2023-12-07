@@ -2,6 +2,7 @@ use bollard::{container::ListContainersOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Container {
     id: String,
     name: Vec<String>,
@@ -13,6 +14,7 @@ pub struct Container {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ContainerList {
     final_containers: Vec<Container>,
 }
