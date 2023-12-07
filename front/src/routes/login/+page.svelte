@@ -3,9 +3,15 @@
 	let password = "";
 
 
-	function login() {
+	async function login() {
 		console.log("username: " + username, "password: " + password);
-		
+        await fetch('/login/api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username, password})
+        })
 	}
 </script>
 

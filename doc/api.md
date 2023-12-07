@@ -1,6 +1,6 @@
 # Documentation API
 
-## POST /auth
+## POST /login
 ### Request
 {
     username: string,
@@ -9,7 +9,10 @@
 ### Response
 {
     success: true,
-    data: string            // token
+    data: {
+        token: string,
+        expiresAt: number,         // timestamp ms
+    }
 } | {
     success: false,
 }
