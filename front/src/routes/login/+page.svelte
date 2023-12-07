@@ -16,7 +16,7 @@
 <div class="container flex mx-auto items-center justify-center">
 
 	<div class="text-center bg-gray-700 p-8 rounded-md">
-		<h1 class="h1 mb-8">Go to your page.</h1>
+		<h1 class="h1 mb-8">Go to your page!</h1>
 
 
 		<div class="form">
