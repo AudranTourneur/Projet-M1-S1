@@ -5,7 +5,7 @@
 
 	async function login() {
 		console.log("username: " + username, "password: " + password);
-        await fetch('/login/api', {
+        await fetch('../api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
