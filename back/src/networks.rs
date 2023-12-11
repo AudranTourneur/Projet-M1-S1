@@ -15,10 +15,8 @@ pub struct NetworkResponse {
     networks: Vec<Network>,
 }
 
-#[get("/networks")]
-pub async fn networks_handler() -> Json<NetworkResponse> {
+async fn get_all_networks() ->  Vec<Network>{
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
-
     let base_networks = &docker.list_networks::<String>(None).await.unwrap();
 
     let my_networks: Vec<Network> = base_networks
@@ -34,8 +32,29 @@ pub async fn networks_handler() -> Json<NetworkResponse> {
         })
         .collect();
 
+    my_networks
+}
+
+#[get("/networks")]
+pub async fn networks_handler() -> Json<NetworkResponse> {
+    let my_networks = get_all_networks().await;
+
     let response = NetworkResponse {
         networks: my_networks,
+    };
+
+    Json(response)
+}
+
+#[get("/networks/<id>")]
+pub async fn network_handler(id: &str) -> Json<Network> {
+    let all_networks : Vec<Network> = get_all_networks().await;
+    let network = all_networks.iter().find(|network| network.id == id).unwrap();
+
+    let response = Network {
+        id: network.id.clone(),
+        name: network.name.clone(),
+        created: network.created.clone(),
     };
 
     Json(response)
