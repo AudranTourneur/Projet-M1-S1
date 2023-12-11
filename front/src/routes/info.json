@@ -7,7 +7,7 @@
         "version": "v1.0",
         "date_images": "11/12/2023",
         "created_images": "Created 4 days ago",
-        "size-images" : "184kB"
+        "size_images" : "184kB"
       },
       {
         "id": "def456",
@@ -15,7 +15,7 @@
         "version": "v2.3",
         "date_images": "11/12/2023",
         "created_images": "Created 4 days ago",
-        "size-images" : "184kB"
+        "size_images" : "184kB"
       }
     ],
     "containers": [
