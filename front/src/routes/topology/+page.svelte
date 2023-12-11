@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { initApp } from '$lib/topology';
 
-    let parentElement: HTMLDivElement;
+	let parentElement: HTMLDivElement;
 	let canvasElement: HTMLCanvasElement;
 
-	onMount(() => {
+	onMount(async () => {
+        const { initApp } = await import('$lib/topology');
 		initApp(canvasElement, parentElement);
 	});
 </script>
 
-    <div bind:this={parentElement}>
-<canvas bind:this={canvasElement} id="topology-canvas" />
-        </div>
+<div bind:this={parentElement} class="w-[80vw] h-[80vh]">
+	<canvas bind:this={canvasElement} id="topology-canvas" />
+</div>
