@@ -1,46 +1,13 @@
 import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import { TopologyContainer } from './TopologyContainer';
-
-function createBunnyGrid(app: PIXI.Application, x: number, y: number) {
-// Create a new texture
-const texture = PIXI.Texture.from('https://pixijs.com/assets/bunny.png');
-
-    const container = new PIXI.Container();
-
-// Create a 5x5 grid of bunnies
-for (let i = 0; i < 25; i++)
-{
-    const bunny = new PIXI.Sprite(texture);
-
-    bunny.anchor.set(0.5);
-    bunny.x = (i % 5) * 40;
-    bunny.y = Math.floor(i / 5) * 40;
-    container.addChild(bunny);
-}
-
-// Move container to the center
-container.x = x;
-container.y = y;
-
-// Center bunny sprite in local container coordinates
-container.pivot.x = container.width / 2;
-container.pivot.y = container.height / 2;
-
-// Listen for animate update
-app.ticker.add((delta) =>
-{
-    // rotate the container!
-    // use delta to create frame-independent transform
-    container.rotation -= 0.01 * delta;
-});
-
-return container;
-}
+// import { GraphPaper, GraphStyle } from "pixi-graphpaper";
 
 export class TopologyApp {
     app: PIXI.Application;
     viewport: Viewport;
+
+    currentlySelected: TopologyContainer | null = null;
 
 	constructor(canvas: HTMLCanvasElement, parent: HTMLElement) {
 		const app = new PIXI.Application({ background: '#1099bb', resizeTo: parent, view: canvas });
@@ -62,6 +29,10 @@ export class TopologyApp {
 		// activate plugins
 		viewport.drag().pinch().wheel().decelerate();
 
+// Background grid for reference
+// const paper = new GraphPaper(GraphStyle.BLUEPRINT);
+// viewport.addChild(paper);
+
         const coords = [
             [0, 0],
             [500, 0],
@@ -74,4 +45,16 @@ export class TopologyApp {
             new TopologyContainer(this, coor[0], coor[1]);
         }
 	}
+
+    select(container: TopologyContainer) {
+        this.currentlySelected = container;
+        // disable viewport plugins
+        this.viewport.plugins.pause('drag');
+    }
+
+    unselect() {
+        this.currentlySelected = null;
+        // enable viewport plugins
+        this.viewport.plugins.resume('drag');
+    }
 }
