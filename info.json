@@ -3,13 +3,19 @@
     "images": [
       {
         "id": "abc123",
-        "name": "web_app_image",
-        "version": "v1.0"
+        "name_repository": "web_app_image",
+        "version": "v1.0",
+        "date_images": "11/12/2023",
+        "created_images": "Created 4 days ago",
+        "size-images" : "184kB"
       },
       {
         "id": "def456",
-        "name": "database_image",
-        "version": "v2.3"
+        "name_repository": "database_image",
+        "version": "v2.3",
+        "date_images": "11/12/2023",
+        "created_images": "Created 4 days ago",
+        "size-images" : "184kB"
       }
     ],
     "containers": [
@@ -17,13 +23,17 @@
         "id": "container1",
         "name": "web_app_container",
         "image_id": "abc123",
-        "status": "running"
+        "status": "Up 16 seconds",
+        "created_containers": "Created 4 days ago",
+        "ports" : "0.0.0.0:8080->80/tcp"
       },
       {
         "id": "container2",
         "name": "db_container",
         "image_id": "def456",
-        "status": "stopped"
+        "status": "Up 2 minutes",
+        "created": "Created 4 days ago",
+        "ports" : "0.0.0.0:8080->80/tcp"
       }
     ],
     "volumes": [
