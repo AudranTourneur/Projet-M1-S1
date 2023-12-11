@@ -40,38 +40,37 @@
       {
         "id": "vol123",
         "name": "data_volume",
-        "size": "123kO",
-        "time_size" : [123,567,1235,12,789,3456,789,123]
+        "size": "1GB"
       },
       {
         "id": "vol456",
         "name": "logs_volume",
-        "size": "10Ko"
+        "size": "500MB"
       },
       {
         "id": "vol789",
         "name": "logs_volume",
-        "size": "569Ko"
+        "size": "750MB"
       },
       {
         "id": "volabc",
         "name": "logs_volume",
-        "size": "230Ko"
+        "size": "800MB"
       },
       {
         "id": "voldef",
         "name": "logs_volume",
-        "size": "12Ko"
+        "size": "900MB"
       },
       {
         "id": "volghi",
         "name": "logs_volume",
-        "size": "128ko"
+        "size": "400MB"
       },
       {
         "id": "voljkl",
         "name": "logs_volume",
-        "size": "469Ko"
+        "size": "800MB"
       }
     ]
   }
