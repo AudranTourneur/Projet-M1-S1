@@ -72,6 +72,17 @@ Response:
 ## GET /volumes/:id/download
 
 ## GET /containers
+{
+    containes:{
+        id: string,
+        name: vec<string>,
+        image: string,
+        network: string,
+        volume: vec<string>,
+        status: string,
+        ports: string,
+    }
+}
 
 ## GET /containers/:id
 
