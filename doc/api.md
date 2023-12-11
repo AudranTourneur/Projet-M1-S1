@@ -73,15 +73,15 @@ Response:
 
 ## GET /containers
 {
-    containes:{
+    containers: Array<{
         id: string,
-        name: vec<string>,
+        name: Array<string>,
         image: string,
         network: string,
-        volume: vec<string>,
+        volume: Array<string>,
         status: string,
         ports: string,
-    }
+    }>
 }
 
 ## GET /containers/:id
