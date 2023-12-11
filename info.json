@@ -1,0 +1,42 @@
+{
+  "docker_info": {
+    "images": [
+      {
+        "id": "abc123",
+        "name": "web_app_image",
+        "version": "v1.0"
+      },
+      {
+        "id": "def456",
+        "name": "database_image",
+        "version": "v2.3"
+      }
+    ],
+    "containers": [
+      {
+        "id": "container1",
+        "name": "web_app_container",
+        "image_id": "abc123",
+        "status": "running"
+      },
+      {
+        "id": "container2",
+        "name": "db_container",
+        "image_id": "def456",
+        "status": "stopped"
+      }
+    ],
+    "volumes": [
+      {
+        "id": "vol123",
+        "name": "data_volume",
+        "size": "1GB"
+      },
+      {
+        "id": "vol456",
+        "name": "logs_volume",
+        "size": "500MB"
+      }
+    ]
+  }
+}
