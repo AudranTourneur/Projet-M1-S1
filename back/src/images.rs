@@ -5,6 +5,7 @@ use rocket::serde::{json::Json, Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct Image {
     id: String,
+    tags: Vec<String>,
     size: i64,
     created: i64,
 }
@@ -30,6 +31,7 @@ async fn get_all_images() -> Vec<Image> {
         .map(|image| {
             let image_data = Image {
                 id: image.id.clone(),
+                tags: image.repo_tags.clone(),
                 size: image.size.clone(),
                 created: image.created.clone(),
             };
@@ -55,6 +57,7 @@ pub async fn image_handler(id: &str) -> Json<Image> {
 
     let response = Image {
         id: image.id.clone(),
+        tags: image.tags.clone(),
         size: image.size.clone(),
         created: image.created.clone(),
     };
