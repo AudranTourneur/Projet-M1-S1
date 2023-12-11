@@ -15,10 +15,8 @@ pub struct ImageResponse {
     images: Vec<Image>,
 }
 
-#[get("/images")]
-pub async fn images_handler() -> Json<ImageResponse> {
+async fn get_all_images() -> Vec<Image> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
-
     let base_images = &docker
         .list_images(Some(ListImagesOptions::<String> {
             all: true,
@@ -39,7 +37,28 @@ pub async fn images_handler() -> Json<ImageResponse> {
         })
         .collect();
 
+    my_images
+}
+
+#[get("/images")]
+pub async fn images_handler() -> Json<ImageResponse> {
+    let my_images = get_all_images().await;
     let response = ImageResponse { images: my_images };
 
     Json(response)
+}
+
+#[get("/images/<id>")]
+pub async fn image_handler(id: &str) -> Json<Image> {
+    let all_images : Vec<Image> = get_all_images().await;
+    let image = all_images.iter().find(|image| image.id == id).unwrap();
+
+    let response = Image {
+        id: image.id.clone(),
+        size: image.size.clone(),
+        created: image.created.clone(),
+    };
+
+    Json(response)
+
 }
