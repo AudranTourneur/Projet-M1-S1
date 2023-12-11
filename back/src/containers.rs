@@ -19,6 +19,8 @@ pub struct ContainerList {
     final_containers: Vec<Container>,
 }
 
+
+
 #[get("/containers")]
 pub async fn containers_handler() -> Json<ContainerList> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();

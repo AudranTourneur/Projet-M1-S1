@@ -90,3 +90,20 @@ pub async fn volumes_handler() -> Json<VolumeResponse> {
 
     Json(response)
 }
+
+#[get("/volumes/<name>")]
+pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
+    let docker = Docker::connect_with_local_defaults().unwrap();
+
+    // Recherche du volume par son nom
+    let volume = docker.inspect_volume(&name).await.ok()?;
+
+    let volume_data = VolumeData {
+        name: volume.name.clone(),
+        created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
+        mountpoint: volume.mountpoint.clone(),
+        size: get_volume_size(volume),
+    };
+
+    Some(Json(volume_data))
+}
