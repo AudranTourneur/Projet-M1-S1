@@ -59,6 +59,7 @@ Response:
         name: string,
         size: number, // bytes
         created: number, // timestamp ms
+        mountpoint: string,
     }
 }
 
@@ -67,6 +68,7 @@ Response:
     name: string,
     size: number, // bytes
     created: number, // timestamp ms
+    mountpoint: string,
 }
 
 ## GET /volumes/:id/download
