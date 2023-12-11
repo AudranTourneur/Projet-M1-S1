@@ -59,6 +59,7 @@ Response:
         name: string,
         size: number, // bytes
         created: number, // timestamp ms
+        mountpoint: string,
     }
 }
 
@@ -67,6 +68,7 @@ Response:
     name: string,
     size: number, // bytes
     created: number, // timestamp ms
+    mountpoint: string,
 }
 
 ## GET /volumes/:id/download
@@ -85,6 +87,15 @@ Response:
 }
 
 ## GET /containers/:id
+{
+    id: string,
+    name: Array<string>,
+    image: string,
+    network: string,
+    volume: Array<string>,
+    status: string,
+    ports: string,
+}
 
 ## POST /containers/start
 
