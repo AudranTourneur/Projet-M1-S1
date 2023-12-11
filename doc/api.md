@@ -85,6 +85,15 @@ Response:
 }
 
 ## GET /containers/:id
+{
+    id: string,
+    name: Array<string>,
+    image: string,
+    network: string,
+    volume: Array<string>,
+    status: string,
+    ports: string,
+}
 
 ## POST /containers/start
 
