@@ -3,11 +3,23 @@ use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct HistoryResponse {
+    id: String,
+    created: i64,
+    created_by: String,
+    tags: Vec<String>,
+    size: i64,
+    comment: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Image {
     id: String,
     tags: Vec<String>,
     size: i64,
     created: i64,
+    history: Option<Vec<HistoryResponse>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -34,6 +46,7 @@ async fn get_all_images() -> Vec<Image> {
                 tags: image.repo_tags.clone(),
                 size: image.size.clone(),
                 created: image.created.clone(),
+                history: None,
             };
             image_data
         })
@@ -54,12 +67,29 @@ pub async fn images_handler() -> Json<ImageResponse> {
 pub async fn image_handler(id: &str) -> Json<Image> {
     let all_images : Vec<Image> = get_all_images().await;
     let image = all_images.iter().find(|image| image.id == id).unwrap();
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    println!("history: {:?}", &docker.image_history(&image.id).await);
+
+    //Collecting history
+    let whole_history = &docker.image_history(&image.id).await.unwrap();
+    let history = whole_history.iter().map(|history| {
+        let history_data = HistoryResponse {
+            id: history.id.clone(),
+            created: history.created.clone(),
+            created_by: history.created_by.clone(),
+            tags: history.tags.clone(),
+            size: history.size,
+            comment: history.comment.clone(),
+        };
+        history_data
+    }).collect();
 
     let response = Image {
         id: image.id.clone(),
         tags: image.tags.clone(),
         size: image.size.clone(),
         created: image.created.clone(),
+        history: Some(history),
     };
 
     Json(response)
