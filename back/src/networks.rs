@@ -6,12 +6,13 @@ use std::collections::hash_map::RandomState;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct IpamConfig {
+pub struct OurIpamConfig {
     subnet: String,
     ip_range: String,
     gateway: String,
     aux_addresses: Option<HashMap<String, String, RandomState>>,
 }
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Network {
@@ -19,7 +20,7 @@ pub struct Network {
     name: String,
     created: String,
     labels : Option<HashMap<String, String, RandomState>>,
-    ipam_config: Option<Vec<IpamConfig>>
+    ipam_config: Option<Vec<OurIpamConfig>>
 }
 
 #[derive(Serialize, Deserialize)]
@@ -65,15 +66,19 @@ pub async fn networks_handler() -> Json<NetworkResponse> {
 pub async fn network_handler(id: &str) -> Json<Network> {
     let all_networks : Vec<Network> = get_all_networks().await;
     let network = all_networks.iter().find(|network| network.id == id).unwrap();
+    
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
-    let config: Vec<IpamConfig> = network.ipam_config.unwrap();
+    let network_response = docker.inspect_network::<String>(id, None).await.unwrap();
 
-    let config: Vec<IpamConfig> = config.iter().map(|config| {
-        let config = IpamConfig {
-            subnet: config.subnet,
-            ip_range: config.ip_range,
-            gateway: config.gateway,
-            aux_addresses: config.aux_addresses
+    let ipam_configs = network_response.clone().ipam.unwrap().clone().config.unwrap();
+
+    let config: Vec<OurIpamConfig> = ipam_configs.iter().map(|cfg| {
+        let config = OurIpamConfig {
+            subnet: cfg.subnet.clone().unwrap_or_default(),
+            ip_range: cfg.ip_range.clone().unwrap_or_default(),
+            gateway: cfg.gateway.clone().unwrap_or_default(),
+            aux_addresses: cfg.auxiliary_addresses.clone(),
         };
         config
     }).collect();
