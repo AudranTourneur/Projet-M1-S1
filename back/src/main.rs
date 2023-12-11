@@ -21,7 +21,8 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             volumes::volumes_handler,
             images::images_handler,
             networks::networks_handler,
-            containers::containers_handler
+            containers::containers_handler,
+            networks::network_handler,
         ],
     )
 }
