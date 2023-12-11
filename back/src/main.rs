@@ -23,6 +23,8 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             networks::networks_handler,
             containers::containers_handler,
             networks::network_handler,
+            images::image_handler,
+            containers::container_handler,
         ],
     )
 }
