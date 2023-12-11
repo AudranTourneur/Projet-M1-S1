@@ -4,12 +4,12 @@
     let volumes = item.docker_info.volumes;
 
     function deleteVolume(index) {
-        // Implement the logic to delete the volume with the given index
+        // implémenter la fontion adéquate
         console.log(`Deleting volume with index ${index}`);
     }
 
     function downloadVolume(index) {
-        // Implement the logic to download the volume with the given index
+        // implémenter la fonction a
         console.log(`Downloading volume with index ${index}`);
     }
 </script>
@@ -41,3 +41,4 @@
         </div>
     {/each}
 </div>
+
