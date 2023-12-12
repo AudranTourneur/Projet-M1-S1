@@ -139,7 +139,9 @@ pub async fn container_start(id: &str){
 pub async fn container_stop(id: &str){
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
-    let stop_options: StopContainerOptions = StopContainerOptions::default();
+    let options = Some(StopContainerOptions{
+        t: 30,
+    });
 
-    docker.stop_container(&id, Some(stop_options)).await.unwrap();
+    docker.stop_container(&id, options).await.unwrap();
 }
