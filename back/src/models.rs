@@ -1,5 +1,5 @@
-use diesel::prelude::*;
 use crate::schema::users;
+use diesel::prelude::*;
 
 #[derive(Insertable)]
 #[diesel(table_name = users)]
@@ -8,5 +8,5 @@ pub struct UserForm<'a> {
     pub password: &'a str,
     pub salt: &'a str,
     pub topology: serde_json::Value,
-    pub updated_at: chrono::NaiveDateTime
+    pub updated_at: chrono::NaiveDateTime,
 }

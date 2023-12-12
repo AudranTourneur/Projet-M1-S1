@@ -46,6 +46,7 @@ use schema::users::dsl::*;
 
 #[rocket::main]
 async fn main() {
+    /*
     let mut conn = database::establish_connection();
 
     let user_form: UserForm = UserForm {
@@ -59,6 +60,9 @@ async fn main() {
     let _ = diesel::insert_into(users)
         .values(&user_form)
         .execute(&mut conn);
+    */
+
+    let _ = database::create_pool().await;
 
     let app = create_rocket_app();
     let _ = app.launch().await;
