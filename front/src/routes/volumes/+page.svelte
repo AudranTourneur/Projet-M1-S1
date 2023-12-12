@@ -1,22 +1,22 @@
-<script>
+<script lang="ts">
     import item from '../info.json';
 
     let volumes = item.docker_info.volumes;
 
-    function deleteVolume(index) {
-        // Implement the logic to delete the volume with the given index
+    function deleteVolume(index: number) {
+        // implémenter la fonction adéquate
         console.log(`Deleting volume with index ${index}`);
     }
 
-    function downloadVolume(index) {
-        // Implement the logic to download the volume with the given index
+    function downloadVolume(index: number) {
+        // implémenter la fonction adéquate
         console.log(`Downloading volume with index ${index}`);
     }
 </script>
 
 <div class="w-full">
-    {#each volumes as { id, name, size }, i}
-        <div class="border border-gray-300 rounded p-4 mb-4" key={i}>
+    {#each volumes as { id, name, size }, i (id)}
+        <div class="border border-gray-300 rounded p-4 mb-4" key={id}>
             <h3 class="text-lg font-semibold mb-2">Volume Information</h3>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">ID:</span>
