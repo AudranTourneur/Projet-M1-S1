@@ -127,19 +127,19 @@ pub async fn container_handler(id: &str) -> Json<Container> {
 
 
 #[post("/containers/<id>/start")]
-pub async fn container_start(id: &str){
+pub async fn container_start(id: &str) -> &'static str{
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
     let start_options: StartContainerOptions<String> = StartContainerOptions::default();
 
     match docker.start_container(&id, Some(start_options)).await{
-        Ok(_) => json!("Container started"),
-        Err(e) => json!("Error starting container: {:?}", e),
-    };
+        Ok(_) => "Container started",
+        Err(e) => "Error starting container",
+    }
 }
 
 #[post("/containers/<id>/stop")]
-pub async fn container_stop(id: &str){
+pub async fn container_stop(id: &str) -> &'static str{
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
     let options = Some(StopContainerOptions{
@@ -147,7 +147,7 @@ pub async fn container_stop(id: &str){
     });
 
     match docker.stop_container(&id, options).await{
-        Ok(_) => json!("Container stopped"),
-        Err(e) => json!("Error stopping container: {:?}", e),
+        Ok(_) => "Container stopped",
+        Err(e) => "Error stopping container",
     }
 }
