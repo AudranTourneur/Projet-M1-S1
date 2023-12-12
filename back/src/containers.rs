@@ -132,7 +132,10 @@ pub async fn container_start(id: &str){
 
     let start_options: StartContainerOptions<String> = StartContainerOptions::default();
 
-    docker.start_container(&id, Some(start_options)).await.unwrap();
+    match docker.start_container(&id, Some(start_options)).await{
+        Ok(_) => json!("Container started"),
+        Err(e) => json!("Error starting container: {:?}", e),
+    };
 }
 
 #[post("/containers/<id>/stop")]
@@ -143,5 +146,8 @@ pub async fn container_stop(id: &str){
         t: 30,
     });
 
-    docker.stop_container(&id, options).await.unwrap();
+    match docker.stop_container(&id, options).await{
+        Ok(_) => json!("Container stopped"),
+        Err(e) => json!("Error stopping container: {:?}", e),
+    }
 }

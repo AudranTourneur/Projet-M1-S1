@@ -97,9 +97,13 @@ Response:
     ports: string,
 }
 
-## POST /containers/:id/:start
+## POST /containers/:id/start/
+### Request
+{
+    id: string,
+}
 
-## POST /containers/:id/stop
+## POST /containers/stop
 
 ## GET /networks
 
