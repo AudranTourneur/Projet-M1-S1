@@ -20,7 +20,7 @@ CREATE TABLE users (
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "salt" TEXT NOT NULL,
-    "topologoy" JSONB NOT NULL,
+    "topology" JSONB NOT NULL,
     "updated_at" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

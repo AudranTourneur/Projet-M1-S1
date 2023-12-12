@@ -6,8 +6,11 @@ mod networks;
 mod overview;
 mod schema;
 //mod stats;
-mod volumes;
+mod database;
 mod topology;
+mod volumes;
+
+use diesel::RunQueryDsl;
 
 #[macro_use]
 extern crate rocket;
@@ -38,8 +41,25 @@ async fn spawn_statistics_subsystem() {
 }
 */
 
+use models::UserForm;
+use schema::users::dsl::*;
+
 #[rocket::main]
 async fn main() {
+    let mut conn = database::establish_connection();
+
+    let user_form: UserForm = UserForm {
+        username: "Bob".into(),
+        password: "123".into(),
+        salt: "123".into(),
+        topology: "aaa".into(),
+        updated_at: Default::default(),
+    };
+
+    let _ = diesel::insert_into(users)
+        .values(&user_form)
+        .execute(&mut conn);
+
     let app = create_rocket_app();
     let _ = app.launch().await;
     //rocket::tokio::spawn(app.launch());

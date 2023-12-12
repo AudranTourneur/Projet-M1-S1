@@ -65,24 +65,27 @@ pub async fn images_handler() -> Json<ImageResponse> {
 
 #[get("/images/<id>")]
 pub async fn image_handler(id: &str) -> Json<Image> {
-    let all_images : Vec<Image> = get_all_images().await;
+    let all_images: Vec<Image> = get_all_images().await;
     let image = all_images.iter().find(|image| image.id == id).unwrap();
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     println!("history: {:?}", &docker.image_history(&image.id).await);
 
     //Collecting history
     let whole_history = &docker.image_history(&image.id).await.unwrap();
-    let history = whole_history.iter().map(|history| {
-        let history_data = HistoryResponse {
-            id: history.id.clone(),
-            created: history.created.clone(),
-            created_by: history.created_by.clone(),
-            tags: history.tags.clone(),
-            size: history.size,
-            comment: history.comment.clone(),
-        };
-        history_data
-    }).collect();
+    let history = whole_history
+        .iter()
+        .map(|history| {
+            let history_data = HistoryResponse {
+                id: history.id.clone(),
+                created: history.created.clone(),
+                created_by: history.created_by.clone(),
+                tags: history.tags.clone(),
+                size: history.size,
+                comment: history.comment.clone(),
+            };
+            history_data
+        })
+        .collect();
 
     let response = Image {
         id: image.id.clone(),
@@ -93,5 +96,4 @@ pub async fn image_handler(id: &str) -> Json<Image> {
     };
 
     Json(response)
-
 }

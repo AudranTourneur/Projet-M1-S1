@@ -37,7 +37,7 @@ diesel::table! {
         username -> Text,
         password -> Text,
         salt -> Text,
-        topologoy -> Jsonb,
+        topology -> Jsonb,
         updated_at -> Timestamp,
     }
 }

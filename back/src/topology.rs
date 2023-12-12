@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -8,7 +8,7 @@ pub struct TopologyContainer {
     pub icon_url: String,
     pub exposed_ports: Vec<u16>,
     pub exposed_volumes: Vec<String>,
-    pub connected_to: Vec<String>
+    pub connected_to: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -16,7 +16,7 @@ pub struct TopologyContainer {
 pub struct TopologyPort {
     pub interface: String,
     pub number: u16,
-    pub connected_to: Vec<String>
+    pub connected_to: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -24,7 +24,7 @@ pub struct TopologyPort {
 pub struct TopologyVolume {
     pub name: String,
     pub size: u64,
-    pub connected_to: Vec<String>
+    pub connected_to: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -32,5 +32,5 @@ pub struct TopologyVolume {
 pub struct Topology {
     pub containers: Vec<TopologyContainer>,
     pub ports: Vec<TopologyPort>,
-    pub volumes: Vec<TopologyVolume>
+    pub volumes: Vec<TopologyVolume>,
 }
