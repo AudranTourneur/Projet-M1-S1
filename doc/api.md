@@ -103,7 +103,11 @@ Response:
     id: string,
 }
 
+
 ## POST /containers/stop
+{
+    id: string,
+}
 
 ## GET /networks
 
