@@ -11,15 +11,14 @@ pub struct Container {
     volume: Vec<String>,
     status: String,
     ports: String,
+    state: String,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ContainerList {
-    final_containers: Vec<Container>,
+    containers: Vec<Container>,
 }
-
-
 
 #[get("/containers")]
 pub async fn containers_handler() -> Json<ContainerList> {
@@ -30,7 +29,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
             ..Default::default()
         }))
         .await
-        .unwrap();
+        .unwrap_or_default();
 
     let ran_string = "test";
 
@@ -47,28 +46,29 @@ pub async fn containers_handler() -> Json<ContainerList> {
 
             let container_data = Container {
                 id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
-                name: container.names.clone().unwrap(),
-                image: container.image.clone().unwrap(),
+                name: container.names.clone().unwrap_or_default(),
+                image: container.image.clone().unwrap_or_default(),
                 volume: volume_name,
                 network: container
                     .network_settings
                     .clone()
-                    .unwrap()
+                    .unwrap_or_default()
                     .networks
                     .clone()
-                    .unwrap()
+                    .unwrap_or_default()
                     .keys()
                     .cloned()
                     .collect(),
-                status: container.status.clone().unwrap(),
+                status: container.status.clone().unwrap_or_default(),
                 ports: ran_string.to_string(),
+                state: container.clone().state.unwrap_or_default()
             };
             container_data
         })
         .collect();
 
     let res = ContainerList {
-        final_containers: listed_containers,
+        containers: listed_containers,
     };
 
     Json(res)
@@ -84,7 +84,7 @@ pub async fn container_handler(id: &str) -> Json<Container> {
             ..Default::default()
         }))
         .await
-        .unwrap();
+        .unwrap_or_default();
 
     let ran_string = "test";
 
@@ -118,6 +118,7 @@ pub async fn container_handler(id: &str) -> Json<Container> {
             .collect(),
         status: container.status.clone().unwrap(),
         ports: ran_string.to_string(),
+        state: container.clone().state.unwrap_or_default()
     };
 
     Json(container_data)
