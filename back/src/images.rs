@@ -97,3 +97,4 @@ pub async fn image_handler(id: &str) -> Json<Image> {
 
     Json(response)
 }
+
