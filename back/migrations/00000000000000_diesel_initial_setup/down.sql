@@ -3,6 +3,10 @@
 -- changes will be added to existing projects as new migrations.
 
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS sessions;
+DROP TABLE IF EXISTS container_statistics;
+DROP TABLE IF EXISTS volume_statitics;
+DROP TABLE IF EXISTS network_statistics;
 
 DROP FUNCTION IF EXISTS diesel_manage_updated_at(_tbl regclass);
 DROP FUNCTION IF EXISTS diesel_set_updated_at();
