@@ -1,5 +1,16 @@
 {
   "docker_info": {
+    "overview":[
+      {
+        "os_version":"Ubuntu 22.1.0",
+        "ram":"16 GB",
+        "cpu":"2048",
+        "io ?":"!!!!",
+        "images_number":"12",
+        "containers_number":"14",
+        "volumes_number":"16"
+      }
+    ],
     "images": [
       {
         "id": "abc123",

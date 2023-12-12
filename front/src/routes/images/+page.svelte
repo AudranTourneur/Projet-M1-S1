@@ -58,11 +58,11 @@ function formatBytes(bytes: number, decimals = 2): string {
                 </div>
                 <br/>
                 <div>
-                    <span>Created {formatCreatedDate(image.created)}</span>
+                    <span>Created :{formatCreatedDate(image.created)}</span>
                 </div>
                 <br/>
                 <div>
-                    Size {formatBytes(image.size)}
+                    Size :{formatBytes(image.size)}
                 </div>
 
                 <div class="flex justify-end">

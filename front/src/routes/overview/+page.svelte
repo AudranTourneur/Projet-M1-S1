@@ -1,27 +1,28 @@
 <script lang="ts">
     import { AppRail, AppRailAnchor, AppRailTile } from "@skeletonlabs/skeleton";
+    import item from '../info.json';
 
-
+    let overview = item.docker_info.overview;
+    let containers=item.docker_info.containers;
+    let volumes=item.docker_info.volumes;
+    let images=item.docker_info.images;
     let currentTile: number = 0;
 </script>
 
-<div class="overflow-x-hidden">
-    <div>
-        <h1>Overview</h1>
-
-    </div>
-
-    <div class="h-screen">
-        <AppRail>
-            <AppRailTile bind:group={currentTile} name="tile-1" value={0} title="tile-1">
-                <span>Images</span>
-            </AppRailTile>
-            <AppRailTile bind:group={currentTile} name="tile-2" value={1} title="tile-2">
-                <span>Containers</span>
-            </AppRailTile>
-            <AppRailTile bind:group={currentTile} name="tile-3" value={2} title="tile-3">
-                <span>Volumes</span>
-            </AppRailTile>
-        </AppRail>
-    </div>
-</div>
+<div className="flex gap-4">
+    {[
+      [24, 32, 32, 16, 16],
+      [32, 40, 56],
+      [64, 32, 32],
+    ].map((card, index) => (
+      <div className="flex-1" key={index}>
+        {card.map((height, index) => (
+          <div
+            className={`mb-4 h-${height} rounded-xl border-2 border-slate-400/10 bg-green-100 p-4 dark:bg-green-900`}
+            key={index}
+          ></div>
+        ))}
+      </div>
+    ))}
+  </div>
+  
