@@ -1,7 +1,7 @@
-use bollard::{container::ListContainersOptions, Docker};
-use rocket::serde::{json::Json, Deserialize, Serialize};
 use bollard::container::StartContainerOptions;
 use bollard::container::StopContainerOptions;
+use bollard::{container::ListContainersOptions, Docker};
+use rocket::serde::{json::Json, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -20,8 +20,6 @@ pub struct Container {
 pub struct ContainerList {
     final_containers: Vec<Container>,
 }
-
-
 
 #[get("/containers")]
 pub async fn containers_handler() -> Json<ContainerList> {
@@ -76,7 +74,6 @@ pub async fn containers_handler() -> Json<ContainerList> {
     Json(res)
 }
 
-
 #[get("/containers/<id>")]
 pub async fn container_handler(id: &str) -> Json<Container> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
@@ -125,28 +122,25 @@ pub async fn container_handler(id: &str) -> Json<Container> {
     Json(container_data)
 }
 
-
 #[post("/containers/<id>/start")]
-pub async fn container_start(id: &str) -> &'static str{
+pub async fn container_start(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
     let start_options: StartContainerOptions<String> = StartContainerOptions::default();
 
-    match docker.start_container(&id, Some(start_options)).await{
+    match docker.start_container(&id, Some(start_options)).await {
         Ok(_) => "Container started",
         Err(e) => "Error starting container",
     }
 }
 
 #[post("/containers/<id>/stop")]
-pub async fn container_stop(id: &str) -> &'static str{
+pub async fn container_stop(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
-    let options = Some(StopContainerOptions{
-        t: 30,
-    });
+    let options = Some(StopContainerOptions { t: 30 });
 
-    match docker.stop_container(&id, options).await{
+    match docker.stop_container(&id, options).await {
         Ok(_) => "Container stopped",
         Err(e) => "Error stopping container",
     }
