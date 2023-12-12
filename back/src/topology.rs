@@ -34,7 +34,3 @@ pub struct Topology {
     pub ports: Vec<TopologyPort>,
     pub volumes: Vec<TopologyVolume>,
 }
-
-pub fn create_topology(){
-    
-}

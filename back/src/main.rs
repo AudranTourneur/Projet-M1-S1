@@ -7,9 +7,9 @@ mod overview;
 mod schema;
 //mod stats;
 mod database;
+mod stats;
 mod topology;
 mod volumes;
-mod stats;
 
 #[macro_use]
 extern crate rocket;
@@ -40,7 +40,6 @@ async fn spawn_statistics_subsystem() {
 
 #[rocket::main]
 async fn main() {
-
     let app = create_rocket_app();
 
     rocket::tokio::spawn(spawn_statistics_subsystem());
