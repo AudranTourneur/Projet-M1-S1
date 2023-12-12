@@ -1,5 +1,6 @@
 use bollard::{container::ListContainersOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use bollard::container::StartContainerOptions;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -122,4 +123,14 @@ pub async fn container_handler(id: &str) -> Json<Container> {
     };
 
     Json(container_data)
+}
+
+
+#[post("/containers/<id>/start")]
+pub async fn container_start(id: &str){
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+
+    let start_options: StartContainerOptions<String> = StartContainerOptions::default();
+
+    docker.start_container(&id, Some(start_options)).await.unwrap();
 }
