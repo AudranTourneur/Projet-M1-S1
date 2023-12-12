@@ -34,36 +34,16 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
     )
 }
 
-/*
 async fn spawn_statistics_subsystem() {
     stats::start_statistics_listeners().await;
 }
-*/
 
 #[rocket::main]
 async fn main() {
-    /*
-    let mut conn = database::establish_connection();
-
-    let user_form: UserForm = UserForm {
-        username: "Bob".into(),
-        password: "123".into(),
-        salt: "123".into(),
-        topology: "aaa".into(),
-        updated_at: Default::default(),
-    };
-
-    let _ = diesel::insert_into(users)
-        .values(&user_form)
-        .execute(&mut conn);
-    */
-
-    let _ = database::create_pool().await;
-
-    spawn_statistics_subsystem().await;
-
-    rocket::tokio::spawn(app.launch());
 
     let app = create_rocket_app();
+
+    rocket::tokio::spawn(spawn_statistics_subsystem());
+
     let _ = app.launch().await;
 }
