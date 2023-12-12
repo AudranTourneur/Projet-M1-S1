@@ -3,6 +3,14 @@
 
     const images = data.images;
 
+    let visibleImages = [...images];
+
+    let search = '';
+
+    $: {
+        visibleImages = images.filter(img => img.id.toLowerCase().includes(search.toLowerCase()) || img.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase())))
+    }
+
     function deleteVolume(index: number): void {
         // Implement the logic to delete the volume with the given index
         console.log(`Deleting volume with index ${index}`);
@@ -27,11 +35,18 @@ function formatBytes(bytes: number, decimals = 2): string {
     }
  </script>
 
+<div class="flex items-center justify-center">
+    <form action="#" method="get" class="p-4 flex flex-col justify-center items-center gap-2">
+        <h2 class="font-bold text-lg">Search by name or ID</h2>
+        <input bind:value={search} type="text" placeholder="Search..." class="bg-gray-800 p-2 border rounded-l">
+    </form>
+</div>
 
 <h1 class="text-center text-4xl">Images</h1>
 <ul>
 
-    {#each images as image, i}
+    {#each visibleImages as image, i}
+
         <div class="space-y-5">
             <div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg">
                 <div>
