@@ -48,7 +48,7 @@ function formatBytes(bytes: number, decimals = 2): string {
     {#each visibleImages as image, i}
 
         <div class="space-y-5">
-            <div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg">
+            <div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg overflow-auto">
                 <div>
                     <span>{image.tags}</span>
                 </div>
