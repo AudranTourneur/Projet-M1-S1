@@ -1,39 +1,57 @@
-<script>
-    import item from '../info.json';
+<script lang="ts">
+    export let data;
 
-    function deleteVolume(index) {
+    const images = data.images;
+
+    function deleteVolume(index: number): void {
         // Implement the logic to delete the volume with the given index
         console.log(`Deleting volume with index ${index}`);
     }
-</script>
+
+function formatBytes(bytes: number, decimals = 2): string {
+    if (!+bytes) return '0 Bytes'
+
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+}
+
+    function formatCreatedDate(sec: number): string {
+        const date = new Date(sec * 1000);
+        const iso = date.toISOString();
+        return iso.split('.')[0].replace('T', ' ');
+    }
+ </script>
 
 
 <h1 class="text-center text-4xl">Images</h1>
 <ul>
 
-    {#each item.docker_info.images as {id, name_repository, version, date_images, created_images, size_images}, i}
+    {#each images as image, i}
         <div class="space-y-5">
             <div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg">
                 <div>
-                    <span>ID : {id}</span>
-                    <span class="absolute right-3">{version}</span>
+                    <span>{image.tags}</span>
                 </div>
                 <br/>
                 <div>
-                    Origine : {name_repository}
+                    <span>ID : {image.id}</span>
                 </div>
                 <br/>
                 <div>
-                    <span>Date de création : {date_images}</span>
-                    <span class="absolute right-3">{created_images}</span>
+                    <span>Created {formatCreatedDate(image.created)}</span>
                 </div>
                 <br/>
                 <div>
-                    taille : {size_images}
+                    Size {formatBytes(image.size)}
                 </div>
 
                 <div class="flex justify-end">
-                    <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}>supprimer</button>
+                    <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}>Delete</button>
                 </div>
             </div>
         </div>
