@@ -1,5 +1,6 @@
 use bollard::{container::ListContainersOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use bollard::container::StartContainerOptions;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -11,14 +12,15 @@ pub struct Container {
     volume: Vec<String>,
     status: String,
     ports: String,
-    state: String,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ContainerList {
-    containers: Vec<Container>,
+    final_containers: Vec<Container>,
 }
+
+
 
 #[get("/containers")]
 pub async fn containers_handler() -> Json<ContainerList> {
@@ -29,7 +31,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
             ..Default::default()
         }))
         .await
-        .unwrap_or_default();
+        .unwrap();
 
     let ran_string = "test";
 
@@ -46,29 +48,28 @@ pub async fn containers_handler() -> Json<ContainerList> {
 
             let container_data = Container {
                 id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
-                name: container.names.clone().unwrap_or_default(),
-                image: container.image.clone().unwrap_or_default(),
+                name: container.names.clone().unwrap(),
+                image: container.image.clone().unwrap(),
                 volume: volume_name,
                 network: container
                     .network_settings
                     .clone()
-                    .unwrap_or_default()
+                    .unwrap()
                     .networks
                     .clone()
-                    .unwrap_or_default()
+                    .unwrap()
                     .keys()
                     .cloned()
                     .collect(),
-                status: container.status.clone().unwrap_or_default(),
+                status: container.status.clone().unwrap(),
                 ports: ran_string.to_string(),
-                state: container.clone().state.unwrap_or_default()
             };
             container_data
         })
         .collect();
 
     let res = ContainerList {
-        containers: listed_containers,
+        final_containers: listed_containers,
     };
 
     Json(res)
@@ -84,7 +85,7 @@ pub async fn container_handler(id: &str) -> Json<Container> {
             ..Default::default()
         }))
         .await
-        .unwrap_or_default();
+        .unwrap();
 
     let ran_string = "test";
 
@@ -118,8 +119,17 @@ pub async fn container_handler(id: &str) -> Json<Container> {
             .collect(),
         status: container.status.clone().unwrap(),
         ports: ran_string.to_string(),
-        state: container.clone().state.unwrap_or_default()
     };
 
     Json(container_data)
+}
+
+
+#[post("/containers/<id>/start")]
+pub async fn container_start(id: &str){
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+
+    let start_options: StartContainerOptions<String> = StartContainerOptions::default();
+
+    docker.start_container(&id, Some(start_options)).await.unwrap();
 }
