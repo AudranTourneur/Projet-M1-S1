@@ -130,7 +130,7 @@ pub async fn container_start(id: &str) -> &'static str {
 
     match docker.start_container(&id, Some(start_options)).await {
         Ok(_) => "Container started",
-        Err(e) => "Error starting container",
+        Err(_) => "Error starting container",
     }
 }
 
@@ -142,6 +142,6 @@ pub async fn container_stop(id: &str) -> &'static str {
 
     match docker.stop_container(&id, options).await {
         Ok(_) => "Container stopped",
-        Err(e) => "Error stopping container",
+        Err(_) => "Error stopping container",
     }
 }

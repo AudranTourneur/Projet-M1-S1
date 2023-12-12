@@ -10,8 +10,6 @@ mod database;
 mod topology;
 mod volumes;
 
-use diesel::RunQueryDsl;
-
 #[macro_use]
 extern crate rocket;
 
@@ -40,9 +38,6 @@ async fn spawn_statistics_subsystem() {
     stats::start_statistics_listeners().await;
 }
 */
-
-use models::UserForm;
-use schema::users::dsl::*;
 
 #[rocket::main]
 async fn main() {
