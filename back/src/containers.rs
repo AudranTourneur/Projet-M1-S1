@@ -1,6 +1,7 @@
 use bollard::{container::ListContainersOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use bollard::container::StartContainerOptions;
+use bollard::container::StopContainerOptions;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -132,4 +133,13 @@ pub async fn container_start(id: &str){
     let start_options: StartContainerOptions<String> = StartContainerOptions::default();
 
     docker.start_container(&id, Some(start_options)).await.unwrap();
+}
+
+#[post("/containers/<id>/stop")]
+pub async fn container_stop(id: &str){
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+
+    let stop_options: StopContainerOptions = StopContainerOptions::default();
+
+    docker.stop_container(&id, Some(stop_options)).await.unwrap();
 }

@@ -27,6 +27,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             containers::container_handler,
             volumes::volume_handler,
             containers::container_start,
+            containers::container_stop,
         ],
     )
 }
