@@ -97,3 +97,16 @@ pub async fn image_handler(id: &str) -> Json<Image> {
 
     Json(response)
 }
+
+
+// Downloading image
+#[post("/images/<id>/download")]
+pub async fn image_get_handler(id: &str) -> &'static str {
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let options = bollard::image::GetImageOptions {
+        all: true,
+        ..Default::default()
+    };
+    let _ = docker.get_image(id, Some(options)).await.unwrap();
+    "OK"
+}
