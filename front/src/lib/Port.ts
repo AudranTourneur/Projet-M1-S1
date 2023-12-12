@@ -3,19 +3,19 @@ import type { TopologyApp } from './TopologyApp';
 
 export class Port {
     constructor(app: TopologyApp, x: number, y: number) {
+        const container = new PIXI.Container();
         // Draw purple losange
         const graphics = new PIXI.Graphics();
         graphics.beginFill(0x800080);
-        const size = 50;
-        graphics.drawPolygon([
-            0, 0,
-            size, size,
-            0, size * 2,
-            -size, size,
-        ]);
+        const size = 75;
+        graphics.drawRoundedRect(0, 0, size, size, 10);
+       
         graphics.endFill();
-        graphics.x = x;
-        graphics.y = y;
+        container.x = x;
+        container.y = y;
+
+        // rotate graphics
+        graphics.rotation = 45 * Math.PI / 180;
 
         const portText = new PIXI.Text('80', {
             fontFamily: 'Arial',
@@ -23,10 +23,8 @@ export class Port {
             fill: '#ffffff'
         });
 
-        portText.x = -size / 2;
-        portText.y = size / 2 - 10;
-
-        graphics.addChild(portText);
+        container.addChild(portText);
+        container.addChild(graphics);
 
         app.viewport.addChild(graphics);
     }
