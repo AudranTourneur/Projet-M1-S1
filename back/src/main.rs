@@ -9,6 +9,7 @@ mod schema;
 mod database;
 mod topology;
 mod volumes;
+mod stats;
 
 #[macro_use]
 extern crate rocket;
@@ -59,8 +60,10 @@ async fn main() {
 
     let _ = database::create_pool().await;
 
+    spawn_statistics_subsystem().await;
+
+    rocket::tokio::spawn(app.launch());
+
     let app = create_rocket_app();
     let _ = app.launch().await;
-    //rocket::tokio::spawn(app.launch());
-    //spawn_statistics_subsystem().await;
 }

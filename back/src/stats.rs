@@ -35,5 +35,7 @@ pub async fn get_container_statistics(container_id_to_get: String) {
         );
     }
 
+    //let memory_stats = &container.memory_stats.unwrap();
+    //println!("memory_stats: {:?}", memory_stats);
     println!("end");
 }
