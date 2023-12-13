@@ -99,13 +99,7 @@ pub async fn image_handler(id: &str) -> Json<Image> {
     Json(response)
 }
 
-#[derive(Deserialize)]
-#[serde(crate = "rocket::serde")]
-struct Task<'r> {
-    description: &'r str,
-    complete: bool,
-    image_id: &'r str,
-}
+
 
 #[post("/images/pull", data = "<image_id>")]
 pub async fn pull_image(image_id: &str) -> &'static str {
@@ -115,7 +109,7 @@ pub async fn pull_image(image_id: &str) -> &'static str {
         ..Default::default()
     });
 
-    let stream = docker.create_image(options, None, None);
+    docker.create_image(options, None, None);
 
-    unreachable!();
+    "Success."
 }
