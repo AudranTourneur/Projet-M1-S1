@@ -18,7 +18,7 @@ pub struct Container {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ContainerList {
-    final_containers: Vec<Container>,
+    containers: Vec<Container>,
 }
 
 #[get("/containers")]
@@ -68,7 +68,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
         .collect();
 
     let res = ContainerList {
-        final_containers: listed_containers,
+        containers: listed_containers,
     };
 
     Json(res)
