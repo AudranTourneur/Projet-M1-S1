@@ -1,6 +1,7 @@
 use bollard::container::StartContainerOptions;
 use bollard::container::StopContainerOptions;
 use bollard::{container::ListContainersOptions, Docker};
+use bollard::models::Port;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use bollard::container::RemoveContainerOptions;
 
@@ -13,7 +14,7 @@ pub struct Container {
     network: String,
     volume: Vec<String>,
     status: String,
-    ports: String,
+    ports: Vec<Port>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -34,7 +35,6 @@ pub async fn containers_handler() -> Json<ContainerList> {
         .unwrap();
 
     let ran_string = "test";
-
     let listed_containers: Vec<Container> = containers
         .iter()
         .map(|container| {
@@ -45,6 +45,10 @@ pub async fn containers_handler() -> Json<ContainerList> {
                 .iter()
                 .map(|volume| volume.name.clone().unwrap_or_default())
                 .collect();
+
+
+            let container_port = container.ports.clone().unwrap_or_default();
+            println!("container_port: {:?}", container_port);
 
             let container_data = Container {
                 id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
@@ -62,7 +66,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
                     .cloned()
                     .collect(),
                 status: container.status.clone().unwrap(),
-                ports: ran_string.to_string(),
+                ports:  container.ports.clone().unwrap_or_default()
             };
             container_data
         })
@@ -75,7 +79,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
     Json(res)
 }
 
-#[get("/containers/<id>")]
+#[get("/container/<id>")]
 pub async fn container_handler(id: &str) -> Json<Container> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let containers = &docker
@@ -86,7 +90,7 @@ pub async fn container_handler(id: &str) -> Json<Container> {
         .await
         .unwrap();
 
-    let ran_string = "test";
+
 
     let container = containers
         .iter()
@@ -117,13 +121,13 @@ pub async fn container_handler(id: &str) -> Json<Container> {
             .cloned()
             .collect(),
         status: container.status.clone().unwrap(),
-        ports: ran_string.to_string(),
+        ports:   container.ports.clone().unwrap_or_default()
     };
 
     Json(container_data)
 }
 
-#[post("/containers/<id>/start")]
+#[post("/container/<id>/start")]
 pub async fn container_start(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
@@ -135,7 +139,7 @@ pub async fn container_start(id: &str) -> &'static str {
     }
 }
 
-#[post("/containers/<id>/stop")]
+#[post("/container/<id>/stop")]
 pub async fn container_stop(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
