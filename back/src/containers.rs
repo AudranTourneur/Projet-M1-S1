@@ -74,7 +74,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
     Json(res)
 }
 
-#[get("/containers/<id>")]
+#[get("/container/<id>")]
 pub async fn container_handler(id: &str) -> Json<Container> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let containers = &docker
@@ -122,7 +122,7 @@ pub async fn container_handler(id: &str) -> Json<Container> {
     Json(container_data)
 }
 
-#[post("/containers/<id>/start")]
+#[post("/container/<id>/start")]
 pub async fn container_start(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
@@ -134,7 +134,7 @@ pub async fn container_start(id: &str) -> &'static str {
     }
 }
 
-#[post("/containers/<id>/stop")]
+#[post("/container/<id>/stop")]
 pub async fn container_stop(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
 
