@@ -1,6 +1,6 @@
-use std::{env, error::Error};
-use sqlx::postgres::{PgPool, PgPoolOptions};
 use dotenvy::dotenv;
+use sqlx::postgres::{PgPool, PgPoolOptions};
+use std::{env, error::Error};
 
 use crate::models::ContainerStats;
 
@@ -9,12 +9,17 @@ pub async fn create_pool() -> Result<PgPool, Box<dyn Error>> {
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let pool = PgPoolOptions::new().max_connections(5).connect(&database_url).await?;
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await?;
 
     Ok(pool)
 }
 
-pub async fn insert_container_stats(container_statistics: ContainerStats) -> Result<(), Box<dyn Error>> {
+pub async fn insert_container_stats(
+    container_statistics: ContainerStats,
+) -> Result<(), Box<dyn Error>> {
     let pool = create_pool().await.unwrap();
 
     let _ = sqlx::query!(
