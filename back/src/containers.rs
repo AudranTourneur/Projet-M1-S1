@@ -179,14 +179,12 @@ pub async fn container_stats_handler(id: &str) -> Json<ContainerStatsResponse> {
 
 
 #[post("/containers/<id>/remove")]
-pub async fn delete_container(id: &str) -> &'static str{
+pub async fn delete_container(id: &str){
     let docker : Docker = Docker::connect_with_local_defaults().unwrap();
-    let options:Option<RemoveContainerOptions> = Some(RemoveContainerOptions {
+    let options = Some(RemoveContainerOptions {
         force: true,
         ..Default::default()
     });
 
-    let _ = docker.remove_container(id, options);
-
-    "Success."
+    docker.remove_container(id, options);
 }
