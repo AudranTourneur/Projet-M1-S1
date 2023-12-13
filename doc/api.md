@@ -53,6 +53,16 @@ Response:
 }
 
 ## POST /images/:image_id/pull
+### Request
+{
+    id: string,
+}
+
+## POST /images/remove
+### Request
+{
+    id: string,
+}
 
 
 ## GET /volumes
@@ -107,6 +117,7 @@ Response:
 
 
 ## POST /containers/stop
+### Request
 {
     id: string,
 }

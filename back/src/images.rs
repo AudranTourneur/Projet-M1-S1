@@ -2,6 +2,7 @@ use bollard::image::CreateImageOptions;
 use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use futures::prelude::stream::StreamExt;
+use bollard::image::RemoveImageOptions;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -123,5 +124,19 @@ pub async fn pull_image(input: Json<ImagePullRequest>) -> &'static str {
         println!("stream iter {:?}", item);
     }
 
+    "Success."
+}
+
+
+#[post("/images/<id>/remove")]
+pub async fn delete_image(id :&str) -> &'static str{
+    let docker : Docker = Docker::connect_with_local_defaults().unwrap();
+    let options:Option<RemoveImageOptions> = Some(RemoveImageOptions {
+        force: true,
+        ..Default::default()
+    });
+
+    let _ = docker.remove_image(id, options, None).await;
+    
     "Success."
 }
