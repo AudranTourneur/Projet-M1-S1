@@ -4,7 +4,7 @@ use bollard::{
 };
 
 use futures_util::stream::StreamExt;
-use rocket::time::{OffsetDateTime, PrimitiveDateTime};
+use rocket::time::OffsetDateTime;
 
 use crate::database;
 
@@ -19,7 +19,7 @@ pub async fn start_statistics_listeners() {
         .unwrap();
 
     for container in containers.iter() {
-        println!("aaaa id = {}", container.id.clone().unwrap());
+        // println!("aaaa id = {}", container.id.clone().unwrap());
         rocket::tokio::spawn(get_container_statistics(container.id.clone().unwrap()));
     }
 }
@@ -34,7 +34,7 @@ pub async fn get_container_statistics(container_id_to_get: String) {
 
     let container_id = container.id.as_ref().unwrap();
 
-    println!("container_id: {}", container_id);
+    // println!("container_id: {}", container_id);
 
     //let stats = &docker.stats("docker-postgres", Some(bollard::container::StatsOptions { stream: true, ..Default::default() })).try_collect::<Vec<_>>().await.unwrap();
 
@@ -57,14 +57,9 @@ pub async fn get_container_statistics(container_id_to_get: String) {
 
         if diff < time_threshold {
             continue;
-        } else {
-            println!("STATS FOR {}", container_id);
-        }
+        } 
 
         last_timestamp_acquisition = current_timestamp;
-
-        let now_odt = OffsetDateTime::now_utc();
-        let now_pdt = PrimitiveDateTime::new(now_odt.date(), now_odt.time());
 
         let stats = crate::models::ContainerStats {
             container_id: container_id.clone(),

@@ -1,6 +1,7 @@
 use bollard::image::CreateImageOptions;
 use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use futures::prelude::stream::StreamExt;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -99,18 +100,27 @@ pub async fn image_handler(id: &str) -> Json<Image> {
     Json(response)
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ImagePullRequest {
+    pub id: String,
+}
 
+#[post("/images/pull", data = "<input>")]
+pub async fn pull_image(input: Json<ImagePullRequest>) -> &'static str {
 
-#[post("/images/pull", data = "<image_id>")]
-pub async fn pull_image(image_id: &str) -> &'static str {
+    println!("pull_image input: {:?}", input);
+
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let options = Some(CreateImageOptions {
-        from_image: image_id,
+        from_image: input.id.clone(),
         ..Default::default()
     });
 
-    docker.create_image(options, None, None);
+    let mut stream = docker.create_image(options, None, None);
 
+    while let Some(item) = stream.next().await {
+        println!("stream iter {:?}", item);
+    }
 
     "Success."
 }
