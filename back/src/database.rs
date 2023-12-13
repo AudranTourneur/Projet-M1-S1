@@ -20,13 +20,30 @@ pub async fn create_pool() -> Result<PgPool, Box<dyn Error>> {
 pub async fn insert_container_stats(
     container_statistics: ContainerStats,
 ) -> Result<(), Box<dyn Error>> {
-    let pool = create_pool().await.unwrap();
+    // let pool = create_pool().await.unwrap();
 
-    let _ = sqlx::query!(
-        r#"
-        INSERT INTO container_statistics (id, timestamp, cpu_usage, memory_usage, io_usage_read, io_usage_write, network_usage_up, network_usage_down)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        "#,
+    // let _ = sqlx::query!(
+    //     r#"
+    //     INSERT INTO container_statistics (id, timestamp, cpu_usage, memory_usage, io_usage_read, io_usage_write, network_usage_up, network_usage_down)
+    //     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    //     "#,
+    //     container_statistics.container_id,
+    //     container_statistics.timestamp,
+    //     container_statistics.cpu_usage,
+    //     container_statistics.memory_usage,
+    //     container_statistics.io_usage_read,
+    //     container_statistics.io_usage_write,
+    //     container_statistics.network_usage_up,
+    //     container_statistics.network_usage_down,
+    // )
+    // .execute(&pool)
+    // .await;
+    
+    let clickhouse_client = get_clickhouse_client();
+
+    let insert_query = format!(
+        "INSERT INTO container_statistics (id, timestamp, cpu_usage, memory_usage, io_usage_read, io_usage_write, network_usage_up, network_usage_down)
+        VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')",
         container_statistics.container_id,
         container_statistics.timestamp,
         container_statistics.cpu_usage,
@@ -35,32 +52,39 @@ pub async fn insert_container_stats(
         container_statistics.io_usage_write,
         container_statistics.network_usage_up,
         container_statistics.network_usage_down,
-    )
-    .execute(&pool)
-    .await;
+    );
+
+    // todo: replace by prepared statement!!!
+    let insert = clickhouse_client.query(&insert_query);
+
+    let res = insert.execute().await;
+
+    match res {
+        Ok(_) => println!("Container statistics inserted"),
+        Err(e) => println!("Error inserting container statistics: {}", e),
+    };
 
     Ok(())
 }
 
 use clickhouse::Client;
 
-pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
-    println!("aaaaaaaaaaaaaaaaa");
-    let client: clickhouse::Client = Client::default()
+pub fn get_clickhouse_client() -> Client {
+    Client::default()
         .with_url("http://localhost:8123")
         .with_user("username")
         .with_password("password")
-        .with_database("my_database");
+        .with_database("my_database")
+}
 
-    println!("bbbbbbbbbb");
+pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
+    let client: clickhouse::Client = get_clickhouse_client();
 
-    let create_table = client.query("CREATE TABLE IF NOT EXISTS my_table (id UInt32, name String)");
+    let init_query = include_str!("../resources/clickhouse_init.sql");
 
-    println!("ccccccccccc");
+    let create_table = client.query(init_query);
 
     let res = create_table.execute().await;
-
-    println!("ddddddd");
 
     println!("Table created");
 
