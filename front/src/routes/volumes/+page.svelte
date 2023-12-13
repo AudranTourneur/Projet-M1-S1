@@ -1,7 +1,8 @@
 <script lang="ts">
-    import item from '../info.json';
 
-    let volumes = item.docker_info.volumes;
+    export let data;
+
+    const volumes = data.volumes;
 
     function deleteVolume(index: number) {
         // implémenter la fonction adéquate
@@ -15,20 +16,24 @@
 </script>
 
 <div class="w-full">
-    {#each volumes as { id, name, size }, i (id)}
-        <div class="border border-gray-300 rounded p-4 mb-4" key={id}>
+    {#each volumes as volume, i}
+        <div class="border border-gray-300 rounded p-4 mb-4">
             <h3 class="text-lg font-semibold mb-2">Volume Information</h3>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">ID:</span>
-                <span>{id}</span>
+                <span>{volume.createdAt}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Name:</span>
-                <span>{name}</span>
+                <span>{volume.name}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Size:</span>
-                <span>{size}</span>
+                <span>{volume.mountpoint}</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold">Size:</span>
+                <span>{volume.size}</span>
             </div>
             <div class="flex justify-end items-center">
                 <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}>
