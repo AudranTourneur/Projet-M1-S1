@@ -1,0 +1,1 @@
+docker run --rm -e CLICKHOUSE_DB=my_database -e CLICKHOUSE_USER=username -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 -e CLICKHOUSE_PASSWORD=password -p 5566:9000/tcp -d --name okidocky-clickhouse clickhouse/clickhouse-server

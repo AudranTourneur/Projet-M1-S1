@@ -41,3 +41,15 @@ pub async fn insert_container_stats(
 
     Ok(())
 }
+
+use clickhouse::Client;
+
+pub async fn create_clickhouse_client() {
+
+
+let client = Client::default()
+    .with_url("http://localhost:5566")
+    .with_user("username")
+    .with_password("password")
+    .with_database("my_database");
+}

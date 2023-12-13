@@ -72,7 +72,7 @@ pub async fn get_container_statistics(container_id_to_get: String) {
         let stats = crate::models::ContainerStats {
             container_id: container_id.clone(),
             timestamp: now_pdt,
-            cpu_usage: 0.0,
+            cpu_usage: stats.cpu_stats.cpu_usage.total_usage as f64,
             memory_usage: stats.memory_stats.usage.unwrap_or_default() as i32,
             io_usage_read: 0.0,
             io_usage_write: 0.0,
