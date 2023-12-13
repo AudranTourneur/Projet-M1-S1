@@ -113,6 +113,7 @@ pub async fn pull_image(input: Json<ImagePullRequest>) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let options = Some(CreateImageOptions {
         from_image: input.id.clone(),
+        tag: "latest".to_string(),
         ..Default::default()
     });
 
