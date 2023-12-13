@@ -38,7 +38,7 @@ pub async fn insert_container_stats(
     // )
     // .execute(&pool)
     // .await;
-    
+
     let clickhouse_client = get_clickhouse_client();
 
     let insert_query = format!(
@@ -94,4 +94,33 @@ pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
     };
 
     Ok(())
+}
+
+use serde::{Deserialize, Serialize};
+use clickhouse::Row;
+
+#[derive(Row, Deserialize, Serialize, Debug)]
+pub struct MyRow {
+    ts: u32,
+    mem: u64,
+    cpu: f32,
+}
+
+pub async fn get_historical_statistics_for_container(
+    id: String,
+) -> Result<Vec<MyRow>, Box<dyn Error>> {
+    let client: clickhouse::Client = get_clickhouse_client();
+
+    let mut cursor = client
+    .query("SELECT timestamp AS ts, memory_usage AS mem, cpu_usage AS cpu FROM container_statistics WHERE id = ?")
+    .bind(id)
+    .fetch::<MyRow>()?;
+
+    let mut vector_response: Vec<MyRow> = vec![];
+
+    while let Some(row) = cursor.next().await? {
+        vector_response.push(row)
+    }
+
+    Ok(vector_response)
 }

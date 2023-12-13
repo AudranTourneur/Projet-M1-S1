@@ -145,3 +145,29 @@ pub async fn container_stop(id: &str) -> &'static str {
         Err(_) => "Error stopping container",
     }
 }
+
+#[derive(Serialize, Debug)]
+pub struct ContainerStatsResponse {
+    pub stats: Vec<crate::database::MyRow>,
+}
+
+#[get("/statistics-historical/container/<id>")]
+pub async fn container_stats_handler(id: &str) -> Json<ContainerStatsResponse> {
+    let db_res = crate::database::get_historical_statistics_for_container(id.to_string()).await;
+
+    match db_res {
+        Ok(stats) => {
+            println!("Stats: {:?}", stats);
+            let res = ContainerStatsResponse { stats };
+
+            Json(res)
+        }
+        Err(e) => {
+            println!("Error getting stats: {}", e);
+
+            let res = ContainerStatsResponse { stats: vec![] };
+
+            Json(res)
+        }
+    }
+}
