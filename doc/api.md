@@ -52,7 +52,7 @@ Response:
     tags: Array<string>,
 }
 
-## POST /images/:image_name/pull
+## POST /images/:image_id/pull
 
 
 ## GET /volumes
