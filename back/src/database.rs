@@ -44,12 +44,30 @@ pub async fn insert_container_stats(
 
 use clickhouse::Client;
 
-pub async fn create_clickhouse_client() {
+pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
+    println!("aaaaaaaaaaaaaaaaa");
+    let client: clickhouse::Client = Client::default()
+        .with_url("http://localhost:8123")
+        .with_user("username")
+        .with_password("password")
+        .with_database("my_database");
 
+    println!("bbbbbbbbbb");
 
-let client = Client::default()
-    .with_url("http://localhost:5566")
-    .with_user("username")
-    .with_password("password")
-    .with_database("my_database");
+    let create_table = client.query("CREATE TABLE IF NOT EXISTS my_table (id UInt32, name String)");
+
+    println!("ccccccccccc");
+
+    let res = create_table.execute().await;
+
+    println!("ddddddd");
+
+    println!("Table created");
+
+    match res {
+        Ok(_) => println!("Clickhouse database initialized"),
+        Err(e) => panic!("Error initializing clickhouse database: {}", e),
+    };
+
+    Ok(())
 }

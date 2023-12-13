@@ -52,15 +52,13 @@ pub async fn get_container_statistics(container_id_to_get: String) {
     let time_threshold = 15;
 
     while let Some(Ok(stats)) = stream.next().await {
-
         let current_timestamp = OffsetDateTime::now_utc().unix_timestamp();
 
         let diff = current_timestamp - last_timestamp_acquisition;
 
         if diff < time_threshold {
             continue;
-        }
-        else {
+        } else {
             println!("STATS FOR {}", container_id);
         }
 
