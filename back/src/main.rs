@@ -30,6 +30,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             volumes::volume_handler,
             containers::container_start,
             containers::container_stop,
+            images::pull_image,
         ],
     )
 }
