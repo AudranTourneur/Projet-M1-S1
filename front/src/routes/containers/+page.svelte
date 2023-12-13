@@ -1,7 +1,8 @@
 <script lang="ts">
-    import item from '../info.json';
+    export let data;
 
-    let containers = item.docker_info.containers;
+    const containers = data.containers;
+
 
     function deleteContainer(index: number) {
         // implémenter la fonction adéquate
@@ -27,32 +28,36 @@
 </script>
 
 <div class="w-full">
-    {#each containers as { id, name, image_id, status, created_containers, ports }, i (id)}
-        <div class="border border-gray-300 rounded p-4 mb-4" key={id}>
+    {#each containers as container, i}
+        <div class="border border-gray-300 rounded p-4 mb-4">
             <h3 class="text-lg font-semibold mb-2">Containers Information</h3>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">ID:</span>
-                <span>{id}</span>
+                <span>{container.id}S</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Name:</span>
-                <span>{name}</span>
+                <span>{container.name}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Image ID :</span>
-                <span>{image_id}</span>
+                <span>{container.image}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Status :</span>
-                <span>{status}</span>
+                <span>{container.status}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Date of creation :</span>
-                <span>{created_containers}</span>
+                <span>{container.network}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Ports used :</span>
-                <span>{ports}</span>
+                <span>{container.ports}</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold">Ports used :</span>
+                <span>{container.volume}</span>
             </div>
             <div class="flex justify-end items-center">
                 <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteContainer(i)}>

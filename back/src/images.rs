@@ -1,6 +1,6 @@
+use bollard::image::CreateImageOptions;
 use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
-use bollard::image::CreateImageOptions;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -99,10 +99,6 @@ pub async fn image_handler(id: &str) -> Json<Image> {
     Json(response)
 }
 
-
-
-
-
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 struct Task<'r> {
@@ -111,8 +107,7 @@ struct Task<'r> {
     image_id: &'r str,
 }
 
-
-#[post("/images/pull", data="<image_id>")]
+#[post("/images/pull", data = "<image_id>")]
 pub async fn pull_image(image_id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let options = Some(CreateImageOptions {
@@ -121,7 +116,6 @@ pub async fn pull_image(image_id: &str) -> &'static str {
     });
 
     let stream = docker.create_image(options, None, None);
-
 
     unreachable!();
 }

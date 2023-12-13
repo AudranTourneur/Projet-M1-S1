@@ -13,7 +13,6 @@ pub async fn start_statistics_listeners() {
 
     let containers = &docker
         .list_containers::<String>(Some(ListContainersOptions::<String> {
-            all: true,
             ..Default::default()
         }))
         .await
@@ -52,15 +51,13 @@ pub async fn get_container_statistics(container_id_to_get: String) {
     let time_threshold = 15;
 
     while let Some(Ok(stats)) = stream.next().await {
-
         let current_timestamp = OffsetDateTime::now_utc().unix_timestamp();
 
         let diff = current_timestamp - last_timestamp_acquisition;
 
         if diff < time_threshold {
             continue;
-        }
-        else {
+        } else {
             println!("STATS FOR {}", container_id);
         }
 
@@ -71,8 +68,8 @@ pub async fn get_container_statistics(container_id_to_get: String) {
 
         let stats = crate::models::ContainerStats {
             container_id: container_id.clone(),
-            timestamp: now_pdt,
-            cpu_usage: 0.0,
+            timestamp: current_timestamp as u64,
+            cpu_usage: stats.cpu_stats.cpu_usage.total_usage as f64,
             memory_usage: stats.memory_stats.usage.unwrap_or_default() as i32,
             io_usage_read: 0.0,
             io_usage_write: 0.0,

@@ -1,3 +1,5 @@
+use database::init_clickhouse_database;
+
 mod auth;
 mod containers;
 mod images;
@@ -41,6 +43,8 @@ async fn spawn_statistics_subsystem() {
 
 #[rocket::main]
 async fn main() {
+    let _ = init_clickhouse_database().await;
+
     let app = create_rocket_app();
 
     rocket::tokio::spawn(spawn_statistics_subsystem());
