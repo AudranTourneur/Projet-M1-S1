@@ -115,7 +115,7 @@ pub async fn pull_image(image_id: &str) -> &'static str {
         ..Default::default()
     });
 
-    stream = docker.create_image(options, None, None);
+    let stream = docker.create_image(options, None, None);
 
     unreachable!();
 }
