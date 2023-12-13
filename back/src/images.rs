@@ -1,5 +1,6 @@
 use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use bollard::image::CreateImageOptions;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -63,7 +64,7 @@ pub async fn images_handler() -> Json<ImageResponse> {
     Json(response)
 }
 
-#[get("/images/<id>")]
+#[get("/image/<id>")]
 pub async fn image_handler(id: &str) -> Json<Image> {
     let all_images: Vec<Image> = get_all_images().await;
     let image = all_images.iter().find(|image| image.id == id).unwrap();
@@ -96,4 +97,31 @@ pub async fn image_handler(id: &str) -> Json<Image> {
     };
 
     Json(response)
+}
+
+
+
+
+
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct Task<'r> {
+    description: &'r str,
+    complete: bool,
+    image_id: &'r str,
+}
+
+
+#[post("/images/pull", data="<image_id>")]
+pub async fn pull_image(image_id: &str) -> &'static str {
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let options = Some(CreateImageOptions {
+        from_image: image_id,
+        ..Default::default()
+    });
+
+    let stream = docker.create_image(options, None, None);
+
+
+    unreachable!();
 }

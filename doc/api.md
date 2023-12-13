@@ -52,6 +52,8 @@ Response:
     tags: Array<string>,
 }
 
+## POST /images/:image_name/pull
+
 
 ## GET /volumes
 {
