@@ -111,5 +111,6 @@ pub async fn pull_image(image_id: &str) -> &'static str {
 
     docker.create_image(options, None, None);
 
+
     "Success."
 }
