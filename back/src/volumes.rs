@@ -3,6 +3,8 @@ use lazy_static::lazy_static;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Mutex;
+use bollard::volume::RemoveVolumeOptions;
+
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -106,4 +108,18 @@ pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
     };
 
     Some(Json(volume_data))
+}
+
+#[post("/volumes/<name>/remove")]
+pub async fn delete_volume(name: String) -> &'static str {
+    let docker = Docker::connect_with_local_defaults().unwrap();
+
+    let options = Some(RemoveVolumeOptions {
+        force: true,
+        ..Default::default()
+    });
+
+    let _ = docker.remove_volume(&name, options).await.unwrap();
+
+    "Volume deleted"
 }

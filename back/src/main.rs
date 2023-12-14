@@ -36,6 +36,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             containers::container_stats_handler,
             images::delete_image,
             containers::delete_container,
+            volumes::delete_volume,
         ],
     )
 }
