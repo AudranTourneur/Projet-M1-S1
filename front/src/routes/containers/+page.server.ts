@@ -11,7 +11,7 @@ const responseSchema = z.object({
             network: z.string(),
             volume: z.array(z.string()),
             status: z.string(),
-            ports: z.string(),
+            ports: z.array(z.string()),
         })
     )
 });
@@ -19,7 +19,9 @@ const responseSchema = z.object({
 export const load: PageServerLoad = async () => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/containers/');
     const serverResponseJson = await serverResponse.json();
-    const res = responseSchema.parse(serverResponseJson);
-    console.log(res)
-    return res
+    console.log('res', serverResponseJson)
+    // const serverResponseJson = await serverResponse.json();
+    // const res = responseSchema.parse(serverResponseJson);
+    // console.log(res)
+    return serverResponseJson
 };
