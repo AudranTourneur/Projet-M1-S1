@@ -85,6 +85,12 @@ Response:
 
 ## GET /volumes/:id/download
 
+## POST /volumes/:names/remove
+### Request
+{
+    name: string,
+}
+
 ## GET /containers
 {
     containers: Array<{
@@ -120,6 +126,12 @@ Response:
 ### Request
 {
     id: string,
+}
+
+## POST /containers/:id/remove
+### Request
+{
+    id :string,
 }
 
 ## GET /networks
