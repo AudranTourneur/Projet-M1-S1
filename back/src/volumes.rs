@@ -111,7 +111,7 @@ pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
 }
 
 #[post("/volumes/<name>/remove")]
-pub async fn delete_volume(name: String) -> &'static str {
+pub async fn delete_volume(name: &str) -> &'static str {
     let docker = Docker::connect_with_local_defaults().unwrap();
 
     let options = Some(RemoveVolumeOptions {
@@ -119,7 +119,7 @@ pub async fn delete_volume(name: String) -> &'static str {
         ..Default::default()
     });
 
-    let _ = docker.remove_volume(&name, options).await.unwrap();
+    let _ = docker.remove_volume(name, options).await;
 
-    "Volume deleted"
+    "Volume deleted."
 }
