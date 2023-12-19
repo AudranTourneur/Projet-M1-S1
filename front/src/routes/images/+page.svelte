@@ -66,6 +66,11 @@ function formatBytes(bytes: number, decimals = 2): string {
                 </div>
 
                 <div class="flex justify-end">
+                    <a href="/images/{image.id}">
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
+                            Info
+                        </button>
+                    </a>
                     <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}>Delete</button>
                 </div>
             </div>

@@ -33,7 +33,7 @@
             <h3 class="text-lg font-semibold mb-2">Containers Information</h3>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">ID:</span>
-                <span>{container.id}S</span>
+                <span>{container.id}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Name:</span>
@@ -52,8 +52,12 @@
                 <span>{container.network}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">Ports used :</span>
-                <span>{container.ports}</span>
+                {#each container.ports as port, i}
+                    <span>IP: {port.IP}</span>
+                    <span>PrivatePort: {port.PrivatePort}</span>
+                    <span>PublicPort: {port.PublicPort}</span>
+                    <span>Type: {port.Type}</span>
+                {/each}
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Ports used :</span>

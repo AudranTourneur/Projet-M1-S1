@@ -1,6 +1,6 @@
-import type { PageServerLoad } from './$types';
-import { PUBLIC_API_URL } from '$env/static/public';
-import { z } from 'zod';
+import type {PageServerLoad} from './$types';
+import {PUBLIC_API_URL} from '$env/static/public';
+import {z} from 'zod';
 
 const responseSchema = z.object({
     containers: z.array(
@@ -11,7 +11,12 @@ const responseSchema = z.object({
             network: z.string(),
             volume: z.array(z.string()),
             status: z.string(),
-            ports: z.array(z.string()),
+            ports: z.array(z.object({
+                IP: z.string().optional(),
+                PrivatePort: z.number(),
+                PublicPort: z.number().optional(),
+                Type: z.string()
+            })),
         })
     )
 });
