@@ -57,9 +57,13 @@ pub async fn get_container_statistics(container_id_to_get: String) {
 
         if diff < time_threshold {
             continue;
-        } 
+        } else {
+            println!("STATS FOR {}", container_id);
+        }
 
         last_timestamp_acquisition = current_timestamp;
+
+        // println!("cpu usage: {:?}", stats.cpu_stats.cpu_usage);
 
         let stats = crate::models::ContainerStats {
             container_id: container_id.clone(),

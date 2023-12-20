@@ -2,6 +2,7 @@ use bollard::container::StartContainerOptions;
 use bollard::container::StopContainerOptions;
 use bollard::{container::ListContainersOptions, Docker};
 use bollard::models::Port;
+use rocket::response::stream::TextStream;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use bollard::container::RemoveContainerOptions;
 
@@ -34,7 +35,6 @@ pub async fn containers_handler() -> Json<ContainerList> {
         .await
         .unwrap();
 
-    let ran_string = "test";
     let listed_containers: Vec<Container> = containers
         .iter()
         .map(|container| {
@@ -173,6 +173,18 @@ pub async fn container_stats_handler(id: &str) -> Json<ContainerStatsResponse> {
             let res = ContainerStatsResponse { stats: vec![] };
 
             Json(res)
+        }
+    }
+}
+
+#[get("/statistics-realtime/container/<_id>")]
+pub async fn container_stats_stream_hander(_id: &str) -> TextStream![String] {
+    TextStream! {
+        for id in 0..42 {
+            // yield with the counter
+            yield format!("{}\n", id);
+            // sleep async for 100ms
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         }
     }
 }

@@ -12,6 +12,7 @@ mod database;
 mod stats;
 mod topology;
 mod volumes;
+mod ports;
 
 #[macro_use]
 extern crate rocket;
@@ -37,6 +38,9 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             images::delete_image,
             containers::delete_container,
             volumes::delete_volume,
+            containers::container_stats_stream_hander,
+            ports::ports_handler,
+            topology::topology_handler,
         ],
     )
 }

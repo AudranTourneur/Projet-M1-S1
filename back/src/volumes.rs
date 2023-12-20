@@ -93,7 +93,7 @@ pub async fn volumes_handler() -> Json<VolumeResponse> {
     Json(response)
 }
 
-#[get("/volumes/<name>")]
+#[get("/volume/<name>")]
 pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
     let docker = Docker::connect_with_local_defaults().unwrap();
 
@@ -110,7 +110,7 @@ pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
     Some(Json(volume_data))
 }
 
-#[post("/volumes/<name>/remove")]
+#[post("/volume/<name>/remove")]
 pub async fn delete_volume(name: &str) -> &'static str {
     let docker = Docker::connect_with_local_defaults().unwrap();
 

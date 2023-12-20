@@ -1,4 +1,3 @@
-use netstat::{AddressFamilyFlags, ProtocolFlags};
 use rocket::serde::json::Json;
 
 #[derive(serde::Serialize)]
@@ -14,22 +13,19 @@ pub struct PortsResponse {
 
 #[get("/ports")]
 pub fn ports_handler() -> Json<PortsResponse> {
-
-    let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
-    let proto_flags = ProtocolFlags::TCP | ProtocolFlags::UDP;
-    let stats = netstat::get_sockets_info(af_flags, proto_flags);
-
-    match stats {
-        Ok(stats) => {
-            println!("Found {} sockets.", stats.len());
+    let ports = vec![
+        PortData {
+            ip: "0.0.0.0".to_string(),
+            port: 8080
         },
-        Err(e) => {
-            println!("Error: {}", e);
-        }
-    }
-
+        PortData {
+            ip: "0.0.0.0".to_string(),
+            port: 3306
+        },
+    ];
+  
     let res = PortsResponse {
-        ports: vec![]
+        ports
     };
 
     Json(res)

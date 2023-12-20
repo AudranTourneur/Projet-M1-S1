@@ -38,23 +38,24 @@ export class TopologyApp {
 			[500, 0],
 			[0, 500],
 			[500, 500],
-			[900, 300]
+			[900, 300],
+			[1500, 300],
 		];
 
 		for (const coor of coords) {
-			new TopologyContainer(this, coor[0], coor[1]);
+			new TopologyContainer(this, coor[0], coor[1], Math.random() < 0.5 ? false : true);
 		}
 
-        const cable: Array<{x: number, y: number}> = [
-            {x: 50, y: 0},
-            {x: 50, y: 250},
-            {x: 550, y: 250},
-            {x: 550, y: 500},
-        ];
-
-        new Cable(this, cable);
-
-        new Port(this, 1050, 0);
+        // const cable: Array<{x: number, y: number}> = [
+        //     {x: 50, y: 0},
+        //     {x: 50, y: 250},
+        //     {x: 550, y: 250},
+        //     {x: 550, y: 500},
+        // ];
+        //
+        // new Cable(this, cable);
+        //
+        // new Port(this, 10500, 500);
 	}
 
 	select(container: TopologyContainer) {
