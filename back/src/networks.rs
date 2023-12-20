@@ -61,7 +61,7 @@ pub async fn networks_handler() -> Json<NetworkResponse> {
     Json(response)
 }
 
-#[get("/networks/<id>")]
+#[get("/network/<id>")]
 pub async fn network_handler(id: &str) -> Json<Network> {
     let all_networks: Vec<Network> = get_all_networks().await;
     let network = all_networks
