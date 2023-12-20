@@ -47,13 +47,18 @@ pub fn get_clickhouse_client() -> Client {
 pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();
 
-    let init_query = include_str!("../resources/clickhouse_init.sql");
+    let init_query_containers  = include_str!("../resources/clickhouse_init_containers.sql");
 
-    let create_table = client.query(init_query);
+    let res = client.query(init_query_containers).execute().await;
 
-    let res = create_table.execute().await;
+    match res {
+        Ok(_) => println!("Clickhouse database initialized"),
+        Err(e) => panic!("Error initializing clickhouse database: {}", e),
+    };
 
-    println!("Table created");
+    let init_query_volumes  = include_str!("../resources/clickhouse_init_volumes.sql");
+
+    let res = client.query(init_query_volumes).execute().await;
 
     match res {
         Ok(_) => println!("Clickhouse database initialized"),
