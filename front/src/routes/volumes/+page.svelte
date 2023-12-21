@@ -36,6 +36,11 @@
                 <span>{volume.size}</span>
             </div>
             <div class="flex justify-end items-center">
+                <a href="/volumes/{volume.name}">
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
+                        Info
+                    </button>
+                </a>
                 <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}>
                     Delete
                 </button>

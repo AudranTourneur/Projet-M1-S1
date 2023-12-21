@@ -10,7 +10,7 @@
 
 <nav class="list-nav p-4">
 	<ul>
-		<li><a on:click={drawerClose} href="/">Overview</a></li>
+		<li><a on:click={drawerClose} href="/overview">Overview</a></li>
 		<li><a on:click={drawerClose} href="/images">Images</a></li>
 		<li><a on:click={drawerClose} href="/containers">Containers</a></li>
 		<li><a on:click={drawerClose} href="/volumes">Volumes</a></li>

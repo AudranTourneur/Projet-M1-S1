@@ -1,4 +1,8 @@
 <script lang="ts">
+    export let data;
+
+    console.log(data);
+
     import {onMount} from "svelte";
 
     onMount(async () => {
@@ -113,4 +117,16 @@
 
 <div id="chart" class="max-w-760px mx-auto my-8 opacity-90">
     <div id="timeline-chart" class="apexcharts-toolbar-opacity-1 apexcharts-toolbar-border-0"></div>
+</div>
+
+
+<div>
+    <br/>
+    {data.name}
+    <br/>
+    {data.createdAt}
+    <br/>
+    {data.mountpoint}
+    <br/>
+    {data.size}
 </div>
