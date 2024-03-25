@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.postcss';
 
-	import { AppBar, AppShell, Avatar, Drawer } from '@skeletonlabs/skeleton';
+	import {AppBar, AppShell, Avatar, Drawer, LightSwitch} from '@skeletonlabs/skeleton';
 	import LeftNavigation from '../components/LeftNavigation.svelte';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
@@ -35,6 +35,7 @@
 				<strong class="text-xl font-bold">OkiDocky</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				<LightSwitch />
 				<Avatar initials="OD" width="w-10" background="bg-primary-500" />
 			</svelte:fragment>
 		</AppBar>
