@@ -21,7 +21,9 @@ export class TopologyContainer {
 			fill: '#dddddd'
 		});
 
-		const text = new PIXI.Text('my-super-app-1', styleName);
+		const nb = Math.floor(Math.random() * 100);
+
+		const text = new PIXI.Text('my-super-app-' + nb, styleName);
 		text.x = 30;
 		text.y = 30;
 		container.addChild(text);
@@ -32,7 +34,24 @@ export class TopologyContainer {
 			fill: '#cccccc'
 		});
 
-		const image = new PIXI.Text('ubuntu:22.04', styleImage);
+		const randomNamesList = [
+			'ubuntu:22.04',
+			'nginx:latest',
+			'node:20',
+			'python:3.8',
+			'php:8.0',
+			'postgres:13',
+			'mysql:8.0',
+			'wordpress:latest',
+			'jenkins:latest',
+			'gitlab:latest',
+			'alpine:latest',
+			'debian:buster',
+		]
+
+		const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
+
+		const image = new PIXI.Text(actualName, styleImage);
 		image.x = 30;
 		image.y = 80;
 		container.addChild(image);

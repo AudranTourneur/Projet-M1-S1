@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  db:
+    container_name: okidocky-db
+    image: clickhouse/clickhouse-server
+    environment:
+      - CLICKHOUSE_DB=my_database
+      - CLICKHOUSE_USER=username
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_PASSWORD=password
+    networks:
+      - main
+    volumes:
+      - ./clickhouse_db:/var/lib/clickhouse
+    restart: always
+
+    #CLICKHOUSE_DB=my_database -e CLICKHOUSE_USER=username -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 -e CLICKHOUSE_PASSWORD=password -p 5566:9000/tcp -p 8123:8123/tcp -d --name okidocky-clickhouse clickhouse/clickhouse-server
+
+  core:
+    container_name: okidocky-core
+    build:
+      context: ./back
+    depends_on:
+      - db
+    networks:
+      - main
+    restart: always
+
+  ui:
+    container_name: okidocky-ui
+    build:
+      context: ./front
+    depends_on:
+      - core
+    networks:
+      - main
+    restart: always
+    ports:
+      - "7777:5173"
+
+networks:
+  main:
+    driver: bridge
