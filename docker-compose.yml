@@ -46,6 +46,8 @@ services:
     restart: always
     ports:
       - "7777:5173"
+    volumes:
+      - "./front/src:/opt/app/src"
 
 networks:
   main:
