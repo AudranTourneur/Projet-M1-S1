@@ -4,6 +4,8 @@
 	let parentElement: HTMLDivElement;
 	let canvasElement: HTMLCanvasElement;
 
+	export let data;
+
 	onMount(async () => {
         const { initApp } = await import('$lib/topology');
 		initApp(canvasElement, parentElement);

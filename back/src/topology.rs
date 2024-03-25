@@ -1,17 +1,19 @@
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
-// use ts_rs::TS;
+use ts_rs::TS;
 
 use crate::containers::{get_all_containers, Container};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
+#[ts(export)]
 pub struct Position {
     x: u32,
     y: u32,
 }
 
-#[derive(Serialize, Deserialize /* , TS*/)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TopologyContainer {
     pub name: String,
     pub image: String,
@@ -22,8 +24,9 @@ pub struct TopologyContainer {
     pub position: Option<Position>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TopologyPort {
     pub interface: String,
     pub number: u16,
@@ -31,8 +34,9 @@ pub struct TopologyPort {
     pub position: Option<Position>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TopologyVolume {
     pub name: String,
     pub size: u64,
@@ -40,8 +44,9 @@ pub struct TopologyVolume {
     pub position: Option<Position>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Topology {
     pub containers: Vec<TopologyContainer>,
     pub ports: Vec<TopologyPort>,

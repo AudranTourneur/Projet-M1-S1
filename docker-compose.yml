@@ -32,6 +32,7 @@ services:
       - "/run/docker.sock:/run/docker.sock:ro,rslave"
       - "./back/target:/app/target"
       - "./back/src:/app/src:ro"
+      - "./back/bindings:/app/bindings"
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro
     ports:
