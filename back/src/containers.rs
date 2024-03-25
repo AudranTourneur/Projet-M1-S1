@@ -6,6 +6,8 @@ use rocket::response::stream::TextStream;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use bollard::container::RemoveContainerOptions;
 
+use crate::docker::get_docker_socket;
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Container {
@@ -26,7 +28,7 @@ pub struct ContainerList {
 
 #[get("/containers")]
 pub async fn containers_handler() -> Json<ContainerList> {
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let docker: Docker = get_docker_socket();
     let containers = &docker
         .list_containers::<String>(Some(ListContainersOptions::<String> {
             all: true,
@@ -81,7 +83,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
 
 #[get("/container/<id>")]
 pub async fn container_handler(id: &str) -> Json<Container> {
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let docker: Docker = get_docker_socket();
     let containers = &docker
         .list_containers::<String>(Some(ListContainersOptions::<String> {
             all: true,
@@ -129,7 +131,7 @@ pub async fn container_handler(id: &str) -> Json<Container> {
 
 #[post("/container/<id>/start")]
 pub async fn container_start(id: &str) -> &'static str {
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let docker: Docker = get_docker_socket();
 
     let start_options: StartContainerOptions<String> = StartContainerOptions::default();
 
@@ -141,7 +143,7 @@ pub async fn container_start(id: &str) -> &'static str {
 
 #[post("/container/<id>/stop")]
 pub async fn container_stop(id: &str) -> &'static str {
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let docker: Docker = get_docker_socket();
 
     let options = Some(StopContainerOptions { t: 30 });
 
@@ -192,7 +194,7 @@ pub async fn container_stats_stream_hander(_id: &str) -> TextStream![String] {
 
 #[post("/containers/<id>/remove")]
 pub async fn delete_container(id: &str) -> &'static str{
-    let docker : Docker = Docker::connect_with_local_defaults().unwrap();
+    let docker : Docker = get_docker_socket();
     let options = Some(RemoveContainerOptions {
         force: true,
         ..Default::default()

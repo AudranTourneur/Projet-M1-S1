@@ -26,6 +26,11 @@ services:
     networks:
       - main
     restart: always
+    volumes:
+      - /:/rootfs:ro
+    ports:
+      - 8000:8000
+
 
   ui:
     container_name: okidocky-ui

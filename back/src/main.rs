@@ -1,5 +1,6 @@
 use database::init_clickhouse_database;
 
+mod docker;
 mod auth;
 mod containers;
 mod images;
