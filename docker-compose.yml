@@ -21,6 +21,7 @@ services:
     container_name: okidocky-core
     build:
       context: ./back
+      dockerfile: Dockerfile.dev
     depends_on:
       - db
     networks:
@@ -29,6 +30,8 @@ services:
     volumes:
       - "/:/rootfs:ro,rslave"
       - "/run/docker.sock:/run/docker.sock:ro,rslave"
+      - "./back/target:/app/target"
+      - "./back/src:/app/src:ro"
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro
     ports:

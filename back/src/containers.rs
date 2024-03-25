@@ -11,13 +11,13 @@ use crate::docker::get_docker_socket;
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Container {
-    id: String,
-    name: Vec<String>,
-    image: String,
-    network: String,
-    volume: Vec<String>,
-    status: String,
-    ports: Vec<Port>,
+    pub id: String,
+    pub name: Vec<String>,
+    pub image: String,
+    pub network: String,
+    pub volume: Vec<String>,
+    pub status: String,
+    pub ports: Vec<Port>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -26,9 +26,8 @@ pub struct ContainerList {
     containers: Vec<Container>,
 }
 
-#[get("/containers")]
-pub async fn containers_handler() -> Json<ContainerList> {
-    let docker: Docker = get_docker_socket();
+pub async fn get_all_containers() -> Vec<Container> {
+ let docker: Docker = get_docker_socket();
     let containers = &docker
         .list_containers::<String>(Some(ListContainersOptions::<String> {
             all: true,
@@ -73,6 +72,13 @@ pub async fn containers_handler() -> Json<ContainerList> {
             container_data
         })
         .collect();
+
+    listed_containers
+}
+
+#[get("/containers")]
+pub async fn containers_handler() -> Json<ContainerList> {
+    let listed_containers = get_all_containers().await;
 
     let res = ContainerList {
         containers: listed_containers,

@@ -1,4 +1,4 @@
-use bollard::{Docker, API_DEFAULT_VERSION};
+use bollard::Docker;
 
 pub fn get_docker_socket() -> Docker {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();

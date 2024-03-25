@@ -1,5 +1,8 @@
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
+// use ts_rs::TS;
+
+use crate::containers::{get_all_containers, Container};
 
 #[derive(Serialize, Deserialize)]
 pub struct Position {
@@ -7,7 +10,7 @@ pub struct Position {
     y: u32,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize /* , TS*/)]
 #[serde(rename_all = "camelCase")]
 pub struct TopologyContainer {
     pub name: String,
@@ -46,60 +49,94 @@ pub struct Topology {
     pub position: Option<Position>,
 }
 
-#[get("/topology")]
-pub fn topology_handler() -> Json<Topology> {
-    let topo = Topology {
-        containers: vec![
-            TopologyContainer {
-                name: "nginx".to_string(),
-                image: "nginx:latest".to_string(),
+async fn create_topology_containers() -> Vec<TopologyContainer> {
+    let all_containers: Vec<Container> = get_all_containers().await;
+
+    let topology_containers: Vec<TopologyContainer> = all_containers
+        .iter()
+        .map(|container| {
+            let container_data = TopologyContainer {
+                name: container.id.clone(),
+                image: container.image.clone(),
                 icon_url: "https://cdn.iconscout.com/icon/free/png-256/nginx-226046.png"
                     .to_string(),
-                exposed_ports: vec![80],
-                exposed_volumes: vec!["/var/www/html".to_string()],
-                connected_to: vec!["mysql".to_string()],
-                position: Some(Position { x: 100, y: 100 }),
-            },
-            TopologyContainer {
-                name: "mysql".to_string(),
-                image: "mysql:latest".to_string(),
-                icon_url: "https://cdn.iconscout.com/icon/free/png-256/mysql-19-1174939.png"
-                    .to_string(),
-                exposed_ports: vec![3306],
-                exposed_volumes: vec!["/var/lib/mysql".to_string()],
-                connected_to: vec!["nginx".to_string()],
-                position: Some(Position { x: 100, y: 100 }),
-            },
-        ],
-        ports: vec![
-            TopologyPort {
-                interface: "eth0".to_string(),
-                number: 80,
-                connected_to: vec!["nginx".to_string()],
-                position: Some(Position { x: 100, y: 100 }),
-            },
-            TopologyPort {
-                interface: "eth0".to_string(),
-                number: 3306,
-                connected_to: vec!["mysql".to_string()],
-                position: Some(Position { x: 100, y: 100 }),
-            },
-        ],
-        volumes: vec![
-            TopologyVolume {
-                name: "nginx".to_string(),
-                size: 100,
-                connected_to: vec!["nginx".to_string()],
-                position: Some(Position { x: 100, y: 100 }),
-            },
-            TopologyVolume {
-                name: "mysql".to_string(),
-                size: 100,
-                connected_to: vec!["mysql".to_string()],
-                position: Some(Position { x: 100, y: 100 }),
-            },
-        ],
-        position: Some(Position { x: 100, y: 100 })
+                exposed_ports: vec![],
+                exposed_volumes: vec![],
+                connected_to: vec![],
+                position: None,
+            };
+            container_data
+        })
+        .collect();
+
+    topology_containers
+}
+
+fn create_topology_ports() -> Vec<TopologyPort> {
+    vec![
+        TopologyPort {
+            interface: "eth0".to_string(),
+            number: 80,
+            connected_to: vec!["nginx".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+        TopologyPort {
+            interface: "eth0".to_string(),
+            number: 3306,
+            connected_to: vec!["mysql".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+    ]
+}
+
+fn create_topology_volumes() -> Vec<TopologyVolume> {
+    vec![
+        TopologyVolume {
+            name: "nginx".to_string(),
+            size: 100,
+            connected_to: vec!["nginx".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+        TopologyVolume {
+            name: "mysql".to_string(),
+            size: 100,
+            connected_to: vec!["mysql".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+        TopologyVolume {
+            name: "postgres".to_string(),
+            size: 100,
+            connected_to: vec!["nginx".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+        TopologyVolume {
+            name: "node".to_string(),
+            size: 100,
+            connected_to: vec!["nginx".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+        TopologyVolume {
+            name: "python".to_string(),
+            size: 100,
+            connected_to: vec!["nginx".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+        TopologyVolume {
+            name: "ruby".to_string(),
+            size: 100,
+            connected_to: vec!["nginx".to_string()],
+            position: Some(Position { x: 100, y: 100 }),
+        },
+    ]
+}
+
+#[get("/topology")]
+pub async fn topology_handler() -> Json<Topology> {
+    let topo = Topology {
+        containers: create_topology_containers().await,
+        ports: create_topology_ports(),
+        volumes: create_topology_volumes(),
+        position: Some(Position { x: 100, y: 100 }),
     };
 
     Json(topo)
