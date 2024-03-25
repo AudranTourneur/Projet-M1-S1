@@ -1,20 +1,26 @@
-FROM ubuntu:22.04
+FROM rust:1 AS chef 
+# We only pay the installation cost once, 
+# it will be cached from the second build onwards
+RUN cargo install cargo-chef 
+WORKDIR app
 
-RUN apt-get update -y
-
-RUN apt-get install cargo libssl-dev pkg-config gcc g++ libpq-dev -y
-
-WORKDIR /opt/app
-
-COPY dummy.rs .
-COPY Cargo.toml .
-
-RUN sed -i 's#src/main.rs#dummy.rs#' Cargo.toml
-RUN cargo build
-RUN sed -i 's#dummy.rs#src/main.rs#' Cargo.toml
-
+FROM chef AS planner
 COPY . .
+RUN cargo chef prepare  --recipe-path recipe.json
 
-RUN cargo build
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+# Build dependencies - this is the caching Docker layer!
+RUN cargo chef cook --release --recipe-path recipe.json
+# Build application
+COPY . .
+RUN cargo build --release --bin app
 
-CMD ["cargo", "run"]
+# We do not need the Rust toolchain to run the binary!
+FROM ubuntu:22.04 AS runtime
+RUN apt-get update -y
+RUN apt-get install cargo libssl-dev pkg-config gcc g++ libpq-dev -y
+WORKDIR app
+COPY --from=builder /app/target/release/app /app/exe
+COPY --from=builder /app/Rocket.toml /app/Rocket.toml
+ENTRYPOINT ["/app/exe"]
