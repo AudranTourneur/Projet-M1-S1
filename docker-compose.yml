@@ -28,7 +28,7 @@ services:
     restart: always
     volumes:
       - "/:/rootfs:ro,rslave"
-      - "/run/docker.socket:/run/docker.socket:ro,rslave"
+      - "/run/docker.sock:/run/docker.sock:ro,rslave"
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro
     ports:
