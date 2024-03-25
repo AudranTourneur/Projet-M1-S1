@@ -2,6 +2,8 @@ use bollard::Docker;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
+use bollard::models::Network;
+use bollard::secret::NetworkContainer;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,64 +16,32 @@ pub struct OurIpamConfig {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Network {
+pub struct NetworkContainers {
+    name: String,
+    endpoint_id: String,
+    mac_address: String,
+    ipv4_address: String,
+    ipv6_address: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OurNetwork {
     id: String,
     name: String,
     created: String,
     labels: Option<HashMap<String, String, RandomState>>,
     ipam_config: Option<Vec<OurIpamConfig>>,
+    containers: Option<HashMap<String, NetworkContainers>>,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkResponse {
-    networks: Vec<Network>,
+    networks: Vec<OurNetwork>,
 }
 
-async fn get_all_networks() -> Vec<Network> {
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
-    let base_networks = &docker.list_networks::<String>(None).await.unwrap();
-
-    let my_networks: Vec<Network> = base_networks
-        .iter()
-        .map(|network| {
-            network.clone().containers.clone().unwrap_or_default();
-            let image_data = Network {
-                id: network.id.clone().unwrap_or("UNDEFINED".to_string()),
-                name: network.name.clone().unwrap_or("UNDEFINED".to_string()),
-                created: network.created.clone().unwrap_or("UNDEFINED".to_string()),
-                labels: None,
-                ipam_config: None,
-            };
-            image_data
-        })
-        .collect();
-
-    my_networks
-}
-
-#[get("/networks")]
-pub async fn networks_handler() -> Json<NetworkResponse> {
-    let my_networks = get_all_networks().await;
-
-    let response = NetworkResponse {
-        networks: my_networks,
-    };
-
-    Json(response)
-}
-
-#[get("/network/<id>")]
-pub async fn network_handler(id: &str) -> Json<Network> {
-    let all_networks: Vec<Network> = get_all_networks().await;
-    let network = all_networks
-        .iter()
-        .find(|network| network.id == id)
-        .unwrap();
-
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
-
-    let network_response = docker.inspect_network::<String>(id, None).await.unwrap();
+fn get_ipam(network_response: Network) -> Vec<OurIpamConfig> {
 
     let ipam_configs = network_response
         .clone()
@@ -94,12 +64,87 @@ pub async fn network_handler(id: &str) -> Json<Network> {
         })
         .collect();
 
-    let response = Network {
+    config
+}
+fn get_containers(network_response: Network) -> HashMap<String, NetworkContainers> {
+
+    let network_containers = network_response
+        .clone()
+        .containers
+        .unwrap()
+        .clone();
+
+    let containers: HashMap<String, NetworkContainers> = network_containers
+        .iter()
+        .map(|(key, value)| {
+            let container = NetworkContainers {
+                name: value.name.clone().unwrap_or_default(),
+                endpoint_id: value.endpoint_id.clone().unwrap_or_default(),
+                mac_address: value.mac_address.clone().unwrap_or_default(),
+                ipv4_address: value.ipv4_address.clone().unwrap_or_default(),
+                ipv6_address: value.ipv6_address.clone().unwrap_or_default(),
+            };
+            (key.clone(), container)
+        })
+        .collect();
+
+    containers
+}
+
+async fn get_all_networks() -> Vec<OurNetwork> {
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let base_networks = &docker.list_networks::<String>(None).await.unwrap();
+        let my_networks: Vec<OurNetwork> = base_networks
+        .iter()
+        .map(|network| {
+            let our_network = OurNetwork {
+                id: network.id.clone().unwrap_or("UNDEFINED".to_string()),
+                name: network.name.clone().unwrap_or("UNDEFINED".to_string()),
+                created: network.created.clone().unwrap_or("UNDEFINED".to_string()),
+                labels: network.labels.clone(),
+                ipam_config: Some(get_ipam(network.clone())),
+                containers: Some(get_containers(network.clone())),
+            };
+            our_network
+        })
+        .collect();
+
+    my_networks
+}
+
+#[get("/networks")]
+pub async fn networks_handler() -> Json<NetworkResponse> {
+    let my_networks = get_all_networks().await;
+
+    let response = NetworkResponse {
+        networks: my_networks,
+    };
+
+    Json(response)
+}
+
+#[get("/network/<id>")]
+pub async fn network_handler(id: &str) -> Json<OurNetwork> {
+    let all_networks: Vec<OurNetwork> = get_all_networks().await;
+    let network = all_networks
+        .iter()
+        .find(|network| network.id == id)
+        .unwrap();
+
+    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let network_response = docker.inspect_network::<String>(id, None).await.unwrap();
+
+    let config = get_ipam(network_response.clone());
+    let containers = get_containers(network_response);
+
+
+    let response = OurNetwork {
         id: network.id.clone(),
         name: network.name.clone(),
         created: network.created.clone(),
         labels: network.labels.clone(),
         ipam_config: Some(config),
+        containers: Some(containers),
     };
 
     Json(response)
