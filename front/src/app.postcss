@@ -4,3 +4,29 @@
 @tailwind variants;
 
 html, body { @apply h-full overflow-hidden; }
+
+.copy-to-clipboard {
+    display: flex;
+    align-items: center;
+    height: 30px;
+
+    &:hover {
+        button {
+            display: inline-flex;
+        }
+
+        .hide-on-clipboard-hover {
+            display: none;
+        }
+    }
+
+    button {
+        margin-left: 5px;
+        display: none;
+        padding: 0;
+        aspect-ratio: 1 / 1;
+        width: 30px;
+        font-size: 0.85rem;
+        line-height: 1.25rem;
+    }
+}
