@@ -5,7 +5,7 @@ import { BackgroundGrid } from './BackgroundGrid';
 export class TopologyContainer {
 	isDragging: boolean = false;
 
-	constructor(app: TopologyApp, x: number, y: number, isOnline: boolean = true) {
+	constructor(app: TopologyApp, x: number, y: number, data: any) {
 		const container = new PIXI.Container();
 		// Create a gray rectangle
 		const graphics = new PIXI.Graphics();
@@ -23,10 +23,10 @@ export class TopologyContainer {
 
 		const nb = Math.floor(Math.random() * 100);
 
-		const text = new PIXI.Text('my-super-app-' + nb, styleName);
-		text.x = 30;
-		text.y = 30;
-		container.addChild(text);
+		const idText = new PIXI.Text('Container', styleName);
+		idText.x = 30;
+		idText.y = 30;
+		container.addChild(idText);
 
 		const styleImage = new PIXI.TextStyle({
 			fontFamily: 'Arial',
@@ -34,27 +34,15 @@ export class TopologyContainer {
 			fill: '#cccccc'
 		});
 
-		const randomNamesList = [
-			'ubuntu:22.04',
-			'nginx:latest',
-			'node:20',
-			'python:3.8',
-			'php:8.0',
-			'postgres:13',
-			'mysql:8.0',
-			'wordpress:latest',
-			'jenkins:latest',
-			'gitlab:latest',
-			'alpine:latest',
-			'debian:buster',
-		]
-
-		const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
+		// const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
+		const actualName = data.image;
 
 		const image = new PIXI.Text(actualName, styleImage);
 		image.x = 30;
 		image.y = 80;
 		container.addChild(image);
+
+		const isOnline = true;
 
 		if (isOnline) {
 			const onlineGreenCircle = new PIXI.Graphics();

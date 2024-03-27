@@ -2,8 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import { TopologyContainer } from './TopologyContainer';
 import { BackgroundGrid } from './BackgroundGrid';
-import { Cable } from './Cable';
-import { Port } from './Port';
+import type { TopologyInitData } from './topology';
 
 export class TopologyApp {
 	app: PIXI.Application;
@@ -11,7 +10,7 @@ export class TopologyApp {
 
 	currentlySelected: TopologyContainer | null = null;
 
-	constructor(canvas: HTMLCanvasElement, parent: HTMLElement) {
+	constructor(canvas: HTMLCanvasElement, parent: HTMLElement, public data: TopologyInitData) {
 		const app = new PIXI.Application({ background: '#2A547E', resizeTo: parent, view: canvas, antialias: true });
 
 		this.app = app;
@@ -34,16 +33,19 @@ export class TopologyApp {
 		new BackgroundGrid(this);
 
 		const coords = [
-			[0, -200],
-			[500, 0],
-			[0, 500],
-			[500, 500],
-			[900, 300],
-			[1500, 300],
+			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
+			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
+			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
+			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
+			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
+			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
 		];
 
-		for (const coor of coords) {
-			new TopologyContainer(this, coor[0], coor[1], Math.random() < 0.5 ? false : true);
+		// for (const coor of coords) {
+		for (let i = 0; i < data.containers.length; i++) {
+			const coor = coords[i];
+			const container = data.containers[i];
+			new TopologyContainer(this, coor[0], coor[1], container);
 		}
 
         // const cable: Array<{x: number, y: number}> = [
@@ -69,4 +71,27 @@ export class TopologyApp {
 		// enable viewport plugins
 		this.viewport.plugins.resume('drag');
 	}
+
+	getSaveData(): SaveData {
+		return {
+			containers: this.app.stage.children
+				.filter((child) => child instanceof TopologyContainer)
+				.map((child) => {
+					const container = child as TopologyContainer;
+					return {
+						id: container.id,
+						x: container.x,
+						y: container.y,
+					};
+				}),
+		};
+	}
+}
+
+type SaveData = {
+	containers: Array<{
+		id: string,
+		x: number,
+		y: number,
+	}>
 }
