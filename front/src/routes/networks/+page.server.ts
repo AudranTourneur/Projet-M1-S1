@@ -29,7 +29,8 @@ const responseSchema = z.object({
 export const load: PageServerLoad = async () => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/networks/');
     const serverResponseJson = await serverResponse.json();
-    const res = responseSchema.parse(serverResponseJson);
-    console.log("iii" + res)
-    return res
+    console.log(serverResponseJson)
+    //const res = responseSchema.parse(serverResponseJson);
+    //console.log("iii" + res)
+    //return res
 }
