@@ -10,6 +10,8 @@ export class TopologyApp {
 
 	currentlySelected: TopologyContainer | null = null;
 
+	allContainers: Array<TopologyContainer> = [];
+
 	constructor(canvas: HTMLCanvasElement, parent: HTMLElement, public data: TopologyInitData) {
 		const app = new PIXI.Application({ background: '#2A547E', resizeTo: parent, view: canvas, antialias: true });
 
@@ -45,7 +47,8 @@ export class TopologyApp {
 		for (let i = 0; i < data.containers.length; i++) {
 			const coor = coords[i];
 			const container = data.containers[i];
-			new TopologyContainer(this, coor[0], coor[1], container);
+			this.allContainers.push(new TopologyContainer(this, coor[0], coor[1], container));
+			
 		}
 
         // const cable: Array<{x: number, y: number}> = [
@@ -74,16 +77,11 @@ export class TopologyApp {
 
 	getSaveData(): SaveData {
 		return {
-			containers: this.app.stage.children
-				.filter((child) => child instanceof TopologyContainer)
-				.map((child) => {
-					const container = child as TopologyContainer;
-					return {
-						id: container.id,
-						x: container.x,
-						y: container.y,
-					};
-				}),
+			containers: this.allContainers.map(container => ({
+				id: container.data.name,
+				x: Math.round(container.pixiContainer.x),
+				y: Math.round(container.pixiContainer.y),
+			}))
 		};
 	}
 }

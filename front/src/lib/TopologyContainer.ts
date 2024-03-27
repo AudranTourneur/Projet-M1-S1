@@ -4,9 +4,10 @@ import { BackgroundGrid } from './BackgroundGrid';
 
 export class TopologyContainer {
 	isDragging: boolean = false;
+	pixiContainer = new PIXI.Container();
 
-	constructor(app: TopologyApp, x: number, y: number, data: any) {
-		const container = new PIXI.Container();
+	constructor(app: TopologyApp, x: number, y: number, public data: any) {
+		const container = this.pixiContainer;
 		// Create a gray rectangle
 		const graphics = new PIXI.Graphics();
 		graphics.beginFill(0x303338);

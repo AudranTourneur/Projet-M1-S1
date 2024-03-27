@@ -146,3 +146,29 @@ pub async fn topology_handler() -> Json<Topology> {
 
     Json(topo)
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct TopologyResponse {
+    ok: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct TopologySaveInputContainer {
+    id: String,
+    x: i32,
+    y: i32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct TopologySaveRequest {
+    containers: Vec<TopologySaveInputContainer>
+}
+
+#[post("/topology/save", format = "json", data = "<input>")]
+pub async fn topology_save_handler(input: Json<TopologySaveRequest>) -> Json<TopologyResponse> {
+    println!("input: {:?}", input);
+    Json(TopologyResponse { ok: true })
+}

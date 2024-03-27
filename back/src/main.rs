@@ -42,6 +42,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             containers::container_stats_stream_hander,
             ports::ports_handler,
             topology::topology_handler,
+            topology::topology_save_handler,
         ],
     )
 }
