@@ -1,4 +1,7 @@
 <script lang="ts">
+    import {Fa} from "svelte-fa";
+    import {faCopy} from "@fortawesome/free-solid-svg-icons";
+
     export let data;
 
     const containers = data.containers;
@@ -30,8 +33,19 @@
     {#each containers as container, i}
         <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
             <div class="flex flex-col">
-                <span class="font-bold">{container.name[0].substring(1, container.name[0].length)}</span>
-                <span>{container.id.substring(0, 12)}...</span>
+                <span class="font-bold copy-to-clipboard">
+                    {container.name[0].substring(1, container.name[0].length)}
+                    <button type="button" class="btn variant-soft">
+                        <Fa icon={faCopy}/>
+                    </button>
+                </span>
+                <div class="copy-to-clipboard">
+                    {container.id.substring(0, 12)}
+                    <div class="hide-on-clipboard-hover">...</div>
+                    <button type="button" class="btn variant-soft">
+                        <Fa icon={faCopy}/>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
