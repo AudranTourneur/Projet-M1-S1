@@ -4,6 +4,7 @@ use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
 use bollard::models::Network;
 use bollard::secret::NetworkContainer;
+use futures_util::future::join_all;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -94,22 +95,27 @@ fn get_containers(network_response: Network) -> HashMap<String, NetworkContainer
 async fn get_all_networks() -> Vec<OurNetwork> {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let base_networks = &docker.list_networks::<String>(None).await.unwrap();
-        let my_networks: Vec<OurNetwork> = base_networks
+        let my_networks = join_all(base_networks
         .iter()
-        .map(|network| {
+        .map(|network| async {
+            let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+            let network_response = docker.inspect_network::<String>(network.id.as_deref().unwrap_or(""), None).await.unwrap();
+            let config = get_ipam(network_response.clone());
+            let containers = get_containers(network_response);
+
             let our_network = OurNetwork {
                 id: network.id.clone().unwrap_or("UNDEFINED".to_string()),
                 name: network.name.clone().unwrap_or("UNDEFINED".to_string()),
                 created: network.created.clone().unwrap_or("UNDEFINED".to_string()),
                 labels: network.labels.clone(),
-                ipam_config: Some(get_ipam(network.clone())),
-                containers: Some(get_containers(network.clone())),
+                ipam_config: Some(config),
+                containers: Some(containers),
             };
             our_network
         })
-        .collect();
+        );
 
-    my_networks
+    my_networks.await
 }
 
 #[get("/networks")]
