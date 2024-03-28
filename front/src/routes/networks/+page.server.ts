@@ -1,6 +1,6 @@
-import type {PageServerLoad} from './$types';
-import {PUBLIC_API_URL} from '$env/static/public';
-import {z} from 'zod';
+import type { PageServerLoad } from './$types';
+import { PUBLIC_API_URL } from '$env/static/public';
+import { z } from 'zod';
 
 const responseSchema = z.object({
     networks: z.array(
@@ -9,34 +9,31 @@ const responseSchema = z.object({
             name: z.string(),
             created: z.string(),
             labels: z.record(z.string(), z.string()),
-            ipam_config: z.record(
+            ipamConfig: z.array(
                 z.object({
-                subnet: z.string(),
-                ip_range: z.string(),
-                gateway: z.string(),
-                aux_addresses: z.record(z.string(), z.string()),
+                    subnet: z.string(),
+                    ipRange: z.string(),
+                    gateway: z.string(),
+                    auxAddresses: z.nullable(z.record(z.string(), z.string()))
                 })
             ),
             containers: z.record(
-                z.string(), 
+                z.string(),
                 z.object({
                     name: z.string(),
-                    endpoint_id: z.string(),
-                    mac_address: z.string(),
-                    ipv4_address: z.string(),
-                    ipv6_address: z.string(),
+                    endpointId: z.string(),
+                    macAddress: z.string(),
+                    ipv4Address: z.string(),
+                    ipv6Address: z.string()
                 })
-            ),
-        }),
+            )
+        })
     )
-})
+});
 
 export const load: PageServerLoad = async () => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/networks/');
     const serverResponseJson = await serverResponse.json();
-    console.log(serverResponseJson)
-    return serverResponseJson
-    //const res = responseSchema.parse(serverResponseJson);
-    //console.log("iii" + res)
-    //return res
+    const res = responseSchema.parse(serverResponseJson);
+    return res
 }
