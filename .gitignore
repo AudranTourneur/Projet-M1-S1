@@ -2,3 +2,4 @@
 .idea
 
 clickhouse_db
+sqlite_db

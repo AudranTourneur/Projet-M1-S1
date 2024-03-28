@@ -33,6 +33,7 @@ services:
       - "./back/target:/app/target"
       - "./back/src:/app/src:ro"
       - "./back/bindings:/app/bindings"
+      - "./sqlite_db:/app/sqlite"
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro
     ports:
