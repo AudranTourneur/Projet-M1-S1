@@ -2,7 +2,7 @@ use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::containers::{get_all_containers, Container};
+use crate::{containers::{get_all_containers, Container}, db::get_sqlite_connection};
 
 #[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
@@ -169,6 +169,17 @@ pub struct TopologySaveRequest {
 
 #[post("/topology/save", format = "json", data = "<input>")]
 pub async fn topology_save_handler(input: Json<TopologySaveRequest>) -> Json<TopologyResponse> {
-    println!("input: {:?}", input);
+    let mut conn = get_sqlite_connection().await.unwrap();
+
+    for container in input.containers.iter() {
+        // upsert
+        sqlx::query("INSERT OR REPLACE INTO topology (id, x, y) VALUES (?, ?, ?)")
+            .bind(container.id.clone())
+            .bind(container.x)
+            .bind(container.y)
+            .execute(&mut conn)
+            .await
+            .expect("Failed to insert topology data into database");
+    }
     Json(TopologyResponse { ok: true })
 }

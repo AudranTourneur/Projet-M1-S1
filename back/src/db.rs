@@ -26,3 +26,9 @@ pub async fn init_sqlite_database() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+
+pub async fn get_sqlite_connection() -> Result<SqliteConnection, Box<dyn Error>> {
+    let conn = SqliteConnection::connect(DB_URL).await?;
+    Ok(conn)
+}

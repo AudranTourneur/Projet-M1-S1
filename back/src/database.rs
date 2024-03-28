@@ -84,7 +84,7 @@ pub async fn get_historical_statistics_for_container(
     let client: clickhouse::Client = get_clickhouse_client();
 
     let mut cursor = client
-    .query("SELECT timestamp AS ts, memory_usage AS mem, cpu_usage AS cpu FROM container_statistics WHERE id = ?")
+    .query("SELECT timestamp AS ts, memory_usage AS mem, cpu_usage AS cpu FROM container_statistics WHERE id = ? ORDER BY timestamp ASC")
     .bind(id)
     .fetch::<MyRow>()?;
 
