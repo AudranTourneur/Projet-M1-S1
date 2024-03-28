@@ -1,11 +1,12 @@
 use bollard::Docker;
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use ts_rs::TS;
 use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
 use bollard::models::Network;
 use futures_util::future::join_all;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct OurIpamConfig {
     subnet: String,
@@ -14,7 +15,7 @@ pub struct OurIpamConfig {
     aux_addresses: Option<HashMap<String, String, RandomState>>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkContainers {
     name: String,
@@ -24,8 +25,9 @@ pub struct NetworkContainers {
     ipv6_address: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct OurNetwork {
     id: String,
     name: String,
@@ -35,8 +37,9 @@ pub struct OurNetwork {
     containers: Option<HashMap<String, NetworkContainers>>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct NetworkResponse {
     networks: Vec<OurNetwork>,
 }

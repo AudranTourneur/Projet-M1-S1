@@ -1,13 +1,15 @@
 use bollard::{service::Volume, Docker};
 use lazy_static::lazy_static;
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use ts_rs::TS;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use bollard::volume::RemoveVolumeOptions;
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct VolumeData {
     pub name: String,
     pub created_at: String,
@@ -15,8 +17,9 @@ pub struct VolumeData {
     pub size: u64,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct VolumeResponse {
     pub volumes: Vec<VolumeData>,
 }

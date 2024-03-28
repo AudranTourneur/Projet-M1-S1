@@ -1,0 +1,1 @@
+docker exec -it okidocky-core bash -c "cargo test"

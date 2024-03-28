@@ -33,6 +33,8 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             networks::network_handler,
             images::image_handler,
             containers::container_handler,
+            containers::rebind_ports_handler,
+            containers::container_filesystem_handler,
             volumes::volume_handler,
             containers::container_start,
             containers::container_stop,

@@ -34,7 +34,7 @@
         <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
             <div class="flex flex-col">
                 <span class="font-bold copy-to-clipboard">
-                    {container.name[0].substring(1, container.name[0].length)}
+                    {container.names[0].substring(1, container.names[0].length)}
                     <button type="button" class="btn variant-soft">
                         <Fa icon={faCopy}/>
                     </button>
@@ -70,11 +70,11 @@
                 <span>{container.network}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
-                {#each container.ports as port, i}
-                    <span>IP: {port.IP}</span>
-                    <span>PrivatePort: {port.PrivatePort}</span>
-                    <span>PublicPort: {port.PublicPort}</span>
-                    <span>Type: {port.Type}</span>
+                {#each container.ports as port}
+                    <span>IP: {port.ip}</span>
+                    <span>PrivatePort: {port.privatePort}</span>
+                    <span>PublicPort: {port.publicPort}</span>
+                    <span>Type: {port.type}</span>
                 {/each}
             </div>
             <div class="flex justify-between items-center mb-2">

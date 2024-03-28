@@ -15,6 +15,7 @@ const responseSchema = z.object({
         PublicPort: z.number().optional(),
         Type: z.string()
     })),
+    rawData: z.string(),
 });
 
 export const load: PageServerLoad = async ({params}) => {
@@ -22,6 +23,6 @@ export const load: PageServerLoad = async ({params}) => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/container/' + id);
     const serverResponseJson = await serverResponse.json();
     const res = responseSchema.parse(serverResponseJson);
-    console.log(res);
+    // console.log(res);
     return res;
 };

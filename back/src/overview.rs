@@ -1,8 +1,10 @@
 use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct OverviewResponse {
     version_docker: String,
     version_linux: String,

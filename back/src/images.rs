@@ -3,8 +3,9 @@ use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use futures::prelude::stream::StreamExt;
 use bollard::image::RemoveImageOptions;
+use ts_rs::TS;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct HistoryResponse {
     id: String,
@@ -15,8 +16,9 @@ pub struct HistoryResponse {
     comment: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Image {
     id: String,
     tags: Vec<String>,
@@ -25,8 +27,9 @@ pub struct Image {
     history: Option<Vec<HistoryResponse>>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ImageResponse {
     images: Vec<Image>,
 }
