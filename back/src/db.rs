@@ -4,7 +4,6 @@ use std::error::Error;
 use sqlx::Connection;
 use sqlx::{migrate::MigrateDatabase, Sqlite};
 
-
 const DB_URL: &str = "sqlite://sqlite/db";
 
 pub async fn init_sqlite_database() -> Result<(), Box<dyn Error>> {
@@ -17,16 +16,16 @@ pub async fn init_sqlite_database() -> Result<(), Box<dyn Error>> {
     } else {
         println!("Database already exists");
     }
+
     let query = include_str!("sqlite/init_db.sql");
     println!("Query: {}", query);
-    // let mut conn: SqliteConnection = SqliteConnection::connect(DB_URL).await?;
-    // sqlx::query(query).execute(&mut conn).await?;
+    let mut conn: SqliteConnection = SqliteConnection::connect(DB_URL).await?;
+    sqlx::query(query).execute(&mut conn).await?;
 
     println!("SQLite database initialized!");
 
     Ok(())
 }
-
 
 pub async fn get_sqlite_connection() -> Result<SqliteConnection, Box<dyn Error>> {
     let conn = SqliteConnection::connect(DB_URL).await?;

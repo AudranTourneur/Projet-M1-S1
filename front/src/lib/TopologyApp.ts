@@ -34,20 +34,16 @@ export class TopologyApp {
 
 		new BackgroundGrid(this);
 
-		const coords = [
-			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
-			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
-			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
-			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
-			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
-			[-500 + Math.random() * 1000, -500 + Math.random() * 1000],
-		];
+		function getRandomCoord() {
+			return Math.random() * 1000 - 500;
+		}
 
-		// for (const coor of coords) {
 		for (let i = 0; i < data.containers.length; i++) {
-			const coor = coords[i];
 			const container = data.containers[i];
-			this.allContainers.push(new TopologyContainer(this, coor[0], coor[1], container));
+			console.log('set', container)
+			const x = container.position.x ?? getRandomCoord();
+			const y = container.position.y ?? getRandomCoord();
+			this.allContainers.push(new TopologyContainer(this, x, y, container));
 			
 		}
 

@@ -1,14 +1,19 @@
+use std::collections::HashMap;
+
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::{containers::{get_all_containers, Container}, db::get_sqlite_connection};
+use crate::{
+    containers::{get_all_containers, Container},
+    db::get_sqlite_connection,
+};
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Debug)]
 #[ts(export)]
 pub struct Position {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
 }
 
 #[derive(Serialize, Deserialize, TS)]
@@ -54,12 +59,47 @@ pub struct Topology {
     pub position: Option<Position>,
 }
 
+use sqlx::Row;
+
+async fn retrieve_container_positions_from_database() -> HashMap<String, (i32, i32)> {
+    let mut conn = get_sqlite_connection().await.unwrap();
+
+    let rows = sqlx::query("SELECT container_id, position_x, position_y FROM topology")
+        .fetch_all(&mut conn)
+        .await
+        .expect("Failed to fetch topology data from database");
+
+    let mut container_positions = HashMap::new();
+
+    for row in rows {
+        let container_id: String = row.get("container_id");
+        let position_x: i32 = row.get("position_x");
+        let position_y: i32 = row.get("position_y");
+
+        container_positions.insert(container_id, (position_x, position_y));
+    }
+
+    container_positions
+}
+
 async fn create_topology_containers() -> Vec<TopologyContainer> {
     let all_containers: Vec<Container> = get_all_containers().await;
+
+    let all_containers_positions = retrieve_container_positions_from_database().await;
+    // print all
+    for (key, value) in all_containers_positions.iter() {
+        println!("debug {}: {:?}", key, value);
+    }
 
     let topology_containers: Vec<TopologyContainer> = all_containers
         .iter()
         .map(|container| {
+            let container_position: Option<Position> = all_containers_positions
+                .get(&container.id)
+                .map(|(x, y)| Position { x: *x as i32, y: *y as i32 });
+
+            println!("obtained container_position: {:?} for {}", container_position, container.id.clone());
+
             let container_data = TopologyContainer {
                 name: container.id.clone(),
                 image: container.image.clone(),
@@ -68,7 +108,7 @@ async fn create_topology_containers() -> Vec<TopologyContainer> {
                 exposed_ports: vec![],
                 exposed_volumes: vec![],
                 connected_to: vec![],
-                position: None,
+                position: container_position,
             };
             container_data
         })
@@ -164,7 +204,7 @@ pub struct TopologySaveInputContainer {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TopologySaveRequest {
-    pub containers: Vec<TopologySaveInputContainer>
+    pub containers: Vec<TopologySaveInputContainer>,
 }
 
 #[post("/topology/save", format = "json", data = "<input>")]
@@ -173,7 +213,7 @@ pub async fn topology_save_handler(input: Json<TopologySaveRequest>) -> Json<Top
 
     for container in input.containers.iter() {
         // upsert
-        sqlx::query("INSERT OR REPLACE INTO topology (id, x, y) VALUES (?, ?, ?)")
+        sqlx::query("INSERT OR REPLACE INTO topology (container_id, position_x, position_y) VALUES (?, ?, ?)")
             .bind(container.id.clone())
             .bind(container.x)
             .bind(container.y)
