@@ -3,6 +3,10 @@
     console.log(data)
     const networks = data.networks;
     console.log(networks)
+    
+    let response = JSON.parse(data)
+    console.log(response);
+
 
     function startNetwork(index: number) {
         // todo

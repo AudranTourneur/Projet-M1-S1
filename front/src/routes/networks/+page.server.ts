@@ -9,19 +9,24 @@ const responseSchema = z.object({
             name: z.string(),
             created: z.string(),
             labels: z.record(z.string(), z.string()),
-            ipam_config: z.object({
+            ipam_config: z.record(
+                z.object({
                 subnet: z.string(),
                 ip_range: z.string(),
                 gateway: z.string(),
-                aux_addresses: z.record(z.string(), z.string())
-            }),
-            containers: z.object({
-                name: z.string(),
-                endpoint_id: z.string(),
-                mac_address: z.string(),
-                ipv4_address: z.string(),
-                ipv6_address: z.string(),
-            }),
+                aux_addresses: z.record(z.string(), z.string()),
+                })
+            ),
+            containers: z.record(
+                z.string(), 
+                z.object({
+                    name: z.string(),
+                    endpoint_id: z.string(),
+                    mac_address: z.string(),
+                    ipv4_address: z.string(),
+                    ipv6_address: z.string(),
+                })
+            ),
         }),
     )
 })
@@ -30,6 +35,7 @@ export const load: PageServerLoad = async () => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/networks/');
     const serverResponseJson = await serverResponse.json();
     console.log(serverResponseJson)
+    return serverResponseJson
     //const res = responseSchema.parse(serverResponseJson);
     //console.log("iii" + res)
     //return res
