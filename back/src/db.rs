@@ -17,7 +17,8 @@ pub async fn init_sqlite_database() -> Result<(), Box<dyn Error>> {
     } else {
         println!("Database already exists");
     }
-    // let query = include_str!("../sqlite/init_db.sql");
+    let query = include_str!("sqlite/init_db.sql");
+    println!("Query: {}", query);
     // let mut conn: SqliteConnection = SqliteConnection::connect(DB_URL).await?;
     // sqlx::query(query).execute(&mut conn).await?;
 
