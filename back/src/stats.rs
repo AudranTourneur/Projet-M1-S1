@@ -33,6 +33,7 @@ pub async fn get_container_statistics(container_id_to_get: String) {
         .unwrap();
 
     let container_id = container.id.as_ref().unwrap();
+    let container_name = container.name.unwrap_or("/".to_owned());
 
     // println!("container_id: {}", container_id);
 
@@ -58,7 +59,7 @@ pub async fn get_container_statistics(container_id_to_get: String) {
         if diff < time_threshold {
             continue;
         } else {
-            println!("STATS FOR {}", container_id);
+            println!("Getting statistics for <Name={}, ID={}>", container_name, container_id);
         }
 
         last_timestamp_acquisition = current_timestamp;

@@ -33,6 +33,6 @@
 	<button type="button" class="btn variant-filled" on:click={save}>Save</button>
 </div>
 
-<div bind:this={parentElement} class="w-[80vw] h-[80vh]">
+<div bind:this={parentElement} class="w-[80vw] h-[72vh]">
 	<canvas bind:this={canvasElement} id="topology-canvas" />
 </div>
