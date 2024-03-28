@@ -1,4 +1,5 @@
 use database::init_clickhouse_database;
+use db::init_sqlite_database;
 
 mod docker;
 mod auth;
@@ -14,6 +15,7 @@ mod stats;
 mod topology;
 mod volumes;
 mod ports;
+mod db;
 
 #[macro_use]
 extern crate rocket;
@@ -54,6 +56,8 @@ async fn spawn_statistics_subsystem() {
 #[rocket::main]
 async fn main() {
     let _ = init_clickhouse_database().await;
+
+    let _ = init_sqlite_database().await;
 
     let app = create_rocket_app();
 

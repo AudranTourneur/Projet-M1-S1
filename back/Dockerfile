@@ -19,7 +19,7 @@ RUN cargo build --release --bin app
 # We do not need the Rust toolchain to run the binary!
 FROM ubuntu:22.04 AS runtime
 RUN apt-get update -y
-RUN apt-get install cargo libssl-dev pkg-config gcc g++ libpq-dev -y
+RUN apt-get install cargo libssl-dev pkg-config gcc g++ libpq-dev libsqlite3-0 libsqlite3-dev -y 
 WORKDIR app
 COPY --from=builder /app/target/release/app /app/exe
 COPY --from=builder /app/Rocket.toml /app/Rocket.toml

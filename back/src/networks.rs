@@ -3,7 +3,6 @@ use rocket::serde::{json::Json, Deserialize, Serialize};
 use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
 use bollard::models::Network;
-use bollard::secret::NetworkContainer;
 use futures_util::future::join_all;
 
 #[derive(Serialize, Deserialize)]
