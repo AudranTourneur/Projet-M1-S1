@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use crate::models::ContainerStats;
+use crate::models::VolumeStats;
 
 pub async fn insert_container_stats(
     container_statistics: ContainerStats,
@@ -89,6 +90,59 @@ pub async fn get_historical_statistics_for_container(
     .fetch::<MyRow>()?;
 
     let mut vector_response: Vec<MyRow> = vec![];
+
+    while let Some(row) = cursor.next().await? {
+        vector_response.push(row)
+    }
+
+    Ok(vector_response)
+}
+
+
+pub async fn insert_volume_stats(
+    volume_statistics: VolumeStats,
+) -> Result<(), Box<dyn Error>> {
+    let clickhouse_client = get_clickhouse_client();
+
+    let insert_query = format!(
+        "INSERT INTO volume_statistics (id, timestamp, disk_usage)
+        VALUES ('{}', '{}', '{}')",
+        volume_statistics.volume_id,
+        volume_statistics.timestamp,
+        volume_statistics.disk_usage,
+    );
+
+    // todo: replace by prepared statement!!!
+    let insert = clickhouse_client.query(&insert_query);
+
+    let res = insert.execute().await;
+
+
+    match res {
+        Ok(_) => (),
+        Err(e) => println!("Error inserting volume statistics: {}", e),
+    };
+
+    Ok(())
+}
+
+#[derive(Row, Deserialize, Serialize, Debug)]
+pub struct VolumeRow {
+    ts: u32,
+    dsk: u64,
+}
+
+pub async fn get_historical_statistics_for_volume(
+    id: String,
+) -> Result<Vec<VolumeRow>, Box<dyn Error>> {
+    let client: clickhouse::Client = get_clickhouse_client();
+
+    let mut cursor = client
+    .query("SELECT timestamp AS ts, disk_usage AS dsk FROM volume_statistics WHERE id = ? ORDER BY timestamp ASC")
+    .bind(id)
+    .fetch::<VolumeRow>()?;
+
+    let mut vector_response: Vec<VolumeRow> = vec![];
 
     while let Some(row) = cursor.next().await? {
         vector_response.push(row)
