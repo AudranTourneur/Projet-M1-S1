@@ -51,6 +51,7 @@ pub struct Container {
 
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ContainerList {
     pub containers: Vec<Container>,
 }

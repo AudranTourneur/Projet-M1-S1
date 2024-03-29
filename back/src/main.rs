@@ -1,5 +1,6 @@
 use database::init_clickhouse_database;
 use db::init_sqlite_database;
+use icons::spawn_icons_service;
 
 mod docker;
 mod auth;
@@ -16,6 +17,7 @@ mod topology;
 mod volumes;
 mod ports;
 mod db;
+mod icons;
 
 #[macro_use]
 extern crate rocket;
@@ -64,6 +66,8 @@ async fn main() {
     let app = create_rocket_app();
 
     rocket::tokio::spawn(spawn_statistics_subsystem());
+
+    rocket::tokio::spawn(spawn_icons_service());
 
     let _ = app.launch().await;
 }
