@@ -1,6 +1,5 @@
 import type { PageServerLoad } from './$types';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { z } from 'zod';
 import { VolumeResponse } from '$lib/types/VolumeResponse';
 
 export const load: PageServerLoad = async () => {
