@@ -33,7 +33,7 @@
 			},
 			series: [
 				{
-					name: 'Total Views',
+					name: 'mémoire utilisé',
 					data: generateDayWiseTimeSeries(stats.stats)
 				}
 			],
@@ -73,8 +73,8 @@
 			},
 			tooltip: {
 				x: {
-					format: 'dd MMM yyyy'
-				},
+					format: 'h tt m'
+				}
 			},
 			legend: {
 				position: 'top',
@@ -98,16 +98,47 @@
 		const chart = new ApexCharts.default(document.querySelector('#timeline-chart'), options);
 		await chart.render();
 	});
+
+	
 </script>
 
 <div id="chart" class="max-w-760px mx-auto my-8 opacity-90">
 	<div id="timeline-chart" class="apexcharts-toolbar-opacity-1 apexcharts-toolbar-border-0"></div>
 </div>
 
-{#each data.ports as port, i}
-	<span>IP: {port.IP} ||</span>
-	<span>PrivatePort: {port.PrivatePort} ||</span>
-	<span>PublicPort: {port.PublicPort} ||</span>
-	<span>Type: {port.Type}</span>
-	<br />
-{/each}
+
+
+<div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
+    <div class="flex justify-between items-center mb-2">
+        <span class="font-bold">ID:</span>
+        <span>{data.id}</span>
+    </div>
+    <div class="flex justify-between items-center mb-2">
+        <span class="font-bold">Name:</span>
+        <span>{data.names}</span>
+    </div>
+    <div class="flex justify-between items-center mb-2">
+        <span class="font-bold">Image ID :</span>
+        <span>{data.image}</span>
+    </div>
+    <div class="flex justify-between items-center mb-2">
+        <span class="font-bold">Status :</span>
+        <span>{data.status}</span>
+    </div>
+    <div class="flex justify-between items-center mb-2">
+        <span class="font-bold">Date of creation :</span>
+        <span>{data.network}</span>
+    </div>
+    <div class="flex justify-between items-center mb-2">
+        {#each data.ports as port}
+            <span>IP: {port.ip}</span>
+            <span>PrivatePort: {port.privatePort}</span>
+            <span>PublicPort: {port.publicPort}</span>
+            <span>Type: {port.type}</span>
+        {/each}
+    </div>
+    <div class="flex justify-between items-center mb-2">
+        <span class="font-bold">Ports used :</span>
+        <span>{data.volumes}</span>
+    </div>
+</div>
