@@ -31,7 +31,7 @@ services:
       - "/:/rootfs:ro,rslave"
       - "/run/docker.sock:/run/docker.sock:ro,rslave"
       - "./back/target:/app/target"
-      - "./back/src:/app/src:ro"
+      - "./back/src:/app/src"
       - "./back/bindings:/app/bindings"
       - "./sqlite_db:/app/sqlite"
       # - back:/opt/app

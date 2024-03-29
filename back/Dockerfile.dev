@@ -1,6 +1,7 @@
 FROM ubuntu:22.04 AS runtime
-RUN apt-get update -y && apt-get install cargo libssl-dev pkg-config gcc g++ libpq-dev libsqlite3-0 libsqlite3-dev -y
+RUN apt-get update -y && apt-get install cargo -y
 RUN cargo install cargo-watch
+RUN apt-get update -y && apt-get install libssl-dev pkg-config gcc g++ libpq-dev libsqlite3-0 libsqlite3-dev rust-src -y
 WORKDIR app
 COPY . .
 CMD ["cargo", "watch", "-x", "run", "-w", "src"]
