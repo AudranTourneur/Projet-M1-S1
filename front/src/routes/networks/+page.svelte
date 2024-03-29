@@ -81,7 +81,7 @@
             </div>
             <br />
 			<div class="flex justify-end">
-				<a href="/network/{network.id}">
+				<a href="/networks/{network.id}">
 					<button class="bg-blue-500 text-white px-4 py-2 rounded mr-2"> Info </button>
 				</a>
 			</div>
