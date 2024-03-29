@@ -24,7 +24,7 @@ pub async fn start_statistics_listeners() {
     for container in containers.iter() {
         // println!("aaaa id = {}", container.id.clone().unwrap());
         rocket::tokio::spawn(get_container_statistics(container.id.clone().unwrap()));
-        rocket::tokio::spawn(get_volumes_size(container.id.clone().unwrap()));
+        // rocket::tokio::spawn(get_volumes_size(container.id.clone().unwrap()));
     }
 }
 
@@ -68,7 +68,7 @@ pub async fn get_container_statistics(container_id_to_get: String) {
 
         last_timestamp_acquisition = current_timestamp;
 
-        // println!("cpu usage: {:?}", stats.cpu_stats.cpu_usage);
+        println!("cpu usage: {:?}", stats.cpu_stats.cpu_usage);
 
         let stats = crate::models::ContainerStats {
             container_id: container_id.clone(),
@@ -100,7 +100,7 @@ pub async fn get_volumes_size(id_to_inspect : String){
 
 
     let mut last_timestamp_acquisition = 0;
-    let time_threshold = 30;
+    let time_threshold = 60 * 60;
     let mut size = get_mountpoint_size(mountpoint_source.clone()).await;
 
 
