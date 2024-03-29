@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { faCube } from '@fortawesome/free-solid-svg-icons';
+	import Fa from 'svelte-fa';
+
 	export let data;
 </script>
 
 <h1 class="text-center text-4xl">{data.name}</h1>
 
 <div class="space-y-5">
-	<div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg overflow-auto">
+	<div class="relative p-3 m-2 shadow rounded-lg overflow-auto">
 		<div>
 			<span>{data.name}</span>
 		</div>
@@ -58,6 +61,20 @@
 					<br />
 				</div>
 			{/each}
+
+			<div class="grid grid-cols-4 gap-4">
+				{#each Object.entries(data.containers) as [name, c]}
+					<div class="flex items-center gap-4 border border-1 p-2 px-4 rounded-lg">
+						<Fa icon={faCube} size="2.5x"></Fa>
+						<div class="flex flex-col">
+							<a href="/containers/{c.endpointId}" class="text-xl font-semibold">{c.name}</a>
+							<span class="text-surface-600-300-token">{c.ipv4Address}</span>
+							<span class="text-surface-600-300-token">{c.macAddress}</span>
+						</div>
+						<br />
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
 </div>
