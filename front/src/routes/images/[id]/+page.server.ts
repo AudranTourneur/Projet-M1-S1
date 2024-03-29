@@ -1,27 +1,10 @@
 import type { PageServerLoad } from './$types';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { z } from 'zod';
-
-const responseSchema = z.object({
-    id: z.string(),
-    tags: z.array(z.string()),
-    size: z.number(),
-    created: z.number(),
-    history: z.array(z.object({
-        id: z.string(),
-        created: z.number(),
-        createdBy: z.string(),
-        tags: z.array(z.string()),
-        size: z.number(),
-        comment: z.string()
-    }))
-});
+import type { Image } from '$lib/types/Image';
 
 export const load: PageServerLoad = async ({params}) => {
     const {id} = params;
     const serverResponse = await fetch(PUBLIC_API_URL + '/image/' + id);
-    const serverResponseJson = await serverResponse.json();
-    const res = responseSchema.parse(serverResponseJson);
-    console.log(res)
+    const res = await serverResponse.json() as Image;
     return res
 };

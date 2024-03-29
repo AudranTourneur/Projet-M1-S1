@@ -1,39 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { z } from 'zod';
-
-const responseSchema = z.object({
-    networks: z.array(
-        z.object({
-            id: z.string(),
-            name: z.string(),
-            created: z.string(),
-            labels: z.record(z.string(), z.string()),
-            ipamConfig: z.array(
-                z.object({
-                    subnet: z.string(),
-                    ipRange: z.string(),
-                    gateway: z.string(),
-                    auxAddresses: z.nullable(z.record(z.string(), z.string()))
-                })
-            ),
-            containers: z.record(
-                z.string(),
-                z.object({
-                    name: z.string(),
-                    endpointId: z.string(),
-                    macAddress: z.string(),
-                    ipv4Address: z.string(),
-                    ipv6Address: z.string()
-                })
-            )
-        })
-    )
-});
+import { NetworkResponse } from '$lib/types/NetworkResponse';
 
 export const load: PageServerLoad = async () => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/networks/');
-    const serverResponseJson = await serverResponse.json();
-    const res = responseSchema.parse(serverResponseJson);
+    const res = await serverResponse.json() as NetworkResponse;
     return res
 }
