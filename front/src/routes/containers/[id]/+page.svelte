@@ -2,10 +2,8 @@
 	export let data;
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { array, number } from 'zod';
 
 	onMount(async () => {
-
 		const response = await fetch('/containers/' + $page.params.id + '/api/stats');
 		const stats = await response.json();
 		console.log(stats);
@@ -76,7 +74,7 @@
 			tooltip: {
 				x: {
 					format: 'dd MMM yyyy'
-				}
+				},
 			},
 			legend: {
 				position: 'top',
@@ -85,15 +83,15 @@
 			fill: {
 				type: 'solid',
 				fillOpacity: 0.7
-			}
+			},
 		};
 
 		function generateDayWiseTimeSeries(
 			stats: Array<{ ts: number; mem: number; cpu: number }>
 		): Array<[number, number]> {
-			return stats.map(obj => {
-                return [obj.ts * 1000 , obj.mem]
-            })
+			return stats.map((obj) => {
+				return [obj.ts * 1000, obj.mem];
+			});
 		}
 
 		const ApexCharts = await import('apexcharts');
