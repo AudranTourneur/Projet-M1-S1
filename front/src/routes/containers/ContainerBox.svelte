@@ -2,6 +2,7 @@
     import {Fa} from "svelte-fa";
     import {faCopy} from "@fortawesome/free-solid-svg-icons";
     import type {Container} from "$lib/types/Container";
+    import Tooltip from "../../components/Tooltip.svelte";
 
     export let container: Container;
     export let i: number;
@@ -36,7 +37,9 @@
                     </button>
                 </span>
         <div class="copy-to-clipboard">
-            {container.id.substring(0, 12)}
+            <Tooltip tooltipText={container.id}>
+                {container.id.substring(0, 12)}
+            </Tooltip>
             <div class="hide-on-clipboard-hover">...</div>
             <button type="button" class="btn variant-soft">
                 <Fa icon={faCopy}/>
