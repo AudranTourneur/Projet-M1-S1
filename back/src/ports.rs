@@ -31,13 +31,13 @@ pub fn ports_handler() -> Json<PortsResponse> {
     Json(res)
 }
 
-#[get("/is-port-open/<ip>/<port>")]
-pub async fn is_port_open(ip: String, port: u16) -> Json<bool> {
-    let res = tokio::task::spawn_blocking(move || {
-        let socket = std::net::SocketAddr::new(ip.parse().unwrap(), port);
-        let result = std::net::TcpStream::connect_timeout(&socket, std::time::Duration::from_secs(1));
-        result.is_ok()
-    }).await.unwrap();
+// #[get("/is-port-open/<ip>/<port>")]
+// pub async fn is_port_open(ip: String, port: u16) -> Json<bool> {
+//     let res = tokio::task::spawn_blocking(move || {
+//         let socket = std::net::SocketAddr::new(ip.parse().unwrap(), port);
+//         let result = std::net::TcpStream::connect_timeout(&socket, std::time::Duration::from_secs(1));
+//         result.is_ok()
+//     }).await.unwrap();
 
-    Json(res)
-}
+//     Json(res)
+// }
