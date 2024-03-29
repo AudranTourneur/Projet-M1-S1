@@ -70,9 +70,12 @@ pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
 
 use serde::{Deserialize, Serialize};
 use clickhouse::Row;
+use ts_rs::TS;
 
-#[derive(Row, Deserialize, Serialize, Debug)]
-pub struct MyRow {
+#[derive(Row, Deserialize, Serialize, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ContainerStatisticsRow {
     ts: u32,
     mem: u64,
     cpu: f32,
@@ -80,15 +83,15 @@ pub struct MyRow {
 
 pub async fn get_historical_statistics_for_container(
     id: String,
-) -> Result<Vec<MyRow>, Box<dyn Error>> {
+) -> Result<Vec<ContainerStatisticsRow>, Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();
 
     let mut cursor = client
     .query("SELECT timestamp AS ts, memory_usage AS mem, cpu_usage AS cpu FROM container_statistics WHERE id = ? ORDER BY timestamp ASC")
     .bind(id)
-    .fetch::<MyRow>()?;
+    .fetch::<ContainerStatisticsRow>()?;
 
-    let mut vector_response: Vec<MyRow> = vec![];
+    let mut vector_response: Vec<ContainerStatisticsRow> = vec![];
 
     while let Some(row) = cursor.next().await? {
         vector_response.push(row)

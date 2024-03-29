@@ -17,8 +17,5 @@ export const GET: RequestHandler = async ({ params, fetch}) => {
     const response = await fetch(PUBLIC_API_URL + '/statistics-historical/container/' + id);
     const serverResponseJson = await response.json();
     const res = responseSchema.parse(serverResponseJson);
-    //console.log(res);
-    return json(
-        res
-    );
+    return json(res);
 };

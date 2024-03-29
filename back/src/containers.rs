@@ -200,9 +200,11 @@ pub async fn container_stop(id: &str) -> &'static str {
     }
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ContainerStatsResponse {
-    pub stats: Vec<crate::database::MyRow>,
+    pub stats: Vec<crate::database::ContainerStatisticsRow>,
 }
 
 #[get("/statistics-historical/container/<id>")]

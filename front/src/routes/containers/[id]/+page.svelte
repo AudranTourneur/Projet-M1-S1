@@ -1,119 +1,35 @@
 <script lang="ts">
-	export let data;
 	import { page } from '$app/stores';
 	import { formatBytes } from '$lib/FormatUtils.js';
+	import type { ContainerStatsResponse } from '$lib/types/ContainerStatsResponse';
 	import { onMount } from 'svelte';
+	import LineChartBytes from '../../../components/LineChartBytes.svelte';
+	import type { ContainerStatisticsRow } from '$lib/types/ContainerStatisticsRow.js';
+
+	export let data;
+
+	let inputData: null | Array<[number, number]> = null;
+
+	function generateDayWiseTimeSeries(
+		stats: ContainerStatisticsRow[]
+	): Array<[number, number]> {
+		return stats.map((obj) => {
+			return [Number(obj.ts) * 1000, Number(obj.mem)];
+		});
+	}
 
 	onMount(async () => {
 		const response = await fetch('/containers/' + $page.params.id + '/api/stats');
-		const stats = await response.json();
-		console.log(stats);
+		const statsRes = (await response.json()) as ContainerStatsResponse;
+		console.log(statsRes);
 
-		const options = {
-			chart: {
-				type: 'area',
-				height: 300,
-				foreColor: '#999',
-				stacked: true,
-				dropShadow: {
-					enabled: true,
-					enabledSeries: [0],
-					top: -2,
-					left: 2,
-					blur: 5,
-					opacity: 0.06
-				}
-			},
-			colors: ['#00E396', '#0090FF'],
-			stroke: {
-				curve: 'smooth',
-				width: 3
-			},
-			dataLabels: {
-				enabled: false
-			},
-			series: [
-				{
-					name: 'Memory used',
-					data: generateDayWiseTimeSeries(stats.stats)
-				}
-			],
-			markers: {
-				size: 0,
-				strokeColor: '#fff',
-				strokeWidth: 3,
-				strokeOpacity: 1,
-				fillOpacity: 1,
-				hover: {
-					size: 6
-				}
-			},
-			xaxis: {
-				type: 'datetime',
-				axisBorder: {
-					show: false
-				},
-				axisTicks: {
-					show: false
-				}
-			},
-			yaxis: {
-				labels: {
-					offsetX: -20,
-					formatter: function (val, index) {
-						return formatBytes(val);
-					}
-					// formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
-					// }
-				},
-				tooltip: {
-					enabled: true
-				}
-			},
-			grid: {
-				padding: {
-					left: -5,
-					right: 5
-				}
-			},
-			// tooltip: {
-			// 	custom: ({ series, seriesIndex, dataPointIndex, w }) => {
-			// 		return (
-			// 			'<div class="p-2 text-center border-token border-surface-300-600-token rounded-container-token">' +
-			// 			'Memory used: <span class="font-bold">' +
-			// 			formatBytes(series[seriesIndex][dataPointIndex]) +
-			// 			'</span>' +
-			// 			'</div>'
-			// 		);
-			// 	}
-			// },
-			legend: {
-				position: 'top',
-				horizontalAlign: 'left'
-			},
-			fill: {
-				type: 'solid',
-				fillOpacity: 0.7
-			}
-		};
-
-		function generateDayWiseTimeSeries(
-			stats: Array<{ ts: number; mem: number; cpu: number }>
-		): Array<[number, number]> {
-			return stats.map((obj) => {
-				return [obj.ts * 1000, obj.mem];
-			});
-		}
-
-		const ApexCharts = await import('apexcharts');
-		const chart = new ApexCharts.default(document.querySelector('#timeline-chart'), options);
-		await chart.render();
+		inputData = generateDayWiseTimeSeries(statsRes.stats)
 	});
 </script>
 
-<div id="chart" class="max-w-760px mx-auto my-8 opacity-90">
-	<div id="timeline-chart" class="apexcharts-toolbar-opacity-1 apexcharts-toolbar-border-0"></div>
-</div>
+{#if inputData}
+	<LineChartBytes {inputData} />
+{/if}
 
 <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
 	<div class="flex justify-between items-center mb-2">

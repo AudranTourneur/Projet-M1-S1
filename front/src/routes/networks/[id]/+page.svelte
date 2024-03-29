@@ -51,7 +51,7 @@
 		<br />
 		<div>
 			Containers :
-			{#each Object.entries(data.containers) as [name, other]}
+			<!-- {#each Object.entries(data.containers) as [name, other]}
 				<div>
 					<p>Name: {other.name}</p>
 					<p>Endpoint Id: {other.endpointId}</p>
@@ -60,14 +60,14 @@
 					<p>IPv6 Address: {other.ipv6Address}</p>
 					<br />
 				</div>
-			{/each}
+			{/each} -->
 
 			<div class="grid grid-cols-4 gap-4">
-				{#each Object.entries(data.containers) as [name, c]}
+				{#each Object.entries(data.containers) as [id, c]}
 					<div class="flex items-center gap-4 border border-1 p-2 px-4 rounded-lg">
 						<Fa icon={faCube} size="2.5x"></Fa>
 						<div class="flex flex-col">
-							<a href="/containers/{c.endpointId}" class="text-xl font-semibold">{c.name}</a>
+							<a href="/containers/{id}" class="text-xl font-semibold hover:text-surface-500">{c.name}</a>
 							<span class="text-surface-600-300-token">{c.ipv4Address}</span>
 							<span class="text-surface-600-300-token">{c.macAddress}</span>
 						</div>
