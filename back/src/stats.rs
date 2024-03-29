@@ -124,7 +124,7 @@ pub async fn get_volumes_size(id_to_inspect : String){
             disk_usage: size as i32,
         };
 
-        //let _ = database::insert_volume_stats(volume_stats).await;
+        let _ = database::insert_volume_stats(volume_stats).await;
     }
 }
 
