@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let data;
 	import { page } from '$app/stores';
+	import { formatBytes } from '$lib/FormatUtils.js';
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
@@ -33,7 +34,7 @@
 			},
 			series: [
 				{
-					name: 'mémoire utilisé',
+					name: 'Memory used',
 					data: generateDayWiseTimeSeries(stats.stats)
 				}
 			],
@@ -58,8 +59,12 @@
 			},
 			yaxis: {
 				labels: {
-					offsetX: 14,
-					offsetY: -5
+					offsetX: -20,
+					formatter: function (val, index) {
+						return formatBytes(val);
+					}
+					// formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+					// }
 				},
 				tooltip: {
 					enabled: true
@@ -71,11 +76,17 @@
 					right: 5
 				}
 			},
-			tooltip: {
-				x: {
-					format: 'h tt m'
-				}
-			},
+			// tooltip: {
+			// 	custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+			// 		return (
+			// 			'<div class="p-2 text-center border-token border-surface-300-600-token rounded-container-token">' +
+			// 			'Memory used: <span class="font-bold">' +
+			// 			formatBytes(series[seriesIndex][dataPointIndex]) +
+			// 			'</span>' +
+			// 			'</div>'
+			// 		);
+			// 	}
+			// },
 			legend: {
 				position: 'top',
 				horizontalAlign: 'left'
@@ -83,7 +94,7 @@
 			fill: {
 				type: 'solid',
 				fillOpacity: 0.7
-			},
+			}
 		};
 
 		function generateDayWiseTimeSeries(
@@ -98,47 +109,43 @@
 		const chart = new ApexCharts.default(document.querySelector('#timeline-chart'), options);
 		await chart.render();
 	});
-
-	
 </script>
 
 <div id="chart" class="max-w-760px mx-auto my-8 opacity-90">
 	<div id="timeline-chart" class="apexcharts-toolbar-opacity-1 apexcharts-toolbar-border-0"></div>
 </div>
 
-
-
 <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
-    <div class="flex justify-between items-center mb-2">
-        <span class="font-bold">ID:</span>
-        <span>{data.id}</span>
-    </div>
-    <div class="flex justify-between items-center mb-2">
-        <span class="font-bold">Name:</span>
-        <span>{data.names}</span>
-    </div>
-    <div class="flex justify-between items-center mb-2">
-        <span class="font-bold">Image ID :</span>
-        <span>{data.image}</span>
-    </div>
-    <div class="flex justify-between items-center mb-2">
-        <span class="font-bold">Status :</span>
-        <span>{data.status}</span>
-    </div>
-    <div class="flex justify-between items-center mb-2">
-        <span class="font-bold">Date of creation :</span>
-        <span>{data.network}</span>
-    </div>
-    <div class="flex justify-between items-center mb-2">
-        {#each data.ports as port}
-            <span>IP: {port.ip}</span>
-            <span>PrivatePort: {port.privatePort}</span>
-            <span>PublicPort: {port.publicPort}</span>
-            <span>Type: {port.type}</span>
-        {/each}
-    </div>
-    <div class="flex justify-between items-center mb-2">
-        <span class="font-bold">Ports used :</span>
-        <span>{data.volumes}</span>
-    </div>
+	<div class="flex justify-between items-center mb-2">
+		<span class="font-bold">ID:</span>
+		<span>{data.id}</span>
+	</div>
+	<div class="flex justify-between items-center mb-2">
+		<span class="font-bold">Name:</span>
+		<span>{data.names}</span>
+	</div>
+	<div class="flex justify-between items-center mb-2">
+		<span class="font-bold">Image ID :</span>
+		<span>{data.image}</span>
+	</div>
+	<div class="flex justify-between items-center mb-2">
+		<span class="font-bold">Status :</span>
+		<span>{data.status}</span>
+	</div>
+	<div class="flex justify-between items-center mb-2">
+		<span class="font-bold">Date of creation :</span>
+		<span>{data.network}</span>
+	</div>
+	<div class="flex justify-between items-center mb-2">
+		{#each data.ports as port}
+			<span>IP: {port.ip}</span>
+			<span>PrivatePort: {port.privatePort}</span>
+			<span>PublicPort: {port.publicPort}</span>
+			<span>Type: {port.type}</span>
+		{/each}
+	</div>
+	<div class="flex justify-between items-center mb-2">
+		<span class="font-bold">Ports used :</span>
+		<span>{data.volumes}</span>
+	</div>
 </div>
