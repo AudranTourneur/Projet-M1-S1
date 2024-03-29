@@ -55,7 +55,7 @@
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Name:</span>
-                <span>{container.name}</span>
+                <span>{container.names}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Image ID :</span>
@@ -79,7 +79,7 @@
             </div>
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold">Ports used :</span>
-                <span>{container.volume}</span>
+                <span>{container.volumes}</span>
             </div>
             <div class="flex justify-end items-center">
                 <a href="/containers/{container.id}">
