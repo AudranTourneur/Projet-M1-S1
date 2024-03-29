@@ -31,7 +31,14 @@
 <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
     <div class="flex flex-col">
                 <span class="font-bold copy-to-clipboard">
-                    {container.names[0].substring(1, container.names[0].length)}
+                    {#if container.names[0].length < 15}
+                        {container.names[0].substring(1, container.names[0].length)}
+                    {:else}
+                        <Tooltip tooltipText={container.names[0].substring(1, container.names[0].length)}>
+                            {container.names[0].substring(1, 12)}
+                        </Tooltip>
+                        <div class="hide-on-clipboard-hover">...</div>
+                    {/if}
                     <button type="button" class="btn variant-soft">
                         <Fa icon={faCopy}/>
                     </button>
