@@ -25,3 +25,10 @@ pub struct ContainerStats {
     pub network_usage_up: f64,
     pub network_usage_down: f64,
 }
+
+#[derive(Serialize, Row)]
+pub struct VolumeStats {
+    pub volume_id: String,
+    pub timestamp: u64,
+    pub disk_usage: i32,
+}

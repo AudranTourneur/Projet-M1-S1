@@ -6,6 +6,9 @@ use bollard::{
 use futures_util::stream::StreamExt;
 use rocket::time::OffsetDateTime;
 
+extern crate fs_extra;
+use fs_extra::dir::get_size;
+
 use crate::database;
 
 pub async fn start_statistics_listeners() {
@@ -21,6 +24,7 @@ pub async fn start_statistics_listeners() {
     for container in containers.iter() {
         // println!("aaaa id = {}", container.id.clone().unwrap());
         rocket::tokio::spawn(get_container_statistics(container.id.clone().unwrap()));
+        rocket::tokio::spawn(get_volumes_size(container.id.clone().unwrap()));
     }
 }
 
@@ -79,4 +83,52 @@ pub async fn get_container_statistics(container_id_to_get: String) {
 
         let _ = database::insert_container_stats(stats).await;
     }
+}
+
+pub async fn get_volumes_size(id_to_inspect : String){
+    let docker = Docker::connect_with_local_defaults().unwrap();
+
+    let inspected = docker.inspect_container(&id_to_inspect, None)
+    .await
+    .unwrap();
+
+    let mountpoint_info = inspected.mounts.clone().unwrap();
+    let source = mountpoint_info[0].source.clone().unwrap();
+
+    let folder = "/rootfs/".to_string();
+    let mountpoint_source = format!("{folder}{source}", folder = folder, source = source);     
+
+
+    let mut last_timestamp_acquisition = 0;
+    let time_threshold = 30;
+    let mut size = get_mountpoint_size(mountpoint_source.clone()).await;
+
+
+    loop {
+        let current_timestamp = OffsetDateTime::now_utc().unix_timestamp();
+
+        let diff = current_timestamp - last_timestamp_acquisition;
+
+        if diff < time_threshold {
+            continue;
+        } else {
+            println!("Updating volume size... <Name={}, Last Size={}> ", mountpoint_source, size);
+        }
+
+        last_timestamp_acquisition = current_timestamp;
+
+        size = get_mountpoint_size(mountpoint_source.clone()).await;
+        let volume_stats = crate::models::VolumeStats {
+            volume_id: id_to_inspect.clone(),
+            timestamp: current_timestamp as u64,
+            disk_usage: size as i32,
+        };
+
+        //let _ = database::insert_volume_stats(volume_stats).await;
+    }
+}
+
+pub async fn get_mountpoint_size(mountpoint_source: String) -> u64 {
+    let size = get_size(mountpoint_source.clone()).unwrap_or(0);
+    size
 }
