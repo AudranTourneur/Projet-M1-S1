@@ -1,17 +1,17 @@
 use bollard::container::RemoveContainerOptions;
 use bollard::container::StartContainerOptions;
 use bollard::container::StopContainerOptions;
-use bollard::secret::EndpointSettings;
 use bollard::secret::PortTypeEnum;
 use bollard::{container::ListContainersOptions, Docker};
 use futures::future::join_all;
+use rocket::form::validate::Contains;
 use rocket::response::stream::TextStream;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::docker::get_docker_socket;
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum OurPortTypeEnum {
     EMPTY,
@@ -20,7 +20,7 @@ pub enum OurPortTypeEnum {
     SCTP,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OurPort {
     pub ip: Option<String>,
@@ -30,7 +30,7 @@ pub struct OurPort {
     pub typ: Option<OurPortTypeEnum>,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 
@@ -39,14 +39,15 @@ pub struct Container {
     pub id: String,
     pub names: Vec<String>,
     pub image: String,
-    pub network: String,
-    // pub networks: Vec<EndpointSettings>,
+    // pub network: String,
+    pub networks: Vec<String>,
     pub volumes: Vec<String>,
     pub status: String,
     pub ports: Vec<OurPort>,
     pub labels: Option<std::collections::HashMap<String, String>>,
     pub compose_file: Option<String>,
     pub raw_data: Option<String>,
+    pub is_running: bool,
 }
 
 #[derive(Serialize, Deserialize, TS)]
@@ -138,9 +139,9 @@ pub async fn get_container_by_id(id: &str) -> Container {
     let raw_data = docker.inspect_container(&id, None).await.unwrap();
     let raw_data = serde_json::to_string_pretty(&raw_data).unwrap();
 
-    let _networks: Vec<EndpointSettings> = container.network_settings.clone().unwrap().networks.clone().unwrap().values().cloned().collect();
+    let networks: Vec<String> = container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect();
 
-    // let networks_str: Vec<String> = networks.iter().map(|network| network.network_id.clone().unwrap_or_default()).collect();
+    let is_running: bool = container.status.clone().unwrap().starts_with("Up");
 
     let container_data = Container {
         icon_url: None,
@@ -148,22 +149,13 @@ pub async fn get_container_by_id(id: &str) -> Container {
         names: container.names.clone().unwrap(),
         image: container.image.clone().unwrap(),
         volumes: volume_name,
-        network: container
-            .network_settings
-            .clone()
-            .unwrap()
-            .networks
-            .clone()
-            .unwrap()
-            .keys()
-            .cloned()
-            .collect(),
-        // networks: networks,
+        networks,
         status: container.status.clone().unwrap(),
         ports,
         compose_file,
         labels: Some(labels),
         raw_data: Some(raw_data),
+        is_running,
     };
 
     container_data

@@ -25,7 +25,7 @@
                 <slot/>
 </span>
 {#if showTooltip}
-    <div class="bg-surface-300-600-token shadow px-0.5 rounded-container-token" use:floatingContent>
+    <div class="bg-surface-300-600-token shadow px-0.5 rounded-container-token text-sm" use:floatingContent>
         {tooltipText}
     </div>
 {/if}

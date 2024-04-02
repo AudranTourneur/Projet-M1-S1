@@ -39,7 +39,8 @@ use clickhouse::Client;
 
 pub fn get_clickhouse_client() -> Client {
     Client::default()
-        .with_url("http://okidocky-db:8123")
+        // .with_url("http://okidocky-db:8123")
+        .with_url("http://127.0.0.1:8123")
         .with_user("username")
         .with_password("password")
         .with_database("my_database")

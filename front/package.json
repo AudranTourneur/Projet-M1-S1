@@ -45,6 +45,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "apexcharts": "^3.44.2",
+    "copy-to-clipboard": "^3.3.3",
     "pixi-graphpaper": "^2.0.1",
     "pixi-viewport": "^5.0.2",
     "pixi.js": "^7.3.2",
