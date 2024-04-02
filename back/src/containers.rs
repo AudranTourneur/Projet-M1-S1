@@ -11,7 +11,7 @@ use ts_rs::TS;
 
 use crate::docker::get_docker_socket;
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum OurPortTypeEnum {
     EMPTY,
@@ -20,7 +20,7 @@ pub enum OurPortTypeEnum {
     SCTP,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OurPort {
     pub ip: Option<String>,
@@ -30,7 +30,7 @@ pub struct OurPort {
     pub typ: Option<OurPortTypeEnum>,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 
@@ -39,8 +39,8 @@ pub struct Container {
     pub id: String,
     pub names: Vec<String>,
     pub image: String,
-    pub network: String,
-    // pub networks: Vec<EndpointSettings>,
+    // pub network: String,
+    pub networks: Vec<String>,
     pub volumes: Vec<String>,
     pub status: String,
     pub ports: Vec<OurPort>,
@@ -138,9 +138,9 @@ pub async fn get_container_by_id(id: &str) -> Container {
     let raw_data = docker.inspect_container(&id, None).await.unwrap();
     let raw_data = serde_json::to_string_pretty(&raw_data).unwrap();
 
-    let _networks: Vec<EndpointSettings> = container.network_settings.clone().unwrap().networks.clone().unwrap().values().cloned().collect();
+    let networks: Vec<EndpointSettings> = container.network_settings.clone().unwrap().networks.clone().unwrap().values().cloned().collect();
 
-    // let networks_str: Vec<String> = networks.iter().map(|network| network.network_id.clone().unwrap_or_default()).collect();
+    let networks_str: Vec<String> = networks.iter().map(|network| network.network_id.clone().unwrap_or_default()).collect();
 
     let container_data = Container {
         icon_url: None,
@@ -148,17 +148,7 @@ pub async fn get_container_by_id(id: &str) -> Container {
         names: container.names.clone().unwrap(),
         image: container.image.clone().unwrap(),
         volumes: volume_name,
-        network: container
-            .network_settings
-            .clone()
-            .unwrap()
-            .networks
-            .clone()
-            .unwrap()
-            .keys()
-            .cloned()
-            .collect(),
-        // networks: networks,
+        networks: networks_str,
         status: container.status.clone().unwrap(),
         ports,
         compose_file,

@@ -18,6 +18,7 @@ mod volumes;
 mod ports;
 mod db;
 mod icons;
+mod composes;
 
 #[macro_use]
 extern crate rocket;
@@ -49,6 +50,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             ports::ports_handler,
             topology::topology_handler,
             topology::topology_save_handler,
+            composes::composes_handler,
         ],
     )
 }
