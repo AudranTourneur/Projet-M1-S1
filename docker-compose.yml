@@ -65,3 +65,6 @@ services:
 networks:
   main:
     driver: bridge
+
+volumes:
+  sqlite_db:

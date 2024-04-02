@@ -1,3 +1,4 @@
+use futures::StreamExt;
 use sqlx::sqlite::SqliteConnection;
 use std::error::Error;
 
@@ -12,17 +13,21 @@ pub async fn init_sqlite_database() -> Result<(), Box<dyn Error>> {
         match Sqlite::create_database(DB_URL).await {
             Ok(_) => println!("Create db success"),
             Err(error) => panic!("error: {}", error),
-        }
+        };
     } else {
         println!("Database already exists");
     }
 
     let query = include_str!("sqlite/init_db.sql");
     println!("Query: {}", query);
-    let mut conn: SqliteConnection = SqliteConnection::connect(DB_URL).await?;
-    sqlx::query(query).execute(&mut conn).await?;
+    let mut conn: SqliteConnection = SqliteConnection::connect(DB_URL).await.unwrap();
 
-    println!("SQLite database initialized!");
+    let res = sqlx::query(query).execute(&mut conn).await;
+
+    match res {
+        Ok(_) => println!("Database initialized"),
+        Err(e) => panic!("Error initializing database: {}", e),
+    };
 
     Ok(())
 }

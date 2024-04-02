@@ -1,6 +1,6 @@
 use database::init_clickhouse_database;
-use db::init_sqlite_database;
-use icons::spawn_icons_service;
+use sqlitedb::init_sqlite_database;
+use icons::spawn_info_service;
 
 mod docker;
 mod auth;
@@ -16,7 +16,7 @@ mod stats;
 mod topology;
 mod volumes;
 mod ports;
-mod db;
+mod sqlitedb;
 mod icons;
 mod composes;
 
@@ -71,7 +71,7 @@ async fn main() {
 
     rocket::tokio::spawn(spawn_statistics_subsystem());
 
-    rocket::tokio::spawn(spawn_icons_service());
+    rocket::tokio::spawn(spawn_info_service());
 
     let _ = app.launch().await;
 }
