@@ -9,8 +9,7 @@ pub async fn insert_container_stats(
     let clickhouse_client = get_clickhouse_client();
 
     let insert_query = format!(
-        "INSERT INTO container_statistics (id, timestamp, cpu_usage, memory_usage, io_usage_read, io_usage_write, network_usage_up, network_usage_down)
-        VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')",
+        "INSERT INTO container_statistics (id, timestamp, cpu_usage, memory_usage, io_usage_read, io_usage_write, network_usage_up, network_usage_down) VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')",
         container_statistics.container_id,
         container_statistics.timestamp,
         container_statistics.cpu_usage,
@@ -29,7 +28,7 @@ pub async fn insert_container_stats(
 
     match res {
         Ok(_) => (),
-        Err(e) => println!("Error inserting container statistics: {}", e),
+        Err(e) => println!("Error inserting container statistics: {} | REQ = {}", e, insert_query),
     };
 
     Ok(())

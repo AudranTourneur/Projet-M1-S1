@@ -1,9 +1,10 @@
-CREATE TABLE IF NOT EXISTS images {
-    image_id TEXT PRIMARY KEY,
+BEGIN TRANSACTION;
+
+CREATE TABLE IF NOT EXISTS images (
     image_name TEXT NOT NULL,
     docker_hub_response TEXT NOT NULL,
     docker_hub_status INTEGER NOT NULL
-};
+);
 
 CREATE TABLE IF NOT EXISTS topology (
     container_id TEXT PRIMARY KEY, 
@@ -11,3 +12,5 @@ CREATE TABLE IF NOT EXISTS topology (
     position_y INTEGER NOT NULL
 );
 
+
+COMMIT;

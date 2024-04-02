@@ -29,18 +29,18 @@ pub async fn spawn_info_service() {
 
     //let conn = Connection::open(DATABASE_PATH).unwrap();
 
-    for image_name in image_names.split(", "){
+    for image_name in image_names.split(", ") {
+        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
         let before_colon = image_name.split(":").collect::<Vec<&str>>()[0];
-        
+
         let image_name = before_colon;
 
         let url = if image_name.contains("/") {
             let before_slash = image_name.split("/").collect::<Vec<&str>>()[0];
             let after_slash = image_name.split("/").collect::<Vec<&str>>()[1];
             format!("{}/{}/{}", API_LINK, before_slash, after_slash)
-        }
-        else {
-           format!("{}/{}/{}", API_LINK, "library", image_name)
+        } else {
+            format!("{}/{}/{}", API_LINK, "library", image_name)
         };
 
         println!("URL {}", url);
@@ -54,36 +54,59 @@ pub async fn spawn_info_service() {
             .unwrap();
 
         if query.len() > 0 {
-            println!("Image info already exists for {}", image_name);
+            println!("[SKIP] --- Image info already exists for {}", image_name);
             continue;
         }
 
-        let response = client.get(&url).send().await.unwrap();
+        let response = client.get(&url).send().await;
 
-        if !response.status().is_success() {
-            println!("Failed to fetch image info for {}", image_name);
-        }
-        else {
-            println!("Success response: {:?}", response);
+        if response.is_err() {
+            println!("Failed to fetch image info for: {}", image_name);
+            continue;
         }
 
-        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+        let response = response.unwrap();
+
+        let status = response.status();
+        let response_text = response.text().await.unwrap();
+
+        let res = if !status.is_success() {
+            println!("Failed to fetch image info for: {}", image_name);
+            sqlx::query("INSERT INTO images (image_name, docker_hub_response, docker_hub_status) VALUES (?, ?, ?)")
+                .bind(image_name)
+                .bind("")
+                .bind(status.as_u16())
+            .execute(&mut conn).await
+        } else {
+            println!("Fetched image info for: {}", image_name);
+            sqlx::query("INSERT INTO images (image_name, docker_hub_response, docker_hub_status) VALUES (?, ?, ?)")
+                .bind(image_name)
+                .bind(response_text)
+                .bind(status.as_u16())
+            .execute(&mut conn).await
+        };
+
+        match res {
+            Ok(_) => println!("Inserted image info for: {}", image_name),
+            Err(e) => println!("Failed to insert image info for: {}: {}", image_name, e),
+        }
+
 
         // if response.status().is_success() {
         //     let json_response: serde_json::Value = json!(response.text().await.unwrap());
         //     println!("{:?}", json_response);
 
-            //let full_description = json_response.to_string();
+        //let full_description = json_response.to_string();
 
-            //conn.execute(
-            //    "INSERT INTO images (image_name, docker_hub_response) VALUE (?1, ?2)",
-            //    &[&image_name, &full_description],
-            //)
-            //.bind(&image_name)
-            //.bind(&full_description)
-            //.execute(&conn)
-            //.await
-            //.unwrap();
+        //conn.execute(
+        //    "INSERT INTO images (image_name, docker_hub_response) VALUE (?1, ?2)",
+        //    &[&image_name, &full_description],
+        //)
+        //.bind(&image_name)
+        //.bind(&full_description)
+        //.execute(&conn)
+        //.await
+        //.unwrap();
         // };
 
         // break;
