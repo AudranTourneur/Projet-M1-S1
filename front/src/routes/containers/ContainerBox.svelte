@@ -1,11 +1,14 @@
 <script lang="ts">
+    import copy from 'copy-to-clipboard';
     import {Fa} from "svelte-fa";
-    import {faCopy} from "@fortawesome/free-solid-svg-icons";
+    import {faCheck, faCopy, faNetworkWired} from "@fortawesome/free-solid-svg-icons";
     import type {Container} from "$lib/types/Container";
     import Tooltip from "../../components/Tooltip.svelte";
 
+
     export let container: Container;
     export let i: number;
+    console.log('Container', container);
 
     function deleteContainer(index: number) {
         // implémenter la fonction adéquate
@@ -26,33 +29,60 @@
         //implémenter la fonction adéquate
         console.log(`Stop a container with index ${index}`);
     }
+
+    let isIdCopied = false;
+    let isNameCopied = false;
+    const copyToClipboardId = () => {
+        isIdCopied = true;
+        setTimeout(() => isIdCopied = false, 1000);
+        copy(container.id);
+    }
+    const copyToClipboardName = () => {
+        isNameCopied = true;
+        setTimeout(() => isNameCopied = false, 1000);
+        copy(container.names[0].substring(1, container.names[0].length));
+    }
 </script>
 
-<div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
+<div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4 flex justify-between items-center">
     <div class="flex flex-col">
-                <span class="font-bold copy-to-clipboard">
-                    {#if container.names[0].length < 15}
-                        {container.names[0].substring(1, container.names[0].length)}
-                    {:else}
-                        <Tooltip tooltipText={container.names[0].substring(1, container.names[0].length)}>
-                            {container.names[0].substring(1, 12)}
-                        </Tooltip>
-                        <div class="hide-on-clipboard-hover">...</div>
-                    {/if}
-                    <button type="button" class="btn variant-soft">
-                        <Fa icon={faCopy}/>
-                    </button>
-                </span>
+        <div class="font-bold copy-to-clipboard">
+            {#if container.names[0].length < 15}
+                {container.names[0].substring(1, container.names[0].length)}
+            {:else}
+                <Tooltip tooltipText={container.names[0].substring(1, container.names[0].length)}>
+                    {container.names[0].substring(1, 12)}
+                </Tooltip>
+                <div class="hide-on-clipboard-hover">...</div>
+            {/if}
+            <button type="button" class="btn variant-soft" on:click={copyToClipboardName}>
+                {#if isNameCopied}
+                    <Fa icon={faCheck} class="text-green-500"/>
+                {:else}
+                    <Fa icon={faCopy}/>
+                {/if}
+            </button>
+        </div>
         <div class="copy-to-clipboard">
             <Tooltip tooltipText={container.id}>
                 {container.id.substring(0, 12)}
             </Tooltip>
             <div class="hide-on-clipboard-hover">...</div>
-            <button type="button" class="btn variant-soft">
-                <Fa icon={faCopy}/>
+            <button type="button" class="btn variant-soft" on:click={copyToClipboardId}>
+                {#if isIdCopied}
+                    <Fa icon={faCheck} class="text-green-500"/>
+                {:else}
+                    <Fa icon={faCopy}/>
+                {/if}
             </button>
         </div>
     </div>
+    <Tooltip tooltipText={`Networks: ${container.networks.length === 0 ? ' - ' : container.networks.join(', ')}`}>
+        <span class="chip variant-soft gap-1">
+        <Fa icon={faNetworkWired}/>
+            {container.networks.length === 0 ? ' - ' : container.networks.join(', ').substring(0, 20) + '...'}
+    	</span>
+	</Tooltip>
 </div>
 <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
     <div class="flex justify-between items-center mb-2">
