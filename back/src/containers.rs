@@ -4,6 +4,7 @@ use bollard::container::StopContainerOptions;
 use bollard::secret::PortTypeEnum;
 use bollard::{container::ListContainersOptions, Docker};
 use futures::future::join_all;
+use rocket::form::validate::Contains;
 use rocket::response::stream::TextStream;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
@@ -46,6 +47,7 @@ pub struct Container {
     pub labels: Option<std::collections::HashMap<String, String>>,
     pub compose_file: Option<String>,
     pub raw_data: Option<String>,
+    pub is_running: bool,
 }
 
 #[derive(Serialize, Deserialize, TS)]
@@ -139,6 +141,8 @@ pub async fn get_container_by_id(id: &str) -> Container {
 
     let networks: Vec<String> = container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect();
 
+    let is_running: bool = container.status.clone().unwrap().starts_with("Up");
+
     let container_data = Container {
         icon_url: None,
         id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
@@ -151,6 +155,7 @@ pub async fn get_container_by_id(id: &str) -> Container {
         compose_file,
         labels: Some(labels),
         raw_data: Some(raw_data),
+        is_running,
     };
 
     container_data
