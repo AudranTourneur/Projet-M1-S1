@@ -6,6 +6,7 @@ use std::{collections::HashMap, thread::current};
 use std::sync::Mutex;
 use bollard::volume::RemoveVolumeOptions;
 use fs_extra::dir::{DirOptions, get_dir_content2};
+use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
@@ -28,9 +29,14 @@ pub struct VolumeResponse {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct VolumeExplorerResponse {
-    pub current_folder: Option<String>,
+    pub current_folder: String,
     pub directories: Vec<String>,
     pub files: Vec<String>,
+}
+
+
+fn to_base64_url(data: &str) -> String {
+    URL_SAFE.encode(data.as_bytes())
 }
 
 // Define the static HashMap inside a lazy_static block
@@ -148,9 +154,9 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     println!("Initial folder: {}", initial_folder);
 
     if current_folder.is_none() {
-        let current_folder = initial_folder.clone();
+        let status_folder = initial_folder.clone();
     } else {
-        let current_folder = format!("{folder}{current_folder}", folder = folder, current_folder = current_folder.clone().unwrap());
+        let status_folder = format!("{folder}{current_folder}", folder = folder, current_folder = current_folder.clone().unwrap());
     }
 
     let mut options = DirOptions::new();
@@ -160,7 +166,7 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     let dir_files = dir_content.as_ref().unwrap().files.clone();
 
     let content = VolumeExplorerResponse {
-        current_folder: current_folder,
+        current_folder: to_base64_url(current_folder.unwrap().as_str()),
         directories: dir_folder,
         files: dir_files,
     };

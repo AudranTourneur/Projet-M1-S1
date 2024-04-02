@@ -1,9 +1,10 @@
 <script lang="ts">
     export let data;
-
+    const id = data.name;
     console.log(data);
 
     import {onMount} from "svelte";
+	import FileExplorer from "../FileExplorer.svelte";
 
     onMount(async () => {
         const ApexCharts = await import('apexcharts')
@@ -129,4 +130,12 @@
     {data.mountpoint}
     <br/>
     {data.size}
+</div>
+
+<br/>
+<div>
+    <h2>Filesystem</h2>
+    <FileExplorer {id}>
+
+    </FileExplorer>
 </div>
