@@ -1,4 +1,3 @@
-use bollard::Docker;
 use rocket::serde::json::Json;
 use bollard::volume::RemoveVolumeOptions;
 use fs_extra::dir::{DirOptions, get_dir_content2};
@@ -13,9 +12,10 @@ pub async fn volumes_handler() -> Json<VolumeList> {
 
     let volumes = docker.list_volumes::<String>(None).await.unwrap();
 
+    let volumes = volumes.volumes;
+    let volumes = volumes.unwrap_or_default();
+
     let mut volumes_data: Vec<VolumeData> = volumes
-        .volumes
-        .unwrap()
         .iter()
         .map(|volume| {
             let volume_data = VolumeData {
@@ -39,7 +39,7 @@ pub async fn volumes_handler() -> Json<VolumeList> {
 
 #[get("/volume/<name>")]
 pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
-    let docker = Docker::connect_with_local_defaults().unwrap();
+    let docker = get_docker_socket();
 
     // Recherche du volume par son nom
     let volume = docker.inspect_volume(&name).await.ok()?;
@@ -56,7 +56,7 @@ pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
 
 #[post("/volume/<name>/remove")]
 pub async fn delete_volume(name: &str) -> &'static str {
-    let docker = Docker::connect_with_local_defaults().unwrap();
+    let docker = get_docker_socket();
 
     let options = Some(RemoveVolumeOptions {
         force: true,
@@ -71,10 +71,17 @@ pub async fn delete_volume(name: &str) -> &'static str {
 
  
 #[get("/volume/<volume_name>/filesystem/<current_folder>")]
-pub async fn volume_explorer_handler(volume_name: String, current_folder: Option<String>) -> Json<VolumeExplorerData>
+pub async fn volume_explorer_handler(volume_name: String, current_folder: Option<String>) -> Json<Option<VolumeExplorerData>>
 {
-    let docker = Docker::connect_with_local_defaults().unwrap();
-    let volume = docker.inspect_volume(&volume_name).await.unwrap();
+    let docker = get_docker_socket();
+    let volume = docker.inspect_volume(&volume_name).await;
+    let volume = match volume {
+        Ok(volume) => volume,
+        Err(_) => {
+            println!("Error reading volume");
+            return Json(None);
+        },
+    };
     println!("Volume: {:?}", volume);
 
     let root_folder = "/rootfs/var/lib/docker/volumes/";
@@ -91,11 +98,11 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
         Ok(content) => content,
         Err(_) => {
             println!("Error reading directory content");
-            return Json(VolumeExplorerData {
+            return Json(Some(VolumeExplorerData {
                 current_folder: "".to_string(),
                 directories: vec![],
                 files: vec![],
-            });
+            }));
         },
     };
 
@@ -125,6 +132,6 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     //     println!("{}", file); // print file path
     // }
 
-    Json(content)
+    Json(Some(content))
 
 }

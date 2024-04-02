@@ -1,15 +1,17 @@
 use bollard::{image::ListImagesOptions, Docker};
+use crate::docker::get_docker_socket;
+
 use super::models::ImageData;
 
 pub async fn get_all_images() -> Vec<ImageData> {
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let docker: Docker = get_docker_socket();
     let base_images = &docker
         .list_images(Some(ListImagesOptions::<String> {
             all: true,
             ..Default::default()
         }))
         .await
-        .unwrap();
+        .unwrap_or(Vec::new());
 
     let my_images: Vec<ImageData> = base_images
         .iter()

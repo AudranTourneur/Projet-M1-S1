@@ -67,10 +67,13 @@ pub async fn container_filesystem_handler(id: &str) -> String {
 }
 
 #[get("/container/<id>")]
-pub async fn container_handler(id: &str) -> Json<ContainerData> {
+pub async fn container_handler(id: &str) -> Json<Option<ContainerData>> {
     let container = get_container_by_id(id).await;
 
-    Json(container)
+    match container {
+        Some(container) => Json(Some(container)),
+        None => Json(None),
+    }
 }
 
 #[post("/container/<id>/start")]

@@ -5,20 +5,30 @@ use crate::docker::get_docker_socket;
 
 use super::models::{ContainerData, PortData, OurPortTypeEnum};
 
-pub async fn get_container_by_id(id: &str) -> ContainerData {
+pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let docker: Docker = get_docker_socket();
     let containers = &docker
         .list_containers::<String>(Some(ListContainersOptions::<String> {
             all: true,
             ..Default::default()
         }))
-        .await
-        .unwrap();
+        .await.unwrap_or(Vec::new());
 
     let container = containers
         .iter()
-        .find(|container| container.id.clone().unwrap() == id)
-        .unwrap();
+        .find(|container| {
+            let container_id = container.id.clone();
+            let container_id = match container_id {
+                Some(container_id) => container_id,
+                None => return false,
+            };
+            container_id == id
+        });
+
+    let container = match container {
+        Some(container) => container,
+        None => return None,
+    };
 
     let volumes: Vec<String> = container
         .mounts
@@ -60,21 +70,48 @@ pub async fn get_container_by_id(id: &str) -> ContainerData {
         .collect();
 
     // call "docker inspect <container_id>"
-    let raw_data = docker.inspect_container(&id, None).await.unwrap();
-    let raw_data = serde_json::to_string_pretty(&raw_data).unwrap();
+    let raw_data = docker.inspect_container(&id, None).await;
+    let raw_data = match raw_data {
+        Ok(raw_data) => raw_data,
+        Err(_) => return None,
+    };
 
-    let networks: Vec<String> = container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect();
+    let raw_data = serde_json::to_string_pretty(&raw_data);
+    let raw_data = match raw_data {
+        Ok(raw_data) => raw_data,
+        Err(_) => return None,
+    };
 
-    let is_running: bool = container.status.clone().unwrap().starts_with("Up");
+    let network_settings = container.network_settings.clone();
+    let network_settings = match network_settings {
+        Some(network_settings) => network_settings,
+        None => return None,
+    };
+
+    let endpoint_settings =  network_settings.networks.clone();
+    let endpoint_settings = match endpoint_settings {
+        Some(endpoint_settings) => endpoint_settings,
+        None => return None,
+    };
+
+    let networks: Vec<String> = endpoint_settings.keys().cloned().collect();
+
+    let status = container.status.clone();
+    let status = match status {
+        Some(status) => status,
+        None => return None,
+    };
+
+    let is_running: bool = status.starts_with("Up");
 
     let container_data = ContainerData {
         icon_url: None,
-        id: container.id.clone().unwrap_or("UNDEFINED".to_string()),
-        names: container.names.clone().unwrap(),
-        image: container.image.clone().unwrap(),
+        id: container.id.clone().unwrap_or("".into()),
+        names: container.names.clone().unwrap_or(vec![]),
+        image: container.image.clone().unwrap_or("".into()),
         volumes,
         networks,
-        status: container.status.clone().unwrap(),
+        status: container.status.clone().unwrap_or("".into()),
         ports,
         compose_file,
         labels: Some(labels),
@@ -82,7 +119,7 @@ pub async fn get_container_by_id(id: &str) -> ContainerData {
         is_running,
     };
 
-    container_data
+    Some(container_data)
 }
 
 pub async fn get_all_containers() -> Vec<ContainerData> {
@@ -93,14 +130,24 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
             ..Default::default()
         }))
         .await
-        .unwrap();
+        .unwrap_or(vec![]);
 
     let listed_containers_futures = containers.iter().map(|container| async {
-        let result = get_container_by_id(&container.id.clone().unwrap()).await;
+        let container_id = container.id.clone();
+        let container_id = match container_id {
+            Some(container_id) => container_id,
+            None => return None,
+        };
+        let result = get_container_by_id(&container_id).await;
         result
     });
 
     let listed_containers = join_all(listed_containers_futures).await;
+
+    let listed_containers: Vec<ContainerData> = listed_containers
+        .into_iter()
+        .filter_map(|container| container)
+        .collect();
 
     listed_containers
 }

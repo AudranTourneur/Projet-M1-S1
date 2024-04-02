@@ -2,6 +2,8 @@ use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
 
+use crate::docker::get_docker_socket;
+
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -16,7 +18,7 @@ pub struct OverviewResponse {
 
 #[get("/overview")]
 pub async fn overview_handler() -> Json<OverviewResponse> {
-    let docker: Docker = Docker::connect_with_local_defaults().unwrap();
+    let docker: Docker = get_docker_socket();
 
     let version_object = docker.version().await.unwrap();
     let linux_version = version_object

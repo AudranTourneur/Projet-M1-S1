@@ -35,7 +35,12 @@ pub async fn get_all_composes() -> ComposeList {
     let listed_containers: Vec<ContainerData> = get_all_containers().await;
 
     for container in listed_containers.iter() {
-        let name = container.labels.as_ref().unwrap().get("com.docker.compose.project.config_files");
+        let labels = container.labels.as_ref();
+        let labels = match labels {
+            Some(labels) => labels,
+            None => continue,
+        };
+        let name = labels.get("com.docker.compose.project.config_files");
         let name = match name {
             Some(name) => name,
             None => continue,
@@ -72,14 +77,18 @@ pub async fn composes_handler() -> Json<ComposeList> {
 }
 
 #[get("/composes/<id>")]
-pub async fn compose_handler(id: String) -> Json<ComposeData> {
+pub async fn compose_handler(id: String) -> Json<Option<ComposeData>> {
     let listed_composes = get_all_composes().await;
 
     let compose = listed_composes
         .composes
         .iter()
-        .find(|compose| compose.id == id)
-        .unwrap();
+        .find(|compose| compose.id == id);
+    let compose = match compose {
+        Some(compose) => compose,
+        None => return Json(None),
+    };
 
-    Json(compose.clone())
+
+    Json(Some(compose.clone()))
 }
