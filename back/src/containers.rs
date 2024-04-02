@@ -1,7 +1,6 @@
 use bollard::container::RemoveContainerOptions;
 use bollard::container::StartContainerOptions;
 use bollard::container::StopContainerOptions;
-use bollard::secret::EndpointSettings;
 use bollard::secret::PortTypeEnum;
 use bollard::{container::ListContainersOptions, Docker};
 use futures::future::join_all;
@@ -138,9 +137,7 @@ pub async fn get_container_by_id(id: &str) -> Container {
     let raw_data = docker.inspect_container(&id, None).await.unwrap();
     let raw_data = serde_json::to_string_pretty(&raw_data).unwrap();
 
-    let networks: Vec<EndpointSettings> = container.network_settings.clone().unwrap().networks.clone().unwrap().values().cloned().collect();
-
-    let networks_str: Vec<String> = networks.iter().map(|network| network.network_id.clone().unwrap_or_default()).collect();
+    let networks: Vec<String> = container.network_settings.clone().unwrap().networks.clone().unwrap().keys().cloned().collect();
 
     let container_data = Container {
         icon_url: None,
@@ -148,7 +145,7 @@ pub async fn get_container_by_id(id: &str) -> Container {
         names: container.names.clone().unwrap(),
         image: container.image.clone().unwrap(),
         volumes: volume_name,
-        networks: networks_str,
+        networks,
         status: container.status.clone().unwrap(),
         ports,
         compose_file,
