@@ -6,7 +6,7 @@ use ts_rs::TS;
 
 use crate::{
     containers::{get_all_containers, Container},
-    db::get_sqlite_connection,
+    sqlitedb::get_sqlite_connection,
 };
 
 #[derive(Serialize, Deserialize, TS, Debug)]

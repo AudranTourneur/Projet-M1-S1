@@ -12,7 +12,7 @@ pub async fn init_sqlite_database() -> Result<(), Box<dyn Error>> {
         match Sqlite::create_database(DB_URL).await {
             Ok(_) => println!("Create db success"),
             Err(error) => panic!("error: {}", error),
-        }
+        };
     } else {
         println!("Database already exists");
     }
@@ -20,7 +20,7 @@ pub async fn init_sqlite_database() -> Result<(), Box<dyn Error>> {
     let query = include_str!("sqlite/init_db.sql");
     println!("Query: {}", query);
     let mut conn: SqliteConnection = SqliteConnection::connect(DB_URL).await?;
-    sqlx::query(query).execute(&mut conn).await?;
+    sqlx::query(query).execute_many(&mut conn).await;
 
     println!("SQLite database initialized!");
 

@@ -136,7 +136,7 @@ pub struct VolumeRow {
     dsk: u64,
 }
 
-pub async fn get_historical_statistics_for_volume(
+pub async fn _get_historical_statistics_for_volume(
     id: String,
 ) -> Result<Vec<VolumeRow>, Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();
