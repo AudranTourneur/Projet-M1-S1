@@ -62,9 +62,26 @@ services:
     volumes:
       - "./front/src:/opt/app/src"
 
+  caddy:
+    container_name: okidocky-caddy
+    image: caddy:latest
+    depends_on:
+      - core
+    restart: always
+    network_mode: "host"
+    # networks:
+    #   - main
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./site:/srv
+      - ./caddy_data:/data
+      - ./caddy_config:/config
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    # - "443:443/udp"
+
+
 networks:
   main:
     driver: bridge
-
-volumes:
-  sqlite_db:
