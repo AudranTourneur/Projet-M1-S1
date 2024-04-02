@@ -1,9 +1,17 @@
 <script lang="ts">
     import copy from 'copy-to-clipboard';
     import {Fa} from "svelte-fa";
-    import {faCheck, faCopy, faNetworkWired} from "@fortawesome/free-solid-svg-icons";
+	import {
+		faCheck, faCoins,
+		faCopy,
+		faEllipsisVertical, faGear,
+		faNetworkWired,
+		faPlay, faPlug,
+		faStop
+	} from "@fortawesome/free-solid-svg-icons";
     import type {Container} from "$lib/types/Container";
     import Tooltip from "../../components/Tooltip.svelte";
+    import {truncateString} from "../../components/truncate-string";
 
 
     export let container: Container;
@@ -77,12 +85,30 @@
             </button>
         </div>
     </div>
+	<Tooltip tooltipText={container.status}>
+		{#if container.isRunning}
+			<Fa icon={faGear} class="text-success-500 animate-spin text-2xl" style="animation-duration: 4s;"/>
+		{:else}
+			<Fa icon={faGear} class="text-error-400 text-2xl" />
+		{/if}
+	</Tooltip>
     <Tooltip tooltipText={`Networks: ${container.networks.length === 0 ? ' - ' : container.networks.join(', ')}`}>
         <span class="chip variant-soft gap-1">
         <Fa icon={faNetworkWired}/>
-            {container.networks.length === 0 ? ' - ' : container.networks.join(', ').substring(0, 20) + '...'}
+            {container.networks.length === 0 ? ' - ' : truncateString(container.networks.join(', '), 20)}
     	</span>
 	</Tooltip>
+    <div class="flex gap-1">
+        <button class="btn variant-ghost-success p-2" disabled={container.isRunning}>
+            <Fa icon={faPlay} fw/>
+        </button>
+        <button class="btn variant-ghost-error p-2" disabled={!container.isRunning}>
+            <Fa icon={faStop} fw />
+        </button>
+        <a href="/containers/{container.id}" class="btn variant-ghost p-2">
+            <Fa icon={faEllipsisVertical} fw/>
+        </a>
+	</div>
 </div>
 <div class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4">
     <div class="flex justify-between items-center mb-2">
