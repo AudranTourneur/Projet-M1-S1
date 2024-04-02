@@ -24,36 +24,33 @@ mod composes;
 extern crate rocket;
 
 fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
-    rocket::build().mount(
-        "/",
-        routes![
+    let base_routes =   routes![
             auth::auth_handler,
             overview::overview_handler,
-            volumes::volumes_handler,
-            images::images_handler,
-            networks::networks_handler,
-            containers::containers_handler,
-            networks::network_handler,
-            images::image_handler,
-            containers::container_handler,
-            containers::rebind_ports_handler,
-            containers::container_filesystem_handler,
-            volumes::volume_handler,
-            containers::container_start,
-            containers::container_stop,
-            images::pull_image,
-            containers::container_stats_handler,
-            images::delete_image,
-            containers::delete_container,
-            volumes::delete_volume,
-            containers::container_stats_stream_hander,
             ports::ports_handler,
             topology::topology_handler,
             topology::topology_save_handler,
-            volumes::volume_explorer_handler,
             composes::composes_handler,
             composes::compose_handler,
-        ],
+        ];
+
+    let images_handlers = images::register::get_all_image_handlers();
+    let containers_handlers = containers::register::get_all_container_handlers();
+    let networks_handlers = networks::register::get_all_network_handlers();
+    let volumes_handlers = volumes::register::get_all_volumes_handlers();
+
+    let all_handlers = base_routes
+        .iter()
+        .chain(images_handlers.iter())
+        .chain(containers_handlers.iter())
+        .chain(networks_handlers.iter())
+        .chain(volumes_handlers.iter())
+        .map(|route| route.clone())
+        .collect::<Vec<_>>();
+
+    rocket::build().mount(
+        "/",
+        all_handlers
     )
 }
 

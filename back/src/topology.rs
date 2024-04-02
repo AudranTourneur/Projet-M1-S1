@@ -5,8 +5,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    containers::{get_all_containers, Container},
-    sqlitedb::get_sqlite_connection,
+    containers::{common::get_all_containers, models::ContainerData}, sqlitedb::get_sqlite_connection
 };
 
 #[derive(Serialize, Deserialize, TS, Debug)]
@@ -83,7 +82,7 @@ async fn retrieve_container_positions_from_database() -> HashMap<String, (i32, i
 }
 
 async fn create_topology_containers() -> Vec<TopologyContainer> {
-    let all_containers: Vec<Container> = get_all_containers().await;
+    let all_containers: Vec<ContainerData> = get_all_containers().await;
 
     let all_containers_positions = retrieve_container_positions_from_database().await;
     // print all

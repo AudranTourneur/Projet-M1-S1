@@ -102,7 +102,7 @@ pub async fn get_historical_statistics_for_container(
 }
 
 
-pub async fn insert_volume_stats(
+pub async fn _insert_volume_stats(
     volume_statistics: VolumeStats,
 ) -> Result<(), Box<dyn Error>> {
     let clickhouse_client = get_clickhouse_client();

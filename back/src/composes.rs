@@ -1,9 +1,9 @@
-use rocket::serde::{self};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
-use crate::containers::{get_all_containers, Container};
 
 use base64::{engine::general_purpose::URL_SAFE, Engine as _};
+
+use crate::containers::{common::get_all_containers, models::ContainerData};
 
 
 #[derive(Serialize, Deserialize, TS, Clone)]
@@ -12,7 +12,7 @@ use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 pub struct ComposeData {
     pub file_path: String,
     pub id: String,
-    pub containers: Vec<Container>,
+    pub containers: Vec<ContainerData>,
 }
 
 
@@ -32,7 +32,7 @@ pub async fn get_all_composes() -> ComposeList {
         composes: vec![],
     };
 
-    let listed_containers: Vec<Container> = get_all_containers().await;
+    let listed_containers: Vec<ContainerData> = get_all_containers().await;
 
     for container in listed_containers.iter() {
         let name = container.labels.as_ref().unwrap().get("com.docker.compose.project.config_files");

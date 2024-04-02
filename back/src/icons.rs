@@ -114,7 +114,7 @@ pub async fn spawn_info_service() {
 }
 
 
-async fn resolve_icon_url_from_image_name(image: String) -> Option<String> {
+async fn _resolve_icon_url_from_image_name(_image: String) -> Option<String> {
     None
     // let db_res = sqlx::query("SELECT docker_hub_response FROM images WHERE image_name = ?")
     //     .bind(image)
