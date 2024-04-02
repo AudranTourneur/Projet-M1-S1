@@ -12,32 +12,33 @@
 		faPlug,
 		faStop
 	} from '@fortawesome/free-solid-svg-icons';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import type { Container } from '$lib/types/Container';
 	import Tooltip from '../../components/Tooltip.svelte';
 
 	export let container: Container;
-	export let i: number;
-	console.log('Container', container);
 
-	function deleteContainer(index: number) {
-		// implémenter la fonction adéquate
-		console.log(`Deleting container with index ${index}`);
-	}
+	// console.log('Container', container);
 
-	function downloadContainer(index: number) {
-		// implémenter la fonction adéquate
-		console.log(`Downloading container with index ${index}`);
-	}
+	const startContainer = async () => {
+		await fetch(`${PUBLIC_API_URL}/container/${container.id}/start`, {
+			method: 'POST',
+			mode: 'no-cors',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	};
 
-	function startContainer(index: number) {
-		// implémenter la fonction adéquate
-		console.log(`Start a container with index ${index}`);
-	}
-
-	function stopContainer(index: number) {
-		//implémenter la fonction adéquate
-		console.log(`Stop a container with index ${index}`);
-	}
+	const stopContainer = async () => {
+		await fetch(`${PUBLIC_API_URL}/container/${container.id}/stop`, {
+			method: 'POST',
+			mode: 'no-cors',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	};
 
 	let isIdCopied = false;
 	let isNameCopied = false;
@@ -125,10 +126,10 @@
 		</Tooltip>
 	</div>
 	<div class="flex gap-1">
-		<button class="btn variant-ghost-success p-2" disabled={container.isRunning}>
+		<button class="btn variant-ghost-success p-2" disabled={container.isRunning} on:click={startContainer}>
 			<Fa icon={faPlay} fw />
 		</button>
-		<button class="btn variant-ghost-error p-2" disabled={!container.isRunning}>
+		<button class="btn variant-ghost-error p-2" disabled={!container.isRunning} on:click={stopContainer}>
 			<Fa icon={faStop} fw />
 		</button>
 		<a href="/containers/{container.id}" class="btn variant-ghost p-2">

@@ -8,7 +8,7 @@
 
 <div class="w-full">
     normal que les containers soient dupliqués, je travaille dessus :-) Simon
-    {#each containers as container, i}
-        <ContainerBox {container} {i}/>
+    {#each containers as container}
+        <ContainerBox {container} />
     {/each}
 </div>
