@@ -9,4 +9,4 @@ RUN npm install
 
 COPY . /opt/app
 
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["npm", "run", "dev", "--", "--host", "--port", "7777"]

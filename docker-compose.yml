@@ -30,9 +30,12 @@ services:
       dockerfile: Dockerfile.dev
     depends_on:
       - db
-    networks:
-      - main
     restart: always
+    network_mode: "host"
+    # networks:
+    #   - main
+    # ports:
+    #   - 8000:8000
     volumes:
       - "/:/rootfs:ro,rslave"
       - "/run/docker.sock:/run/docker.sock:ro,rslave"
@@ -42,8 +45,6 @@ services:
       - "./sqlite_db:/app/sqlite"
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro
-    ports:
-      - 8000:8000
 
 
   ui:
@@ -52,11 +53,12 @@ services:
       context: ./front
     depends_on:
       - core
-    networks:
-      - main
     restart: always
-    ports:
-      - "7777:5173"
+    network_mode: "host"
+    # networks:
+    #   - main
+    # ports:
+    #   - "7777:5173"
     volumes:
       - "./front/src:/opt/app/src"
 
