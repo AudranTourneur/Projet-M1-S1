@@ -49,6 +49,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             ports::ports_handler,
             topology::topology_handler,
             topology::topology_save_handler,
+            volumes::volume_explorer_handler,
         ],
     )
 }

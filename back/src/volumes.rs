@@ -2,10 +2,10 @@ use bollard::{service::Volume, Docker};
 use lazy_static::lazy_static;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
-use std::collections::HashMap;
+use std::{collections::HashMap, thread::current};
 use std::sync::Mutex;
 use bollard::volume::RemoveVolumeOptions;
-
+use fs_extra::dir::{DirOptions, get_dir_content2};
 
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
@@ -22,6 +22,15 @@ pub struct VolumeData {
 #[ts(export)]
 pub struct VolumeResponse {
     pub volumes: Vec<VolumeData>,
+}
+
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct VolumeExplorerResponse {
+    pub current_folder: Option<String>,
+    pub directories: Vec<String>,
+    pub files: Vec<String>,
 }
 
 // Define the static HashMap inside a lazy_static block
@@ -109,7 +118,7 @@ pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
         mountpoint: volume.mountpoint.clone(),
         size: get_volume_size(volume),
     };
-
+    
     Some(Json(volume_data))
 }
 
@@ -125,4 +134,44 @@ pub async fn delete_volume(name: &str) -> &'static str {
     let _ = docker.remove_volume(name, options).await;
 
     "Volume deleted."
+}
+ 
+#[get("/volume/<volume_name>/filesystem/<current_folder>")]
+pub async fn volume_explorer_handler(volume_name: String, current_folder: Option<String>) -> Json<VolumeExplorerResponse>
+{
+    let docker = Docker::connect_with_local_defaults().unwrap();
+    let volume = docker.inspect_volume(&volume_name).await.unwrap();
+    println!("Volume: {:?}", volume);
+
+    let folder = "/rootfs/var/lib/docker/volumes/".to_string();
+    let initial_folder = format!("{folder}{volume_name}", folder = folder, volume_name = volume_name);
+    println!("Initial folder: {}", initial_folder);
+
+    if current_folder.is_none() {
+        let current_folder = initial_folder.clone();
+    } else {
+        let current_folder = format!("{folder}{current_folder}", folder = folder, current_folder = current_folder.clone().unwrap());
+    }
+
+    let mut options = DirOptions::new();
+    let dir_content = get_dir_content2(current_folder.clone().unwrap(), &options);
+
+    let dir_folder = dir_content.as_ref().unwrap().directories.clone();
+    let dir_files = dir_content.as_ref().unwrap().files.clone();
+
+    let content = VolumeExplorerResponse {
+        current_folder: current_folder,
+        directories: dir_folder,
+        files: dir_files,
+    };
+
+    for directory in dir_content.as_ref().unwrap().directories.clone() {
+        println!("{}", directory); // print directory path
+    }
+    for file in dir_content.unwrap().files {
+        println!("{}", file); // print file path
+    }
+
+    Json(content)
+
 }
