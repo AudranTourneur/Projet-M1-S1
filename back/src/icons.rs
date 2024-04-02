@@ -112,3 +112,32 @@ pub async fn spawn_info_service() {
         // break;
     }
 }
+
+
+async fn resolve_icon_url_from_image_name(image: String) -> Option<String> {
+    None
+    // let db_res = sqlx::query("SELECT docker_hub_response FROM images WHERE image_name = ?")
+    //     .bind(image)
+    //     .fetch_all(&mut conn)
+    //     .await
+    //     .unwrap();
+
+    // if db_res.len() == 0 {
+    //     return None;
+    // }
+
+    // let db_res = db_res[0];
+
+    // let text = db_res.get::<String, _>("docker_hub_response");
+
+    // let pattern = "\\[!logo\\]\\((.*)\\)";
+
+    // let re = Regex::new(pattern).unwrap();
+
+    // let caps = re.captures(text);
+
+    // if caps.is_none() {
+    //     return None;
+    // }
+
+}

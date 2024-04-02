@@ -141,6 +141,13 @@ pub async fn delete_volume(name: &str) -> &'static str {
 
     "Volume deleted."
 }
+
+fn remove_prefix_from_path(path: &str, prefix: &str) -> String {
+    if path.starts_with(prefix) {
+        return path[prefix.len()..].to_string();
+    }
+    path.to_string()
+}
  
 #[get("/volume/<volume_name>/filesystem/<current_folder>")]
 pub async fn volume_explorer_handler(volume_name: String, current_folder: Option<String>) -> Json<VolumeExplorerResponse>
@@ -149,34 +156,53 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     let volume = docker.inspect_volume(&volume_name).await.unwrap();
     println!("Volume: {:?}", volume);
 
-    let folder = "/rootfs/var/lib/docker/volumes/".to_string();
-    let initial_folder = format!("{folder}{volume_name}", folder = folder, volume_name = volume_name);
+    let root_folder = "/rootfs/var/lib/docker/volumes/";
+    let initial_folder = format!("{}{}", root_folder, volume_name);
     println!("Initial folder: {}", initial_folder);
 
-    if current_folder.is_none() {
-        let status_folder = initial_folder.clone();
-    } else {
-        let status_folder = format!("{folder}{current_folder}", folder = folder, current_folder = current_folder.clone().unwrap());
-    }
+    let options = DirOptions::new();
 
-    let mut options = DirOptions::new();
-    let dir_content = get_dir_content2(current_folder.clone().unwrap(), &options);
+    let full_path = format!("{}/{}", initial_folder, current_folder.clone().unwrap_or("".to_string()));
 
-    let dir_folder = dir_content.as_ref().unwrap().directories.clone();
-    let dir_files = dir_content.as_ref().unwrap().files.clone();
+    let dir_content = get_dir_content2(full_path, &options);
+
+    let dir_content = match dir_content {
+        Ok(content) => content,
+        Err(_) => {
+            println!("Error reading directory content");
+            return Json(VolumeExplorerResponse {
+                current_folder: "".to_string(),
+                directories: vec![],
+                files: vec![],
+            });
+        },
+    };
+
+    println!("aaaaaaaaaaa");
+
+    let dir_folders = dir_content.directories;
+    let dir_files = dir_content.files;
+
+    println!("Folders: {:?}", dir_folders);
+    println!("Files: {:?}", dir_files);
+
+    println!("bbbbbbbbbb");
 
     let content = VolumeExplorerResponse {
-        current_folder: to_base64_url(current_folder.unwrap().as_str()),
-        directories: dir_folder,
+        current_folder: current_folder.unwrap_or("".into()),
+        directories: dir_folders,
         files: dir_files,
     };
 
-    for directory in dir_content.as_ref().unwrap().directories.clone() {
-        println!("{}", directory); // print directory path
-    }
-    for file in dir_content.unwrap().files {
-        println!("{}", file); // print file path
-    }
+    println!("cccccccccc");
+
+
+    // for directory in dir_folders {
+    //     println!("{}", directory); // print directory path
+    // }
+    // for file in dir_files {
+    //     println!("{}", file); // print file path
+    // }
 
     Json(content)
 
