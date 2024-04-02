@@ -1,23 +1,30 @@
-use rocket::serde::{self, json::Json};
-use serde::{Deserialize, Serialize};
+use rocket::serde::{self};
+use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
 use crate::containers::{get_all_containers, Container};
 
+use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 
-#[derive(Serialize, Deserialize, TS)]
+
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ComposeData {
-    pub name: String,
+    pub file_path: String,
+    pub id: String,
     pub containers: Vec<Container>,
 }
 
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ComposeList {
     pub composes: Vec<ComposeData>,
+}
+
+fn to_base64_url(data: &str) -> String {
+    URL_SAFE.encode(data.as_bytes())
 }
 
 pub async fn get_all_composes() -> ComposeList {
@@ -37,7 +44,7 @@ pub async fn get_all_composes() -> ComposeList {
         let compose = compose_data
             .composes
             .iter_mut()
-            .find(|compose| compose.name == *name.clone());
+            .find(|compose| compose.file_path == *name.clone());
 
         match compose {
             Some(compose) => {
@@ -45,7 +52,8 @@ pub async fn get_all_composes() -> ComposeList {
             }
             None => {
                 let new_compose = ComposeData {
-                    name: name.clone(),
+                    file_path: name.clone(),
+                    id: to_base64_url(name),
                     containers: vec![container.clone()],
                 };
                 compose_data.composes.push(new_compose);
@@ -61,4 +69,17 @@ pub async fn composes_handler() -> Json<ComposeList> {
     let listed_composes = get_all_composes().await;
 
     Json(listed_composes)
+}
+
+#[get("/composes/<id>")]
+pub async fn compose_handler(id: String) -> Json<ComposeData> {
+    let listed_composes = get_all_composes().await;
+
+    let compose = listed_composes
+        .composes
+        .iter()
+        .find(|compose| compose.id == id)
+        .unwrap();
+
+    Json(compose.clone())
 }

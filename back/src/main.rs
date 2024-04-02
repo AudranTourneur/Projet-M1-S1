@@ -51,6 +51,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             topology::topology_handler,
             topology::topology_save_handler,
             composes::composes_handler,
+            composes::compose_handler,
         ],
     )
 }
