@@ -1,10 +1,12 @@
+use bollard::container::{Config, CreateContainerOptions};
 use bollard::image::CreateImageOptions;
 use bollard::Docker;
 use futures::StreamExt;
 use rocket::serde::json::Json;
+use crate::docker::get_docker_socket;
 use crate::images::models::{HistoryResponse, ImageData, ImagePullRequest};
 use super::common::get_all_images;
-use super::models::ImageList;
+use super::models::{ImageCreateContainerRequest, ImageList};
 
 #[get("/images")]
 pub async fn images_handler() -> Json<ImageList> {
@@ -68,6 +70,39 @@ pub async fn pull_image_handler(input: Json<ImagePullRequest>) -> &'static str {
     }
 
     "Success."
+}
+
+#[post("/images/create-container", data = "<input>")]
+pub async fn create_container_from_image_handler(input: Json<ImageCreateContainerRequest>) -> Json<bool> {
+    let docker: Docker = get_docker_socket();
+
+    let user_image_name = input.image_name.clone();
+    let user_container_name = input.container_name.clone();
+
+    let create_options = match user_container_name {
+        Some(container_name) => Some(
+            CreateContainerOptions {
+                name: container_name,
+                ..Default::default()
+            }
+        ),
+        None => None,
+    };
+
+    let res = docker.create_container(create_options,
+        Config {
+            image: Some(user_image_name),
+            ..Default::default()
+        }
+    ).await;
+
+    match res {
+        Ok(_) => {
+            println!("Container created successfully {:?}", res);
+            Json(true)
+        },
+        Err(_) => Json(false),
+    }
 }
 
 

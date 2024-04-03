@@ -3,6 +3,7 @@ use ts_rs::TS;
 
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct HistoryResponse {
     pub id: String,
     pub created: i64,
@@ -31,7 +32,15 @@ pub struct ImageList {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ImagePullRequest {
     pub id: String,
 }
 
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ImageCreateContainerRequest {
+    pub image_name: String,
+    pub container_name: Option<String>,
+}
