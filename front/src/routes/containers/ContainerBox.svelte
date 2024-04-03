@@ -13,10 +13,10 @@
 		faStop
 	} from '@fortawesome/free-solid-svg-icons';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import type { Container } from '$lib/types/Container';
+	import type { ContainerData } from '$lib/types/ContainerData';
 	import Tooltip from '../../components/Tooltip.svelte';
 
-	export let container: Container;
+	export let container: ContainerData;
 
 	// console.log('Container', container);
 

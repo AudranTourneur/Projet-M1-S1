@@ -1,10 +1,10 @@
 import type { PageServerLoad } from './$types';
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { Image } from '$lib/types/Image';
+import type { ImageData } from '$lib/types/ImageData';
 
 export const load: PageServerLoad = async ({params}) => {
     const {id} = params;
     const serverResponse = await fetch(PUBLIC_API_URL + '/image/' + id);
-    const res = await serverResponse.json() as Image;
+    const res = await serverResponse.json() as ImageData;
     return res
 };
