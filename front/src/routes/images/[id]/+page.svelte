@@ -12,6 +12,14 @@
 	onMount(() => {
 		console.log('todo');
 	});
+
+
+	async function CreateNewContainer() {
+		const res = await fetch('/images/' + data.id + '/api/create-container', {
+			method: 'POST',
+		})
+		console.log(res)
+	}
 </script>
 
 <div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg overflow-auto">
@@ -31,6 +39,12 @@
 		Size :{formatBytes(image.size)}
 	</div>
 	<div class="flex justify-end">
+		<button
+			class="btn variant-ghost-success p-2"
+			on:click={CreateNewContainer}>
+			Create a New Container
+		</button>
+
 		<a href="/images/{image.id}">
 			<button class="bg-blue-500 text-white px-4 py-2 rounded mr-2"> Info </button>
 		</a>
