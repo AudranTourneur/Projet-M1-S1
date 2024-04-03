@@ -17,6 +17,7 @@
 	import Tooltip from '../../components/Tooltip.svelte';
 
 	export let container: ContainerData;
+	export let refresh: () => void;
 
 	// console.log('Container', container);
 
@@ -28,6 +29,7 @@
 				'Content-Type': 'application/json'
 			}
 		});
+		refresh();
 	};
 
 	const stopContainer = async () => {
@@ -38,6 +40,7 @@
 				'Content-Type': 'application/json'
 			}
 		});
+		refresh();
 	};
 
 	let isIdCopied = false;
