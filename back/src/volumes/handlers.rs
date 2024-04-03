@@ -1,10 +1,12 @@
+use std::str::from_utf8;
+
 use rocket::serde::json::Json;
 use bollard::volume::RemoveVolumeOptions;
 use fs_extra::dir::{DirOptions, get_dir_content2};
 
 use crate::{docker::get_docker_socket, volumes::models::VolumeExplorerData};
 
-use super::{common::get_volume_size, models::{VolumeData, VolumeList}};
+use super::{common::{get_volume_size, _from_base64_url}, models::{VolumeData, VolumeList}};
 
 #[get("/volumes")]
 pub async fn volumes_handler() -> Json<VolumeList> {
@@ -87,11 +89,19 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     let root_folder = "/rootfs/var/lib/docker/volumes/";
     let initial_folder = format!("{}{}", root_folder, volume_name);
     println!("Initial folder: {}", initial_folder);
+    
+    //- 
+    println!("Current folder: {:?}", current_folder.clone().unwrap_or("".to_string())); //Lw
+
+    let decoded_u8 = _from_base64_url(&current_folder.clone().unwrap_or("".to_string()));
+    let decoded = from_utf8(&decoded_u8).unwrap();
+    println!("Decoded: {:?}", decoded);
+
+    let full_path = format!("{}{}", initial_folder, decoded);
+
+    println!("Full path: {}", full_path);
 
     let options = DirOptions::new();
-
-    let full_path = format!("{}/{}", initial_folder, current_folder.clone().unwrap_or("".to_string()));
-
     let dir_content = get_dir_content2(full_path, &options);
 
     let dir_content = match dir_content {
@@ -117,20 +127,12 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     println!("bbbbbbbbbb");
 
     let content = VolumeExplorerData {
-        current_folder: current_folder.unwrap_or("".into()),
+        current_folder: decoded.to_string(),
         directories: dir_folders,
         files: dir_files,
     };
 
     println!("cccccccccc");
-
-
-    // for directory in dir_folders {
-    //     println!("{}", directory); // print directory path
-    // }
-    // for file in dir_files {
-    //     println!("{}", file); // print file path
-    // }
 
     Json(Some(content))
 

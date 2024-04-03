@@ -136,6 +136,5 @@
 <div>
     <h2>Filesystem</h2>
     <FileExplorer {id}>
-
     </FileExplorer>
 </div>
