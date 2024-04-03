@@ -1,22 +1,32 @@
 <script lang="ts">
-import {onMount} from "svelte";
-import {Base64} from "js-base64";
+	import { onMount } from 'svelte';
+	import { Base64 } from 'js-base64';
 
-export let id : string;
-let path = "/";
-let files = [];
-let directories = [];
+	export let id: string;
+	let path = '/';
+	let files: any[] = [];
+	let directories: any[] = [];
 
-onMount(async () => {
-    const response = await fetch(`/volumes/${id}/filesystem/${Base64.encodeURI(path)}/api`);
-    const res = await response.json();
-    console.log(res);
-})
+	let res;
 
-
-
+	onMount(async () => {
+		let response = await fetch(`/volumes/${id}/filesystem/${Base64.encodeURI(path)}/api`);
+		res = await response.json();
+		files = res.files;
+		directories = res.directories;
+		console.log(res);
+	});
 </script>
 
-<!-- {#each files as file}
-    <div>{file.name}</div>
-{/each} -->
+{#if res}
+<div>
+	{#each directories as directory}
+		<div>DIR {directory}</div>
+	{/each}
+	{#each files as file}
+		<div>FILE {file}</div>
+	{/each}
+</div>
+{:else}
+Loading...
+{/if}
