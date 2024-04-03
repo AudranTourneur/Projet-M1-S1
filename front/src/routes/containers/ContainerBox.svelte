@@ -19,7 +19,22 @@
 	export let container: ContainerData;
 	export let refresh: () => void;
 
-	// console.log('Container', container);
+	function concatenatePortConfigurations(configurations : ContainerData['ports']) {
+		if (configurations.length === 0) {
+			return "-";
+		}
+		const concatenatedPorts = {};
+		configurations.forEach(config => {
+			if (config.publicPort !== null) {
+				const key = `${config.publicPort}:${config.privatePort}`;
+				// Check if the entry exists already for IPv4 or IPv6
+				if (!(key in concatenatedPorts)) {
+					concatenatedPorts[key] = true;
+				}
+			}
+		});
+		return Object.keys(concatenatedPorts).join(', ');
+	}
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
@@ -110,12 +125,10 @@
 		</Tooltip>
 		<Tooltip
 			class="chip variant-soft overflow-hidden px-1.5 lg:px-2.5"
-			tooltipText={`Ports: ${
-				container.ports.length === 0 ? ' - ' : container.ports.map((port) => port.publicPort).join(', ')
-			}`}>
+			tooltipText={`Ports: ${concatenatePortConfigurations(container.ports)}`}>
 			<Fa icon={faPlug} />
 			<span class="text-ellipsis overflow-hidden">
-				{container.ports.length === 0 ? ' - ' : container.ports.map((port) => port.publicPort).join(', ')}
+				{concatenatePortConfigurations(container.ports)}
 			</span>
 		</Tooltip>
 		<Tooltip
