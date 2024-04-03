@@ -47,7 +47,7 @@ pub fn get_volume_size(vol: Volume) -> u64 {
     size
 }
 
-fn _remove_prefix_from_path(path: &str, prefix: &str) -> String {
+pub fn remove_prefix_from_path(path: String, prefix: &str) -> String {
     if path.starts_with(prefix) {
         return path[prefix.len()..].to_string();
     }

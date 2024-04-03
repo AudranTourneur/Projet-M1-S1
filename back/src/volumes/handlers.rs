@@ -4,7 +4,7 @@ use rocket::serde::json::Json;
 use bollard::volume::RemoveVolumeOptions;
 use fs_extra::dir::{DirOptions, get_dir_content2};
 
-use crate::{docker::get_docker_socket, volumes::models::VolumeExplorerData};
+use crate::{docker::get_docker_socket, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}};
 
 use super::{common::{get_volume_size, _from_base64_url}, models::{VolumeData, VolumeList}};
 
@@ -86,7 +86,8 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     };
     println!("Volume: {:?}", volume);
 
-    let root_folder = "/rootfs/var/lib/docker/volumes/";
+    let root_folder_without_slash = "/rootfs/var/lib/docker/volumes";
+    let root_folder = format!("{}/", root_folder_without_slash);
     let initial_folder = format!("{}{}", root_folder, volume_name);
     println!("Initial folder: {}", initial_folder);
     
@@ -101,7 +102,9 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
 
     println!("Full path: {}", full_path);
 
-    let options = DirOptions::new();
+    let options = DirOptions {
+        depth: 1,
+    };
     let dir_content = get_dir_content2(full_path, &options);
 
     let dir_content = match dir_content {
@@ -118,8 +121,15 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
 
     println!("aaaaaaaaaaa");
 
-    let dir_folders = dir_content.directories;
-    let dir_files = dir_content.files;
+    
+    // let prefix = format!("{}")
+
+    let dir_folders = dir_content.directories.into_iter().map(|x| {
+        remove_prefix_from_path(x, root_folder_without_slash)
+    }).collect();
+    let dir_files = dir_content.files.into_iter().map(|x| {
+        remove_prefix_from_path(x, root_folder_without_slash)
+    }).collect();
 
     println!("Folders: {:?}", dir_folders);
     println!("Files: {:?}", dir_files);
