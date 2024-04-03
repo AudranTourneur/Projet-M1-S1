@@ -43,6 +43,7 @@ services:
       - "./back/src:/app/src"
       - "./back/bindings:/app/bindings"
       - "./sqlite_db:/app/sqlite"
+      - ./Caddyfile:/etc/caddy/Caddyfile
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro
 

@@ -11,7 +11,10 @@
 		faImages,
 		faLayerGroup,
 		faNetworkWired,
-		faCircleNodes
+		faCircleNodes,
+
+		faGlobe
+
 	} from '@fortawesome/free-solid-svg-icons';
 
 	const drawerStore = getDrawerStore();
@@ -29,6 +32,7 @@
 		{ icon: faCoins, text: 'Volumes', href: '/volumes' },
 		{ icon: faNetworkWired, text: 'Networks', href: '/networks' },
 		{ icon: faCircleNodes, text: 'Topology', href: '/topology' },
+		{ icon: faGlobe, text: 'DNS', href: '/dns' },
 		{ icon: faCog, text: 'Settings', href: '/settings' }
 	];
 </script>

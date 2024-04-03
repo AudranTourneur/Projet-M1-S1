@@ -5,8 +5,12 @@
 	import { onMount } from 'svelte';
 	import LineChartBytes from '../../../components/LineChartBytes.svelte';
 	import type { ContainerStatisticsRow } from '$lib/types/ContainerStatisticsRow.js';
+	import { Port } from '$lib/Port';
+	import PortsBox from './PortsBox.svelte';
 
 	export let data;
+
+	const container = data;
 
 	let inputData: null | Array<[number, number]> = null;
 
@@ -64,4 +68,10 @@
 		<span class="font-bold">Ports used :</span>
 		<span>{data.volumes}</span>
 	</div>
+</div>
+
+
+<div>
+	<br>
+	<PortsBox {container}></PortsBox>
 </div>

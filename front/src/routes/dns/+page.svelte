@@ -7,6 +7,6 @@
 <div>DNS</div>
 
 {#each dns as record}
-    {record.domainName
+    {record.domainName}
     {record.reverseProxyPort}
 {/each}
