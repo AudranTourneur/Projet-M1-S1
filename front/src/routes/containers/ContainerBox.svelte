@@ -6,6 +6,7 @@
 		faCircleNotch,
 		faCoins,
 		faCopy,
+		faCube,
 		faEllipsisVertical,
 		faGear,
 		faNetworkWired,
@@ -19,12 +20,14 @@
 	export let container: ContainerData;
 	export let refresh: () => void;
 
-	function concatenatePortConfigurations(configurations : ContainerData['ports']) {
+	console.log(container);
+
+	function concatenatePortConfigurations(configurations: ContainerData['ports']) {
 		if (configurations.length === 0) {
-			return "-";
+			return '-';
 		}
 		const concatenatedPorts = {};
-		configurations.forEach(config => {
+		configurations.forEach((config) => {
 			if (config.publicPort !== null) {
 				const key = `${config.publicPort}:${config.privatePort}`;
 				// Check if the entry exists already for IPv4 or IPv6
@@ -33,7 +36,8 @@
 				}
 			}
 		});
-		return Object.keys(concatenatedPorts).join(', ');
+		// return the keys of the concatenatedPorts object and sort them to have a consistent order
+		return Object.keys(concatenatedPorts).sort().join(', ');
 	}
 
 	let isLoadingStart = false;
@@ -57,6 +61,9 @@
 		refresh();
 	};
 
+	// TODO: Remove this when the backend is fixed
+	container.iconUrl = Math.random() > 0.7 ? null : container.iconUrl;
+
 	let isIdCopied = false;
 	let isNameCopied = false;
 	const copyToClipboardId = () => {
@@ -74,13 +81,20 @@
 <div
 	class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4 flex justify-between items-center gap-2">
 	<div class="flex items-center gap-2 md:gap-4">
-		<Tooltip tooltipText={container.status}>
-			{#if container.isRunning}
-				<Fa icon={faGear} class="text-success-500 animate-spin text-2xl" style="animation-duration: 4s;" />
+		<div class="flex flex-col items-center gap-2 w-6">
+			{#if container.iconUrl}
+				<img src={container.iconUrl} alt={container.image} class="w-6 h-6" />
 			{:else}
-				<Fa icon={faGear} class="text-error-400 text-2xl" />
+				<Fa icon={faCube} class="text-surface-300-600-token text-xl" />
 			{/if}
-		</Tooltip>
+			<Tooltip tooltipText={container.status}>
+				{#if container.isRunning}
+					<Fa icon={faGear} class="text-success-500 animate-spin text-xl" style="animation-duration: 4s;" />
+				{:else}
+					<Fa icon={faGear} class="text-error-400 text-xl" />
+				{/if}
+			</Tooltip>
+		</div>
 		<div class="flex flex-col w-36">
 			<div class="font-bold copy-to-clipboard">
 				{#if container.names[0].length < 15}
