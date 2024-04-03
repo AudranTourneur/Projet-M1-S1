@@ -19,6 +19,7 @@ mod ports;
 mod sqlitedb;
 mod icons;
 mod composes;
+mod dns;
 
 #[macro_use]
 extern crate rocket;
@@ -32,6 +33,8 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             topology::topology_save_handler,
             composes::composes_handler,
             composes::compose_handler,
+            dns::dns_list_handler,
+            dns::dns_upsert_handler,
         ];
 
     let images_handlers = images::register::get_all_image_handlers();

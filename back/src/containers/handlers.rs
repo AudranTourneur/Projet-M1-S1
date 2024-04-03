@@ -1,8 +1,12 @@
+use std::collections::HashMap;
+
+use bollard::secret::{HostConfig, PortBinding};
 use bollard::{container::StartContainerOptions, Docker};
-use bollard::container::{RemoveContainerOptions, StopContainerOptions};
+use bollard::container::{Config, CreateContainerOptions, InspectContainerOptions, RemoveContainerOptions, StopContainerOptions};
 use rocket::response::stream::TextStream;
 use rocket::serde::json::Json;
 
+use crate::containers::models::ContainerPortRebindRequest;
 use crate::docker::get_docker_socket;
 
 use super::common::{get_all_containers, get_container_by_id};
@@ -56,11 +60,6 @@ pub async fn delete_container(id: &str) -> &'static str {
     "Success."
 }
 
-#[post("/containers/<id>/rebind-ports")]
-pub async fn rebind_ports_handler(id: &str) -> String {
-    format!("WIP {}", id)
-}
-
 #[get("/containers/<id>/filesystem")]
 pub async fn container_filesystem_handler(id: &str) -> String {
     format!("WIP {}", id)
@@ -111,3 +110,100 @@ pub async fn containers_handler() -> Json<ContainerList> {
     Json(res)
 }
 
+
+#[post("/containers/<id>/rebind-ports", data = "<input>")]
+pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &str) -> Json<bool>{
+    let docker: Docker = get_docker_socket();
+
+    let res = docker.inspect_container(id, Some(
+        InspectContainerOptions{
+            size: false,}
+    )).await;
+
+    let res = match res {
+        Ok(res) => res,
+        Err(_) => return Json(false)
+    };
+
+    let rep = docker.stop_container(id, Some(
+        StopContainerOptions{
+            t: 1,
+        })
+    ).await;
+    match rep {
+        Ok(_) => (),
+        Err(_) => return Json(false),
+    };
+
+    
+    let rep = docker.remove_container(id, Some(
+        RemoveContainerOptions{
+            force: true,
+            ..Default::default()
+        })
+    ).await;
+    match rep {
+        Ok(_) => (),
+        Err(_) => return Json(false),
+    };
+
+    let create_options = match res.name {
+        Some(container_name) => Some(
+            CreateContainerOptions {
+                name: container_name,
+                ..Default::default()
+            }
+        ),
+        None => None,
+    };
+
+    let image_name = res.image;
+
+    /*
+    let host_config = HostConfig {
+        port_bindings: Some(HashMap::from([
+            ("8080".into(), Some(vec![PortBinding { 
+                host_ip: Some("0.0.0.0".into()), 
+                host_port: Some("80".into()), 
+            }])) 
+        ])),
+        ..Default::default()
+    };
+    */
+
+let port_bindings = Some(input.ports.clone().into_iter().map(|p| {
+        let port_binding = PortBinding {
+            host_ip: Some("0.0.0.0".into()),
+            host_port: Some(p.internal.to_string()),
+        };
+
+        (p.internal.to_string(), Some(vec![port_binding]))
+    }).map(|chunk| (chunk.0, chunk.1))
+        .collect::<HashMap<_, _>>());
+
+
+    let host_config = HostConfig {
+        port_bindings,
+        ..Default::default()
+    };
+
+    let cfg = Config {
+        image: image_name,
+        host_config: Some(host_config),
+        ..Default::default()
+    };
+
+    let rep = docker.create_container(create_options, cfg).await;
+    match rep {
+        Ok(_) => (),
+        Err(_) => return Json(false),
+    };
+
+    let rep = docker.start_container(id, None::<StartContainerOptions<String>>).await;
+    match rep {
+        Ok(_) => (),
+        Err(_) => return Json(false),
+    };
+
+    Json(true)
+}
