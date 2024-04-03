@@ -11,6 +11,7 @@ use crate::containers::{common::get_all_containers, models::ContainerData};
 #[ts(export)]
 pub struct ComposeData {
     pub file_path: String,
+    pub file_content: String,
     pub id: String,
     pub containers: Vec<ContainerData>,
 }
@@ -51,6 +52,8 @@ pub async fn get_all_composes() -> ComposeList {
             .iter_mut()
             .find(|compose| compose.file_path == *name.clone());
 
+        let file_content = std::fs::read_to_string(format!("/rootfs/{}", name.clone())).unwrap();
+
         match compose {
             Some(compose) => {
                 compose.containers.push(container.clone());
@@ -60,6 +63,7 @@ pub async fn get_all_composes() -> ComposeList {
                     file_path: name.clone(),
                     id: to_base64_url(name),
                     containers: vec![container.clone()],
+                    file_content,
                 };
                 compose_data.composes.push(new_compose);
             }

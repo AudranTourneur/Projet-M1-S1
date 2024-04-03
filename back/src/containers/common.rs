@@ -105,7 +105,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let is_running: bool = status.starts_with("Up");
 
     let container_data = ContainerData {
-        icon_url: None,
+        icon_url: "https://raw.githubusercontent.com/docker-library/docs/2ac3caaf21dfba9734f20518971983edc617c77c/ubuntu/logo.png",
         id: container.id.clone().unwrap_or("".into()),
         names: container.names.clone().unwrap_or(vec![]),
         image: container.image.clone().unwrap_or("".into()),
