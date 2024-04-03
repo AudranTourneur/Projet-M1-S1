@@ -3,3 +3,5 @@
 
 clickhouse_db
 sqlite_db
+caddy_config
+caddy_data
