@@ -3,6 +3,7 @@
 	import { Fa } from 'svelte-fa';
 	import {
 		faCheck,
+		faCircleNotch,
 		faCoins,
 		faCopy,
 		faEllipsisVertical,
@@ -12,7 +13,6 @@
 		faPlug,
 		faStop
 	} from '@fortawesome/free-solid-svg-icons';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import type { ContainerData } from '$lib/types/ContainerData';
 	import Tooltip from '../../components/Tooltip.svelte';
 
@@ -21,25 +21,24 @@
 
 	// console.log('Container', container);
 
+	let isLoadingStart = false;
+	let isLoadingStop = false;
+
 	const startContainer = async () => {
-		await fetch(`${PUBLIC_API_URL}/container/${container.id}/start`, {
-			method: 'POST',
-			mode: 'no-cors',
-			headers: {
-				'Content-Type': 'application/json'
-			}
+		isLoadingStart = true;
+		await fetch(`/containers/${container.id}/api/start`, {
+			method: 'POST'
 		});
+		isLoadingStart = false;
 		refresh();
 	};
 
 	const stopContainer = async () => {
-		await fetch(`${PUBLIC_API_URL}/container/${container.id}/stop`, {
-			method: 'POST',
-			mode: 'no-cors',
-			headers: {
-				'Content-Type': 'application/json'
-			}
+		isLoadingStop = true;
+		await fetch(`/containers/${container.id}/api/stop`, {
+			method: 'POST'
 		});
+		isLoadingStop = false;
 		refresh();
 	};
 
@@ -129,11 +128,17 @@
 		</Tooltip>
 	</div>
 	<div class="flex gap-1">
-		<button class="btn variant-ghost-success p-2" disabled={container.isRunning} on:click={startContainer}>
-			<Fa icon={faPlay} fw />
+		<button
+			class="btn variant-ghost-success p-2"
+			disabled={container.isRunning || isLoadingStart}
+			on:click={startContainer}>
+			<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
 		</button>
-		<button class="btn variant-ghost-error p-2" disabled={!container.isRunning} on:click={stopContainer}>
-			<Fa icon={faStop} fw />
+		<button
+			class="btn variant-ghost-error p-2"
+			disabled={!container.isRunning || isLoadingStop}
+			on:click={stopContainer}>
+			<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
 		</button>
 		<a href="/containers/{container.id}" class="btn variant-ghost p-2">
 			<Fa icon={faEllipsisVertical} fw />
