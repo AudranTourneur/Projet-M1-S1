@@ -1,17 +1,17 @@
 use std::str::from_utf8;
-
+use std::collections::HashSet;
+use std::collections::HashMap;
 use rocket::serde::json::Json;
 use bollard::volume::RemoveVolumeOptions;
-use fs_extra::dir::{DirOptions, get_dir_content2};
+use fs_extra::dir::{DirOptions, DirEntryAttr, DirEntryValue, get_details_entry, get_dir_content2};
 
 use crate::{docker::get_docker_socket, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}};
 
-use super::{common::{get_volume_size, _from_base64_url}, models::{VolumeData, VolumeList}};
+use super::{common::{get_volume_size, _from_base64_url}, models::{VolumeData, VolumeList, FileData}};
 
 #[get("/volumes")]
 pub async fn volumes_handler() -> Json<VolumeList> {
     let docker = get_docker_socket();
-
     let volumes = docker.list_volumes::<String>(None).await.unwrap();
 
     let volumes = volumes.volumes;
@@ -91,8 +91,7 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     let initial_folder = format!("{}{}", root_folder, volume_name);
     println!("Initial folder: {}", initial_folder);
     
-    //- 
-    println!("Current folder: {:?}", current_folder.clone().unwrap_or("".to_string())); //Lw
+    println!("Current folder: {:?}", current_folder.clone().unwrap_or("".to_string()));
 
     let decoded_u8 = _from_base64_url(&current_folder.clone().unwrap_or("".to_string()));
     let decoded = from_utf8(&decoded_u8).unwrap();
@@ -105,7 +104,7 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
     let options = DirOptions {
         depth: 1,
     };
-    let dir_content = get_dir_content2(full_path, &options);
+    let dir_content = get_dir_content2(full_path.clone(), &options);
 
     let dir_content = match dir_content {
         Ok(content) => content,
@@ -121,18 +120,18 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
 
     println!("aaaaaaaaaaa");
 
-    
-    // let prefix = format!("{}")
-
-    let dir_folders = dir_content.directories.into_iter().map(|x| {
+    let dir_folders : Vec<String> = dir_content.directories.into_iter().map(|x| {
         remove_prefix_from_path(x, root_folder_without_slash)
     }).collect();
-    let dir_files = dir_content.files.into_iter().map(|x| {
+    let dir_files : Vec<String> =  dir_content.files.into_iter().map(|x| {
         remove_prefix_from_path(x, root_folder_without_slash)
     }).collect();
 
-    println!("Folders: {:?}", dir_folders);
-    println!("Files: {:?}", dir_files);
+    println!("Folders: {:?}", dir_folders.clone());
+    println!("Files: {:?}", dir_files.clone());
+
+    let dir_folders = details_fdir(dir_folders, full_path.clone(), root_folder_without_slash);
+    let dir_files = details_fdir(dir_files, full_path, root_folder_without_slash);
 
     println!("bbbbbbbbbb");
 
@@ -146,4 +145,58 @@ pub async fn volume_explorer_handler(volume_name: String, current_folder: Option
 
     Json(Some(content))
 
+}
+
+
+fn extract_value(val: &DirEntryValue) -> String {
+    match val {
+        DirEntryValue::String(s) => s.into(),
+        DirEntryValue::Boolean(b) => b.to_string(),
+        DirEntryValue::SystemTime(_) => "...".into(),
+        DirEntryValue::U64(u) => u.to_string(),
+    }
+}
+
+fn details_fdir(dir_folders : Vec<String>, full_path : String, root_folder_without_slash : &str) -> Vec<FileData> {
+
+    let folder_data : Vec<Option<FileData>> = dir_folders.iter().map(|x| {
+        println!("full path {}",full_path.clone());
+        let tmp = format!("{}{}", root_folder_without_slash.clone(), x.clone());
+        println!("{}",tmp);
+
+        let mut config = HashSet::new();
+            config.insert(DirEntryAttr::Name);
+            config.insert(DirEntryAttr::Size);
+            config.insert(DirEntryAttr::BaseInfo);
+        
+        let res = get_details_entry(tmp.clone(), &config);
+
+        let res = match res {
+            Ok(res) =>  res,
+            Err(e) => {
+                println!("Unlucky :c | {:?} | attepting to read {}", e, tmp.clone());
+                return None;
+            }
+        };
+
+        let name = res.get(&DirEntryAttr::Name).unwrap();
+        let name = extract_value(name);
+        println!("NAME = {}", name);
+
+        let size = res.get(&DirEntryAttr::Size).unwrap();
+        let size = extract_value(size);
+        println!("SIZE = {}", size);
+
+        let file_data = FileData {
+            name : name,
+            size : size,
+        };
+
+        Some(file_data)
+
+    }).collect();
+
+    let res = folder_data.into_iter().filter_map(|e|e).collect();
+    
+    res
 }

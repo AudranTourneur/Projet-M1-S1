@@ -23,6 +23,22 @@ pub struct VolumeList {
 #[ts(export)]
 pub struct VolumeExplorerData {
     pub current_folder: String,
-    pub directories: Vec<String>,
-    pub files: Vec<String>,
+    //pub directories : Vec<String>,
+    //pub files : Vec<String>,
+    pub directories: Vec<FileData>,
+    pub files: Vec<FileData>,
+}
+
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct FileData {
+    pub name : String,
+    pub size : String,
+    //pub name64 : String,
+    /* pub creation_time : String,
+    pub permissions : String,
+    pub owner : String,
+    pub group : String,
+    pub isDirectory : String, */
 }
