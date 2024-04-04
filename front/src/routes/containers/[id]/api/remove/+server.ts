@@ -3,9 +3,9 @@ import { PUBLIC_API_URL } from '$env/static/public';
 
 export const POST: RequestHandler = async ({ params, fetch }) => {
 	const { id } = params;
-	const res = await fetch(`${PUBLIC_API_URL}/containers/${id}/rebind-ports`, {
+	const res = await fetch(`${PUBLIC_API_URL}/containers/${id}/remove`, {
 		method: 'POST'
 	});
-	return json(await res.json())
+    return json(await res.json())
 };
 

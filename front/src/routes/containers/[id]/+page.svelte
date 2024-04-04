@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { formatBytes } from '$lib/FormatUtils.js';
 	import type { ContainerStatsResponse } from '$lib/types/ContainerStatsResponse';
 	import { onMount } from 'svelte';
 	import LineChartBytes from '../../../components/LineChartBytes.svelte';
 	import type { ContainerStatisticsRow } from '$lib/types/ContainerStatisticsRow.js';
-	import { Port } from '$lib/Port';
 	import PortsBox from './PortsBox.svelte';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -29,6 +28,14 @@
 
 		inputData = generateDayWiseTimeSeries(statsRes.stats)
 	});
+
+	async function removeContainer() {
+		const serverResponse = await fetch('/containers/' + $page.params.id + '/api/remove', {
+			method: 'POST'
+		});
+		console.log(serverResponse);
+		goto('/containers');
+	}
 </script>
 
 {#if inputData}
@@ -54,7 +61,7 @@
 	</div>
 	<div class="flex justify-between items-center mb-2">
 		<span class="font-bold">Date of creation :</span>
-		<span>{data.network}</span>
+		<span>{data.networks}</span>
 	</div>
 	<div class="flex justify-between items-center mb-2">
 		{#each data.ports as port}
@@ -70,6 +77,7 @@
 	</div>
 </div>
 
+<button class="btn variant-ghost-error" on:click={removeContainer}>Delete container</button>
 
 <div>
 	<br>

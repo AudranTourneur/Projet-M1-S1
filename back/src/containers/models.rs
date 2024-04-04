@@ -36,7 +36,6 @@ pub struct ContainerData {
     pub labels: Option<std::collections::HashMap<String, String>>,
     pub compose_file: Option<String>,
     pub raw_data: Option<String>,
-    pub is_running: bool,
 }
 
 #[derive(Serialize, Deserialize, TS)]
