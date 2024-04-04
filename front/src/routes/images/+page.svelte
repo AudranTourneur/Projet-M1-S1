@@ -30,7 +30,7 @@
 			bind:value={search}
 			type="text"
 			placeholder="Search..."
-			class="bg-gray-800 p-2 border rounded-l"
+			class=" p-2 border rounded-l"
 		/>
 	</form>
 </div>
@@ -39,7 +39,7 @@
 <ul>
 	{#each visibleImages as image, i}
 		<div class="space-y-5">
-			<div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg overflow-auto">
+			<div class="relative p-3 m-2  shadow rounded-lg overflow-auto">
 				<div>
 					<span>{image.tags}</span>
 				</div>

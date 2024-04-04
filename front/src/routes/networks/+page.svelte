@@ -25,7 +25,7 @@
 {#each networks as network}
 	{network.name} <br />
 	<div class="space-y-5">
-		<div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg overflow-auto">
+		<div class="relative p-3 m-2 shadow rounded-lg overflow-auto">
 			<div>
 				<span>{network.name}</span>
 			</div>

@@ -33,7 +33,7 @@
 	}
 </script>
 
-<div class="relative p-3 m-2 bg-gray-800 shadow rounded-lg overflow-auto">
+<div class="relative p-3 m-2 shadow rounded-lg overflow-auto">
 	<div>
 		<span>id: {image.id}</span>
 	</div>
@@ -50,7 +50,7 @@
 		Size :{formatBytes(image.size)}
 	</div>
 	<div class="flex justify-end">
-		<input bind:value={name} placeholder="enter your name" />
+		<input class="input" bind:value={name} placeholder="enter your name" />
 		<button class="btn variant-ghost-success p-2" on:click={CreateNewContainer}>
 			Create a New Container
 		</button>
