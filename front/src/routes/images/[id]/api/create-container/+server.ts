@@ -3,7 +3,8 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
 
-export const POST: RequestHandler = async ({ params, fetch }) => {
+export const POST: RequestHandler = async ({ params, fetch , request}) => {
+    const {containerName} = await request.json();
     const id = params.id;
 	const serverResponse = await fetch(PUBLIC_API_URL + `/images/create-container`, {
         method: 'POST',
@@ -12,7 +13,7 @@ export const POST: RequestHandler = async ({ params, fetch }) => {
         },
         body: JSON.stringify({
             imageName: id,
-            contanierName: null,
+            containerName,
         }),
     });
     console.log('Backend response is', await serverResponse.text())

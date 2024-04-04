@@ -13,12 +13,23 @@
 		console.log('todo');
 	});
 
-
+	let name = '';
 	async function CreateNewContainer() {
 		const res = await fetch('/images/' + data.id + '/api/create-container', {
 			method: 'POST',
-		})
-		console.log(res)
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				containerName: !!name ? name : null
+			})
+		});
+		console.log(res);
+	}
+
+
+	function deleteVolume(i: any): any {
+		throw new Error('Function not implemented.');
 	}
 </script>
 
@@ -39,9 +50,8 @@
 		Size :{formatBytes(image.size)}
 	</div>
 	<div class="flex justify-end">
-		<button
-			class="btn variant-ghost-success p-2"
-			on:click={CreateNewContainer}>
+		<input bind:value={name} placeholder="enter your name" />
+		<button class="btn variant-ghost-success p-2" on:click={CreateNewContainer}>
 			Create a New Container
 		</button>
 
@@ -49,7 +59,6 @@
 			<button class="bg-blue-500 text-white px-4 py-2 rounded mr-2"> Info </button>
 		</a>
 		<button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}
-			>Delete</button
-		>
+			>Delete</button>
 	</div>
 </div>
