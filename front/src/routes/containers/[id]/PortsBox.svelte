@@ -36,7 +36,7 @@
 
 	function editPublicPort(port: PortData): any {
 		console.log(port)
-        port.publicPort: !! null ? ++ : null
+        port.publicPort++
         ports = ports;
 	}
 </script>
