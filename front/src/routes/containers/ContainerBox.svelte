@@ -9,6 +9,8 @@
 		faCube,
 		faEllipsisVertical,
 		faGear,
+		faImage,
+		faLayerGroup,
 		faNetworkWired,
 		faPlay,
 		faPlug,
@@ -20,7 +22,7 @@
 	export let container: ContainerData;
 	export let refresh: () => void;
 
-	console.log(container);
+	const dockerComposeName = container.composeFile?.split('/').slice(-2, -1)[0].toLowerCase();
 
 	function concatenatePortConfigurations(configurations: ContainerData['ports']) {
 		if (configurations.length === 0) {
@@ -60,9 +62,6 @@
 		isLoadingStop = false;
 		refresh();
 	};
-
-	// TODO: Remove this when the backend is fixed
-	container.iconUrl = Math.random() > 0.7 ? null : container.iconUrl;
 
 	let isIdCopied = false;
 	let isNameCopied = false;
@@ -116,7 +115,7 @@
 				</button>
 			</div>
 			<div class="copy-to-clipboard">
-				<Tooltip tooltipText={container.id}>
+				<Tooltip tooltipText={`Container ID: ${container.id}`}>
 					{container.id.substring(0, 12)}
 				</Tooltip>
 				<div class="hide-on-clipboard-hover">...</div>
@@ -131,6 +130,20 @@
 		</div>
 	</div>
 	<div class="flex flex-wrap gap-2 flex-grow min-w-0">
+		{#if dockerComposeName}
+			<Tooltip
+				class="chip variant-soft-primary overflow-hidden px-1.5 lg:px-2.5"
+				tooltipText={`Docker Compose: ${container.composeFile}`}>
+				<Fa icon={faLayerGroup} />
+				<span class="text-ellipsis overflow-hidden">{dockerComposeName}</span>
+			</Tooltip>
+		{/if}
+		<Tooltip
+			class="chip variant-soft overflow-hidden px-1.5 lg:px-2.5"
+			tooltipText={`Image: ${container.image}`}>
+			<Fa icon={faImage} />
+			<span class="text-ellipsis overflow-hidden">{container.image}</span>
+		</Tooltip>
 		<Tooltip
 			class="chip variant-soft overflow-hidden px-1.5 lg:px-2.5"
 			tooltipText={`Networks: ${container.networks.length === 0 ? ' - ' : container.networks.join(', ')}`}>
@@ -159,7 +172,7 @@
 	<div class="flex gap-1">
 		<button
 			class="btn variant-ghost-success p-2"
-			disabled={container.status.includes('Up')  || isLoadingStart}
+			disabled={container.status.includes('Up') || isLoadingStart}
 			on:click={startContainer}>
 			<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
 		</button>
