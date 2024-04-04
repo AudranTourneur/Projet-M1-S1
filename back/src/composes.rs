@@ -52,7 +52,12 @@ pub async fn get_all_composes() -> ComposeList {
             .iter_mut()
             .find(|compose| compose.file_path == *name.clone());
 
-        let file_content = std::fs::read_to_string(format!("/rootfs/{}", name.clone())).unwrap();
+        let file_content = std::fs::read_to_string(format!("/rootfs/{}", name.clone()));
+
+        let file_content = match file_content {
+            Ok(file_content) => file_content,
+            Err(_) => continue,
+        };
 
         match compose {
             Some(compose) => {

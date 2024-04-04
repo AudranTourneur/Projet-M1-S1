@@ -17,12 +17,19 @@ pub struct DnsList {
 }
 
 #[get("/dns")]
-pub fn dns_list_handler() -> Json<DnsList> {
+pub async fn dns_list_handler() -> Json<DnsList> {
+    //let caddyfile_content = std::fs::read_to_string("/etc/caddy/Caddyfile").unwrap();    
+    let client = reqwest::Client::new();
+
+    // let url = "http://localhost:2019/config/apps/http/servers/srv0/routes";
+    let url = "http://localhost:2019/config";
+
+    let response = client.get(url).send().await.unwrap().text().await.unwrap();
+
+    println!("{:?}", response);
+
     let dns = DnsList {
-        dns: vec![DnsData {
-            domain_name: "example.com".to_string(),
-            reverse_proxy_port: Some(8080),
-        }],
+        dns: vec![]
     };
 
     Json(dns)
