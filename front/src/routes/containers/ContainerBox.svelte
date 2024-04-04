@@ -88,8 +88,10 @@
 				<Fa icon={faCube} class="text-surface-300-600-token text-xl" />
 			{/if}
 			<Tooltip tooltipText={container.status}>
-				{#if container.isRunning}
-					<Fa icon={faGear} class="text-success-500 animate-spin text-xl" style="animation-duration: 4s;" />
+				{#if container.status.includes('Paused')}
+					<Fa icon={faGear} class="text-warning-500 animate-pulse text-xl" />
+				{:else if container.status.includes('Up')}
+					<Fa icon={faGear} class="text-success-500 animate-spin text-xl" style="animation-duration: 5s;" />
 				{:else}
 					<Fa icon={faGear} class="text-error-400 text-xl" />
 				{/if}
@@ -157,13 +159,13 @@
 	<div class="flex gap-1">
 		<button
 			class="btn variant-ghost-success p-2"
-			disabled={container.isRunning || isLoadingStart}
+			disabled={container.status.includes('Up')  || isLoadingStart}
 			on:click={startContainer}>
 			<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
 		</button>
 		<button
 			class="btn variant-ghost-error p-2"
-			disabled={!container.isRunning || isLoadingStop}
+			disabled={container.status.includes('Exited') || isLoadingStop}
 			on:click={stopContainer}>
 			<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
 		</button>
