@@ -1,22 +1,26 @@
 <script lang="ts">
 	import '../app.postcss';
-
-	import {AppBar, AppShell, Avatar, Drawer, LightSwitch} from '@skeletonlabs/skeleton';
+	import { page } from '$app/stores';
+	import { AppBar, AppShell, Avatar, Drawer, LightSwitch } from '@skeletonlabs/skeleton';
 	import LeftNavigation from '../components/LeftNavigation.svelte';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 
 	initializeStores();
 
-    const drawerStore = getDrawerStore();
+	const drawerStore = getDrawerStore();
 
 	function drawerOpen() {
-        drawerStore.open();
+		drawerStore.open();
 	}
 </script>
 
+<svelte:head>
+	<title>{$page.data.metaTitle ? `${$page.data.metaTitle} | OkiDocky` : 'OkiDocky'}</title>
+</svelte:head>
+
 <Drawer>
-    <LeftNavigation />
+	<LeftNavigation />
 </Drawer>
 
 <AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
