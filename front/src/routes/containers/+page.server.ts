@@ -5,5 +5,5 @@ import type { ContainerList } from '$lib/types/ContainerList';
 export const load: PageServerLoad = async () => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/containers/');
     const res = await serverResponse.json() as ContainerList;
-    return res
+    return {...res, metaTitle: 'Containers list'};
 };
