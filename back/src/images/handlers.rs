@@ -46,6 +46,7 @@ pub async fn image_handler(id: &str) -> Json<ImageData> {
         size: image.size.clone(),
         created: image.created.clone(),
         history: Some(history),
+        icon_url: Some("https://cdn.iconscout.com/icon/free/png-256/nginx-226046.png".into())
     };
 
     Json(response)

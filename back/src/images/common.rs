@@ -22,6 +22,7 @@ pub async fn get_all_images() -> Vec<ImageData> {
                 size: image.size.clone(),
                 created: image.created.clone(),
                 history: None,
+                icon_url: Some("https://cdn.iconscout.com/icon/free/png-256/nginx-226046.png".into()),
             };
             image_data
         })

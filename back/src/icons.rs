@@ -1,4 +1,5 @@
 use bollard::{image::ListImagesOptions, Docker};
+use regex::Regex;
 
 use crate::sqlitedb::get_sqlite_connection;
 
@@ -116,30 +117,30 @@ pub async fn spawn_info_service() {
 
 pub async fn resolve_icon_url_from_image_name(image: String) -> Option<String> {
 
-    let mut conn = get_sqlite_connection().await.unwrap();
+    // let mut conn = get_sqlite_connection().await.unwrap();
 
-    let db_res = sqlx::query("SELECT docker_hub_response FROM images WHERE image_name = ?")
-        .bind(image)
-        .fetch_all(&mut conn)
-        .await
-        .unwrap();
+    // let db_res = sqlx::query("SELECT docker_hub_response FROM images WHERE image_name = ?")
+    //     .bind(image)
+    //     .fetch_all(&mut conn)
+    //     .await
+    //     .unwrap();
 
-    if db_res.is_empty() {
-        return None;
-    }
+    // if db_res.is_empty() {
+    //     return None;
+    // }
 
 
-    let text: String = db_res[0].try_get("docker_hub_response").ok()?;
+    // // let text: String = db_res[0].try_get("docker_hub_response").ok()?;
 
-    let pattern = "\\[!logo\\]\\((.*)\\)";
+    // let pattern = "\\[!logo\\]\\((.*)\\)";
 
-    let re = Regex::new(pattern).unwrap();
+    // let re = Regex::new(pattern).unwrap();
 
-    if let Some(caps) = re.captures(&text) {
-        if let Some(url) = caps.get(1) {
-            return Some(url.as_str().to_string());
-        }
-    }
+    // if let Some(caps) = re.captures(&text) {
+    //     if let Some(url) = caps.get(1) {
+    //         return Some(url.as_str().to_string());
+    //     }
+    // }
 
     None
 

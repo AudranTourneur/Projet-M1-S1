@@ -1,7 +1,7 @@
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
 
-use crate::docker::get_docker_socket;
+use crate::{docker::get_docker_socket, icons::resolve_icon_url_from_image_name};
 
 use super::models::{ContainerData, PortData, OurPortTypeEnum};
 
@@ -116,7 +116,6 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         compose_file,
         labels: Some(labels),
         raw_data: Some(raw_data),
-        is_running,
     };
 
     Some(container_data)

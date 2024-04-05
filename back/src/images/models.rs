@@ -22,6 +22,7 @@ pub struct ImageData {
     pub size: i64,
     pub created: i64,
     pub history: Option<Vec<HistoryResponse>>,
+    pub icon_url: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, TS)]
