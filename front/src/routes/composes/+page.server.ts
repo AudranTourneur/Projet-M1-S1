@@ -1,6 +1,6 @@
 import type {PageServerLoad} from './$types';
 import {PUBLIC_API_URL} from '$env/static/public';
-import { ComposeList } from '$lib/types/ComposeList';
+import type { ComposeList } from '$lib/types/ComposeList';
 
 export const load: PageServerLoad = async () => {
     const serverResponse = await fetch(PUBLIC_API_URL + '/composes/');

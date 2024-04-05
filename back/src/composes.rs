@@ -1,3 +1,5 @@
+use std::process::Command;
+
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -100,4 +102,41 @@ pub async fn compose_handler(id: String) -> Json<Option<ComposeData>> {
 
 
     Json(Some(compose.clone()))
+}
+
+fn from_base64_url(data: &str) -> String {
+    let vec: Vec<u8> = URL_SAFE.decode(data).unwrap();
+    let str = String::from_utf8(vec).unwrap();
+    str
+}
+
+#[get("/composes/<id>/start")]
+pub async fn compose_start_handler(id: &str) -> Json<bool> {
+    let id = from_base64_url(id);
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg("docker-compose up -d -f")
+        .output()
+        .expect("failed to execute process");
+    let hello = output.stdout;
+    let hello = std::str::from_utf8(&hello).unwrap();
+
+    println!("hello = {}", hello);
+
+    return Json(true);
+}
+
+
+pub async fn compose_stop_handler(id: &str) -> Json<bool> {
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg("echo hello")
+        .output()
+        .expect("failed to execute process");
+    let hello = output.stdout;
+    let hello = std::str::from_utf8(&hello).unwrap();
+
+    println!("hello = {}", hello);
+
+    return Json(true);
 }
