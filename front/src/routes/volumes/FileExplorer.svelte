@@ -6,38 +6,71 @@
     let path = '/';
     let files: any[] = [];
     let directories: any[] = [];
-    let explorer: any[] = [];
+    let explorer_dir: any[] = [];
+    let explorer_file: any[] = [];
     let res;
 
     onMount(async () => {
         let response = await fetch(`/volumes/${id}/filesystem/${Base64.encodeURI(path)}/api`);
         res = await response.json();
+        update(res);
+       
+    });
+
+    async function changePage(path: string) {
+        console.log(path)
+        const urlApi = `/volumes/${id}/filesystem/${Base64.encodeURI(path)}/api`
+        console.log('making call to', urlApi)
+        let response = await fetch(urlApi);
+        console.log(response)
+
+        res = await response.json();
+        update(res);
+    }
+
+    function update(res) {
         files = res.files;
         directories = res.directories;
         console.log(res);
 
         // Push directories to explorer array with their respective href
         for (const directory of directories) {
-            explorer.push({
-                text: directory,
-                href: `/volumes/${id}/filesystem/${Base64.encodeURI('/', directory)}`
+            explorer_dir.push({
+                text: directory.name,
+                size: directory.size,
+                base64: Base64.encodeURI('/' + directory.name)
             });
         }
 
-        console.log('explorer', explorer); // Move console.log inside onMount
-    });
+        for (const file of files) {
+            explorer_file.push({
+                text: file.name,
+                size: file.size,
+            })
+        }
+        
+
+        console.log('explorer_dir', explorer_dir);
+        console.log('explorer_file', explorer_file); 
+    }
 </script>
 
 {#if res}
     <div>
-        {#each explorer as { text, href }}
+        {#each explorer_dir as { text, base64, size }}
 		<div>
-			<a href={href}>{text}</a>
+			<button on:click={() => changePage(base64)}>{text}</button>
+            <br>²
+            <p> Size : {size}</p>
 		</div>
         {/each}
-        {#each files as file}
-            <div>FILE {file}</div>
+        {#each explorer_file as {text, size}}
+            <div>FILE {text}</div>
+            <br>
+            <p> Size : {size}</p>
+
         {/each}
+
 
     </div>
 {:else}
