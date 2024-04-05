@@ -1,13 +1,7 @@
 <script lang="ts">
-
     export let data;
 
     const volumes = data.volumes;
-
-    function deleteVolume(index: number) {
-        // implémenter la fonction adéquate
-        console.log(`Deleting volume with index ${index}`);
-    }
 
     function downloadVolume(index: number) {
         // implémenter la fonction adéquate
@@ -41,9 +35,6 @@
                         Info
                     </button>
                 </a>
-                <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}>
-                    Delete
-                </button>
                 <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={() => downloadVolume(i)}>
                     Download
                 </button>

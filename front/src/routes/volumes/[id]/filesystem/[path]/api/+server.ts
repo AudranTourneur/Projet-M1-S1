@@ -7,3 +7,4 @@ export const GET: RequestHandler = async ({params}) => {
     const serverResponseJson = await response.json();
     return json(serverResponseJson);
 };
+

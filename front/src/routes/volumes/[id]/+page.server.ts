@@ -8,3 +8,5 @@ export const load: PageServerLoad = async ({ params }) => {
 	const res = (await serverResponse.json()) as VolumeData;
 	return { ...res, metaTitle: 'Volume ' + res.name };
 };
+
+
