@@ -8,7 +8,7 @@
     const volumes = data.volumes;
     
     function handleDeleteVolume(index: number) {
-    deleteVolume(volumes[index].name)
+    deleteVolume({ params: { name: volumes[index].name }})
       .then(response => {
         console.log(response.message);
       })
