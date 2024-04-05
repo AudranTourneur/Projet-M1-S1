@@ -7,6 +7,7 @@
 
     import {onMount, createEventDispatcher} from "svelte";
 	import FileExplorer from "../FileExplorer.svelte";
+	import { goto } from '$app/navigation';
 
     
     let showModal = false;
@@ -30,6 +31,7 @@
         console.log(await response.text())
         showModal = false;
         dispatch('volumeDeleted', { name: data.name});
+        goto("/volumes");
     }
 
     function cancelDelete() {
