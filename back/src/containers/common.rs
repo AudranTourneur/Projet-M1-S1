@@ -102,7 +102,28 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         None => return None,
     };
 
-    let icon_url = resolve_icon_url_from_image_name(container.image.clone().unwrap_or("".into())).await;
+    let image_name = container.image.clone();
+    let imgname = image_name.clone();
+   
+    let mut icon_url: Option<String> = None;
+
+    if imgname.is_some() {
+        let image_name = imgname.unwrap();
+        let image_history = docker.image_history(&image_name).await;
+   
+
+        if let Ok(history) = image_history {
+            for history in history {
+                let image_id = history.id.clone();
+                let image_id = image_id.to_string();
+                icon_url = resolve_icon_url_from_image_name(&image_id).await;
+                if icon_url.is_some() {
+                    break;
+                }
+            }
+        }
+   
+    }
 
     let container_data = ContainerData {
         icon_url,
