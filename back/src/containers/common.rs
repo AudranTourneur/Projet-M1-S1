@@ -103,7 +103,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     };
 
     let container_data = ContainerData {
-        icon_url: Some("https://raw.githubusercontent.com/docker-library/docs/2ac3caaf21dfba9734f20518971983edc617c77c/ubuntu/logo.png".into()),
+        icon_url,
         id: container.id.clone().unwrap_or("".into()),
         names: container.names.clone().unwrap_or(vec![]),
         image: container.image.clone().unwrap_or("".into()),
@@ -114,6 +114,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         compose_file,
         labels: Some(labels),
         raw_data: Some(raw_data),
+        is_running,
     };
 
     Some(container_data)

@@ -114,30 +114,33 @@ pub async fn spawn_info_service() {
 }
 
 
-async fn _resolve_icon_url_from_image_name(_image: String) -> Option<String> {
+pub async fn resolve_icon_url_from_image_name(image: String) -> Option<String> {
+
+    let mut conn = get_sqlite_connection().await.unwrap();
+
+    let db_res = sqlx::query("SELECT docker_hub_response FROM images WHERE image_name = ?")
+        .bind(image)
+        .fetch_all(&mut conn)
+        .await
+        .unwrap();
+
+    if db_res.is_empty() {
+        return None;
+    }
+
+
+    let text: String = db_res[0].try_get("docker_hub_response").ok()?;
+
+    let pattern = "\\[!logo\\]\\((.*)\\)";
+
+    let re = Regex::new(pattern).unwrap();
+
+    if let Some(caps) = re.captures(&text) {
+        if let Some(url) = caps.get(1) {
+            return Some(url.as_str().to_string());
+        }
+    }
+
     None
-    // let db_res = sqlx::query("SELECT docker_hub_response FROM images WHERE image_name = ?")
-    //     .bind(image)
-    //     .fetch_all(&mut conn)
-    //     .await
-    //     .unwrap();
-
-    // if db_res.len() == 0 {
-    //     return None;
-    // }
-
-    // let db_res = db_res[0];
-
-    // let text = db_res.get::<String, _>("docker_hub_response");
-
-    // let pattern = "\\[!logo\\]\\((.*)\\)";
-
-    // let re = Regex::new(pattern).unwrap();
-
-    // let caps = re.captures(text);
-
-    // if caps.is_none() {
-    //     return None;
-    // }
 
 }
