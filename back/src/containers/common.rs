@@ -102,6 +102,8 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         None => return None,
     };
 
+    let icon_url = resolve_icon_url_from_image_name(container.image.clone().unwrap_or("".into())).await;
+
     let container_data = ContainerData {
         icon_url,
         id: container.id.clone().unwrap_or("".into()),
