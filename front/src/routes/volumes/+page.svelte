@@ -2,15 +2,6 @@
     export let data;
 
     const volumes = data.volumes;
-    
-    async function handleDeleteVolume(index: number) {
-        const volume = volumes[index]
-        const name = volume.name;
-        const response = await fetch(`/volumes/${name}/api/remove-volume`, {
-             method: 'POST',
-        });
-        console.log(await response.text())
-      }
 
     function downloadVolume(index: number) {
         // implémenter la fonction adéquate
@@ -44,9 +35,6 @@
                         Info
                     </button>
                 </a>
-                <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => handleDeleteVolume(i)}>
-                    Delete
-                </button>
                 <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={() => downloadVolume(i)}>
                     Download
                 </button>

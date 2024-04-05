@@ -12,6 +12,13 @@
         await chart.render();
     })
 
+    async function handleDeleteVolume(volumeName: String) {
+        const name = volumeName;
+        const response = await fetch(`/volumes/${id}/api/remove-volume`, {
+             method: 'POST',
+        });
+        console.log(await response.text())
+      }
 
     const options = {
         chart: {
@@ -130,6 +137,10 @@
     {data.mountpoint}
     <br/>
     {data.size}
+    <br/>
+    <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => handleDeleteVolume(data.name)}>
+        Delete
+    </button>
 </div>
 
 <br/>
