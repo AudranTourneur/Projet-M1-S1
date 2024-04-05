@@ -1,21 +1,16 @@
 <script lang="ts">
-
-    
-    import { deleteVolume } from './[id]/filesystem/[path]/api/remove-volume/+server.ts';
-
     export let data;
 
     const volumes = data.volumes;
     
-    function handleDeleteVolume(index: number) {
-    deleteVolume({ params: { name: volumes[index].name }})
-      .then(response => {
-        console.log(response.message);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
+    async function handleDeleteVolume(index: number) {
+        const volume = volumes[index]
+        const name = volume.name;
+        const response = await fetch(`/volumes/${name}/api/remove-volume`, {
+             method: 'POST',
+        });
+        console.log(await response.text())
+      }
 
     function downloadVolume(index: number) {
         // implémenter la fonction adéquate
