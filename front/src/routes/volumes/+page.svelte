@@ -1,12 +1,20 @@
 <script lang="ts">
 
+import { deleteVolume } from './[id]/filesystem/[path]/api/remove-volume/+server.ts';
+
     export let data;
 
     const volumes = data.volumes;
-
-    function deleteVolume(index: number) {
-        // implémenter la fonction adéquate
-        console.log(`Deleting volume with index ${index}`);
+    
+    function handleDeleteVolume(index) {
+        deleteVolume(index)
+            .then(response => {
+                console.log(response.message); // Afficher le message de suppression réussie
+                // Vous pouvez mettre à jour l'interface utilisateur ou effectuer d'autres actions en fonction de la réponse
+            })
+            .catch(error => {
+                console.error(error); // Gérer les erreurs, par exemple afficher un message d'erreur à l'utilisateur
+            });
     }
 
     function downloadVolume(index: number) {
@@ -41,7 +49,7 @@
                         Info
                     </button>
                 </a>
-                <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => deleteVolume(i)}>
+                <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => handleDeleteVolume(index)}>
                     Delete
                 </button>
                 <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={() => downloadVolume(i)}>
