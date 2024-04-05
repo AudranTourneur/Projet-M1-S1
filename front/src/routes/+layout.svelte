@@ -52,7 +52,7 @@
 	<!-- (sidebarRight) -->
 	<!-- (pageHeader) -->
 	<!-- Router Slot -->
-	<div class="container p-10 mx-auto">
+	<div class="container py-10 px-1 sm:px-3 md:px-6 mx-auto">
 		<slot />
 	</div>
 	<!-- ---- / ---- -->
