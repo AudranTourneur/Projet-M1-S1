@@ -22,7 +22,7 @@
 	export let container: ContainerData;
 	export let refresh: () => void;
 
-	const dockerComposeName = container.composeFile?.split('/').slice(-2, -1)[0].toLowerCase();
+	const dockerComposeName = container.composeFile?.split('/').slice(-2, -1)[0]?.toLowerCase();
 
 	function concatenatePortConfigurations(configurations: ContainerData['ports']) {
 		if (configurations.length === 0) {

@@ -1,73 +1,238 @@
 <script lang="ts">
-	import type { ContainerData } from "$lib/types/ContainerData";
-	import type { OurPortTypeEnum } from "$lib/types/OurPortTypeEnum";
-	import type { PortData } from "$lib/types/PortData";
+	import type { ContainerData } from '$lib/types/ContainerData';
+	import type { OurPortTypeEnum } from '$lib/types/OurPortTypeEnum';
+	import type { PortData } from '$lib/types/PortData';
+	import { Fa } from 'svelte-fa';
+	import { faPenToSquare, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+	import { number } from 'zod';
+	import Input from 'postcss/lib/input';
 
-    export let container: ContainerData;
+	export let container: ContainerData;
 
-    const c = container;
+	const c = container;
 
-    let ports = c.ports.filter(x => x.ip?.includes('.'))
-    console.log(ports)
+	type ExtendedPortData = {
+		port: PortData;
+		isEditingPublicPort: boolean;
+		isEditingIPPort: boolean;
+		isEditingPrivatePort: boolean;
+		isEditingTypePort: boolean;
+		currentlyEditingValuePublicPort: number;
+		currentlyEditingValueIPPort: string;
+		currentlyEditingValuePrivatePort: number;
+		currentlyEditingValueTypePort: OurPortTypeEnum
+	};
 
+	let ports: ExtendedPortData[] = c.ports
+		.filter((x) => x.ip?.includes('.'))
+		.map((portData) => ({
+			port: portData,
+			isEditingPublicPort: false,
+			isEditingIPPort: false,
+			isEditingPrivatePort: false,
+			isEditingTypePort: false,
+			currentlyEditingValuePublicPort: portData.publicPort || 0,
+			currentlyEditingValueIPPort: portData.ip!,
+			currentlyEditingValuePrivatePort: portData.privatePort,
+			currentlyEditingValueTypePort: portData.type || 'EMPTY'
+		}));
+	console.log(ports);
 
 	function addPort(): any {
-		throw new Error("Function not implemented.");
+		let newPort: PortData = {
+			ip: '0.0.0.0',
+			privatePort: 0,
+			publicPort: null,
+			type: 'EMPTY'
+		};
+		ports.push({
+			port: newPort,
+			isEditingPublicPort: false,
+			isEditingIPPort: false,
+			isEditingPrivatePort: false,
+			isEditingTypePort: false,
+			currentlyEditingValuePublicPort: 0,
+			currentlyEditingValueIPPort: '',
+			currentlyEditingValuePrivatePort: 0,
+			currentlyEditingValueTypePort: 'EMPTY'
+		});
+		ports = ports;
+		console.log(ports);
 	}
 
 
-	function deleteBiding() {
-		throw new Error("Function not implemented.");
+	function togglePublicPortEditition(p: ExtendedPortData, change: boolean) {
+		if (p.isEditingPublicPort) {
+			p.port.publicPort = !change ? p.currentlyEditingValuePublicPort : p.port.publicPort;
+		}
+
+		p.isEditingPublicPort = !p.isEditingPublicPort;
+		p.currentlyEditingValuePublicPort = p.port.publicPort || 0;
+
+		ports = ports;
+		console.log(ports);
 	}
 
+	function toggleIPPortEditition(p: ExtendedPortData, change: boolean) {
+		if (p.isEditingIPPort) {
+			p.port.ip = !change ? p.currentlyEditingValueIPPort : p.port.ip;
+		}
 
-    let newPortType: OurPortTypeEnum
-	function editPortType(port: PortData): any {
-        port.type = newPortType;
-        ports = ports;
+		p.isEditingIPPort = !p.isEditingIPPort;
+		p.currentlyEditingValueIPPort = p.port.ip || '';
+
+		ports = ports;
+		console.log(ports);
 	}
 
+	function togglePrivetPortEdition(p: ExtendedPortData, change: boolean) {
+		if (p.isEditingPrivatePort) {
+			p.port.privatePort = !change ? p.currentlyEditingValuePrivatePort : p.port.privatePort;
+		}
 
-    let newPrivatePort: number
-	function editPrivatePort(port: PortData): any {
-        port.privatePort = newPrivatePort;
-        ports = ports;
+		p.isEditingPrivatePort = !p.isEditingPrivatePort;
+		p.currentlyEditingValuePrivatePort = p.port.privatePort;
+
+		ports = ports;
+		console.log(ports);
 	}
 
+	function toggleTypePortEdition(p: ExtendedPortData, change: boolean) {
+		if (p.isEditingTypePort) {
+			p.port.type = !change ? p.currentlyEditingValueTypePort : p.port.type;
+		}
 
-    let newPortIP = '';
-    function editPortIP(port: PortData): any {
-        port.ip = newPortIP;
-        ports = ports;
-	}
+		p.isEditingTypePort = !p.isEditingTypePort;
+		p.currentlyEditingValueTypePort = p.port.type!;
 
-
-    let newPublicPort: number
-	function editPublicPort(port: PortData): any {
-        port.publicPort = !! newPublicPort ? newPublicPort:0;
-        ports = ports;
+		ports = ports;
+		console.log(ports);
 	}
 </script>
 
 <div>
 	Rebind ports
-{#each ports as port}
-    Host port {port.publicPort} on {port.ip} is binded to the internal port {port.privatePort} for the protocol {port.type}
-        <button class="btn variant-glass-primary" on:click={() => editPublicPort(port)}>Edit public port</button>
-        <input title="Input (number)" type="number" bind:value={port.publicPort} placeholder="new public port" />
+	{#each ports as p}
+		Host port
 
-        <button class="btn variant-glass-primary" on:click={() => editPortIP(port)}>Edit port IP</button>
-        <input title="Input (text)" type="text" bind:value={newPortIP} placeholder="new IP" />
+		{#if !p.isEditingPublicPort}
+			{p.port.publicPort}
+		{:else}
+			<input
+				title="Input (number)"
+				type="number"
+				bind:value={p.currentlyEditingValuePublicPort}
+				placeholder="new public port"
+				class="input w-40" />
+		{/if}
 
-        <button class="btn variant-glass-primary" on:click={() => editPrivatePort(port)}>Edit private port</button>
-        <input title="Input (number)" type="number" bind:value={newPrivatePort} placeholder="new private port" />
+		{#if !p.isEditingPublicPort}
+			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, false)}>
+				<Fa icon={faPenToSquare} />
+			</button>
+		{:else}
+			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, false)}>
+				<Fa icon={faCheck} />
+			</button>
+			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, true)}>
+				<Fa icon={faXmark} />
+			</button>
+		{/if}
 
-        <button class="btn variant-glass-primary" on:click={() => editPortType(port)}>Edit port type</button>
-        <input title="Input (text)" type="text" bind:value={newPortType} placeholder="new port type" />
+		on
 
-        <button class="btn variant-glass-primary" on:click={() => deleteBiding()}>delete biding</button>
-        <br>
-{/each}
+		{#if !p.isEditingIPPort}
+			{p.port.ip}
+		{:else}
+			<input
+				title="Input (text)"
+				type="text"
+				bind:value={p.currentlyEditingValueIPPort}
+				placeholder="new IP port"
+				class="input w-40" />
+		{/if}
 
-<button class="btn variant-glass-primary" on:click={() => addPort()}>Add port</button>
+		{#if !p.isEditingIPPort}
+			<button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, false)}>
+				<Fa icon={faPenToSquare} />
+			</button>
+		{:else}
+			<button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, false)}>
+				<Fa icon={faCheck} />
+			</button>
+			<button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, true)}>
+				<Fa icon={faXmark} />
+			</button>
+		{/if}
+
+		is binded to the internal port
+
+		{#if !p.isEditingPrivatePort}
+			{p.port.privatePort}
+		{:else}
+			<input
+				title="Input (number)"
+				type="number"
+				bind:value={p.currentlyEditingValuePrivatePort}
+				placeholder="new IP port"
+				class="input w-40" />
+		{/if}
+
+		{#if !p.isEditingPrivatePort}
+			<button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, false)}>
+				<Fa icon={faPenToSquare} />
+			</button>
+		{:else}
+			<button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, false)}>
+				<Fa icon={faCheck} />
+			</button>
+			<button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, true)}>
+				<Fa icon={faXmark} />
+			</button>
+		{/if}
+
+		for the protocol
+
+		{#if !p.isEditingTypePort}
+			{p.port.type}
+		{:else}
+			<select class="select w-40">
+				<option value="1">EMPTY</option>
+				<option value="2">TCP</option>
+				<option value="3">UDP</option>
+				<option value="4">SCTP</option>
+			</select>
+		{/if}
+
+		{#if !p.isEditingTypePort}
+			<button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, false)}>
+				<Fa icon={faPenToSquare} />
+			</button>
+		{:else}
+			<button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, false)}>
+				<Fa icon={faCheck} />
+			</button>
+			<button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, true)}>
+				<Fa icon={faXmark} />
+			</button>
+		{/if}
+
+		<!--
+		<button class="btn variant-glass-primary" on:click={() => editPortType(port)}>Edit port type</button>
+		<input title="Input (text)" type="text" bind:value={port.type} placeholder="new port type" />
+		<button on:click={showInputBox}> <Fa icon={faPenToSquare} /></button>
+		{#if showInput}
+			<input
+				title="Input (number)"
+				type="number"
+				bind:value={port.publicPort}
+				placeholder="new public port" />
+		{/if}
+
+		<button class="btn variant-glass-primary" on:click={() => deleteBiding(port)}>delete biding</button>
+		-->
+		<br />
+	{/each}
+
+	<button class="btn variant-glass-primary" on:click={() => addPort()}>Add port</button>
 </div>
