@@ -1,4 +1,4 @@
-use std::process::Command;
+use std::{fmt::Display, process::{Command, ExitStatus}};
 
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
@@ -110,33 +110,53 @@ fn from_base64_url(data: &str) -> String {
     str
 }
 
-#[get("/composes/<id>/start")]
-pub async fn compose_start_handler(id: &str) -> Json<bool> {
-    let id = from_base64_url(id);
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg("docker-compose up -d -f")
-        .output()
-        .expect("failed to execute process");
-    let hello = output.stdout;
-    let hello = std::str::from_utf8(&hello).unwrap();
-
-    println!("hello = {}", hello);
-
-    return Json(true);
+#[derive(Serialize, Deserialize, TS, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ShellOutput {
+    pub stdout: String,
+    pub stderr: String,
+    pub status: String,
 }
 
+#[get("/composes/<id>/start")]
+pub async fn compose_start_handler(id: &str) -> Json<ShellOutput> {
+    let id = from_base64_url(id);
+    println!("Attemting to Docker Compose UP: {}", id);
+    let output = Command::new("docker")
+        .arg("compose")
+        .arg("-f")
+        .arg(format!("/rootfs{}", id))
+        .arg("up")
+        .arg("-d")
+        .output()
+        .expect("failed to execute process");
 
+    let shell_output = ShellOutput {
+        stdout: std::str::from_utf8(&output.stdout).unwrap_or("").into(),
+        stderr: std::str::from_utf8(&output.stderr).unwrap_or("").into(),
+        status: output.status.to_string(),
+    };
+
+    println!("docker-compose up -d {:?}", shell_output);
+
+    return Json(shell_output);
+}
+
+#[get("/composes/<id>/stop")]
 pub async fn compose_stop_handler(id: &str) -> Json<bool> {
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg("echo hello")
+    let id = from_base64_url(id);
+    let output = Command::new("docker")
+        .arg("compose")
+        .arg("down")
+        .arg("-f")
+        .arg(format!("/rootfs/{}", id))
         .output()
         .expect("failed to execute process");
     let hello = output.stdout;
     let hello = std::str::from_utf8(&hello).unwrap();
 
-    println!("hello = {}", hello);
+    println!("docker-compose up -d {}", hello);
 
     return Json(true);
 }

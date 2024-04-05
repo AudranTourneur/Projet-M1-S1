@@ -37,6 +37,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             composes::composes_handler,
             composes::compose_handler,
             composes::compose_start_handler,
+            composes::compose_stop_handler,
             dns::dns_list_handler,
             dns::dns_upsert_handler,
         ];
