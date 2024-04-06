@@ -23,6 +23,8 @@
 	<input bind:value={search} type="text" placeholder="Search by name or ID" class="input mb-4" />
 </div>
 
-{#each visibleImages as image}
-	<ImageBox {image} />
-{/each}
+<div class="flex flex-col gap-4">
+	{#each visibleImages as image}
+		<ImageBox {image} />
+	{/each}
+</div>

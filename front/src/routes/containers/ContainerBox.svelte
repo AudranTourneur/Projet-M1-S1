@@ -78,7 +78,7 @@
 </script>
 
 <div
-	class="border-token border-surface-300-600-token rounded-container-token p-4 mb-4 flex justify-between items-center gap-2">
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4 flex justify-between items-center gap-2">
 	<div class="flex items-center gap-2 md:gap-4">
 		<div class="flex flex-col items-center gap-2 w-6">
 			{#if container.iconUrl}
@@ -171,13 +171,13 @@
 	</div>
 	<div class="flex gap-1">
 		<button
-			class="btn variant-ghost-success p-2"
+			class="btn variant-filled-success p-2"
 			disabled={container.status.includes('Up') || isLoadingStart}
 			on:click={startContainer}>
 			<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
 		</button>
 		<button
-			class="btn variant-ghost-error p-2"
+			class="btn variant-filled-error p-2"
 			disabled={container.status.includes('Exited') || isLoadingStop}
 			on:click={stopContainer}>
 			<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
