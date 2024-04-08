@@ -1,16 +1,17 @@
 import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
-import { TopologyContainer } from './TopologyContainer';
+import { TopologyContainerPixi } from './TopologyContainer';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyInitData } from './topology';
+import { TopologyLink } from './TopologyLinkPixi';
 
 export class TopologyApp {
 	app: PIXI.Application;
 	viewport: Viewport;
 
-	currentlySelected: TopologyContainer | null = null;
+	currentlySelected: TopologyContainerPixi | null = null;
 
-	allContainers: Array<TopologyContainer> = [];
+	allContainers: Array<TopologyContainerPixi> = [];
 
 	constructor(canvas: HTMLCanvasElement, parent: HTMLElement, public data: TopologyInitData) {
 		const app = new PIXI.Application({ background: '#2A547E', resizeTo: parent, view: canvas, antialias: true });
@@ -41,25 +42,30 @@ export class TopologyApp {
 		for (let i = 0; i < data.containers.length; i++) {
 			const container = data.containers[i];
 			console.log('set', container)
+			let threeRandomIds = data.containers.map(container => container.id);
+			console.log(threeRandomIds);
+			threeRandomIds.sort(() => Math.random() - 0.5);
+			console.log(threeRandomIds);
+			threeRandomIds = threeRandomIds.slice(0, 3);
+			console.log(threeRandomIds);
+
+			container.connectedTo = threeRandomIds;
+
 			const x = container.position?.x ?? getRandomCoord();
 			const y = container.position?.y ?? getRandomCoord();
-			this.allContainers.push(new TopologyContainer(this, x, y, container));
-			
+			this.allContainers.push(new TopologyContainerPixi(this, x, y, container));
 		}
 
-        // const cable: Array<{x: number, y: number}> = [
-        //     {x: 50, y: 0},
-        //     {x: 50, y: 250},
-        //     {x: 550, y: 250},
-        //     {x: 550, y: 500},
-        // ];
-        //
-        // new Cable(this, cable);
-        //
-        // new Port(this, 10500, 500);
+		for (const source of this.allContainers) {
+			for (const targetId of source.data.connectedTo) {
+				const target = this.allContainers.find(container => container.data.data.id === targetId);
+				if (!target) continue
+				TopologyLink.createLink(this, source, target)
+			}
+		}
 	}
 
-	select(container: TopologyContainer) {
+	select(container: TopologyContainerPixi) {
 		this.currentlySelected = container;
 		// disable viewport plugins
 		this.viewport.plugins.pause('drag');
