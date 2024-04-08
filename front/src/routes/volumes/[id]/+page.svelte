@@ -10,9 +10,13 @@
     import {onMount, createEventDispatcher} from "svelte";
 	import FileExplorer from "../FileExplorer.svelte";
 	import { goto } from '$app/navigation';
-    import PortsBox from './PortsBox.svelte';
-    import type { VolumeData } from '$lib/types/VolumeData'; 
 
+    export let data: any;
+
+    let volume: VolumeData = {
+        path: '/path/to/volume',
+        mountPath: '/mount/path'
+    };
     
     let showModal = false;
     const dispatch = createEventDispatcher();
