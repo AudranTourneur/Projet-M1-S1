@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { formatBytes, formatCreatedDate } from '$lib/FormatUtils.js';
+	import { formatBytes } from '$lib/FormatUtils.js';
 	import type { ImageData } from '$lib/types/ImageData.js';
 	import { faCircleNotch, faEllipsisVertical, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
+	import Tooltip from '../../components/Tooltip.svelte';
 
 	export let image: ImageData;
 	export let refresh: () => void;
@@ -20,23 +21,25 @@
 
 <div
 	class="flex justify-between items-center gap-2 p-3 rounded-container-token overflow-auto bg-surface-300/30 dark:bg-surface-600/30 shadow border-token border-surface-300-600-token">
-	<img src={image.iconUrl} alt="icon" class="w-8 h-8 rounded-full" />
-	<div class="flex flex-col">
-		<div>
-			<span>{image.tags}</span>
-		</div>
-		<br />
-		<div>
-			<span>ID : {image.id.substring(0, 19)}...</span>
+	<div class="flex items-center gap-2">
+		<img src={image.iconUrl} alt="icon" class="w-8 h-8 rounded-full" />
+		<div class="flex flex-col">
+			<div class="font-bold text-lg">
+				{image.tags}
+			</div>
+			<Tooltip tooltipText={`ID : ${image.id}`}>
+				{image.id.substring(0, 19)}...
+			</Tooltip>
 		</div>
 	</div>
 	<div class="flex flex-col">
 		<div>
-			<span>Created :{formatCreatedDate(image.created)}</span>
+			<span class="font-bold">Created :</span>
+			{new Date(image.created).toLocaleString()}
 		</div>
-		<br />
 		<div>
-			Size :{formatBytes(image.size)}
+			<span class="font-bold">Size :</span>
+			{formatBytes(image.size)}
 		</div>
 	</div>
 
