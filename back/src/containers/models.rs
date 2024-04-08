@@ -65,6 +65,10 @@ pub struct ContainerPortRebindRequest {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ContainerPortRebind {
-    pub host: u16,
-    pub internal: u16
+    pub host: u16,      //public port
+    pub internal: u16,   //private
+    pub ip : String ,
+    pub protocol : String,
+    
+    
 }

@@ -151,6 +151,9 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
         Some(container_name) => Some(
             CreateContainerOptions {
                 name: container_name,
+                // TODO: ne pas oublier le reste
+                // le reste ???
+                //platform : Some("linux/amd64"), //par ex?
                 ..Default::default()
             }
         ),
@@ -169,6 +172,38 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
         ])),
         ..Default::default()
     };
+    */
+
+    /* 
+    pub struct PortBinding {
+        pub host_ip: Option<String>,
+        pub host_port: Option<String>,
+    }; 
+    
+
+    type ExtendedPortData = {
+		port: PortData;					//
+		isEditingPublicPort: boolean;	//
+		isEditingIPPort: boolean;		//
+		isEditingPrivatePort: bolean;	//
+		isEditingTypePort: boolean;		//  tab data
+		currentlyEditingValuePublicPort: number;
+		currentlyEditingValueIPPort: string;
+		currentlyEditingValuePrivatePort: number;
+		currentlyEditingValueTypePort: OurPortTypeEnum
+	};
+
+
+    pub struct ContainerPortRebind {
+    pub host: u16,
+    pub internal: u16
+    }
+
+    pub struct ContainerPortRebindRequest {
+    pub ports: Vec<ContainerPortRebind>
+    }
+
+
     */
 
 let port_bindings = Some(input.ports.clone().into_iter().map(|p| {
