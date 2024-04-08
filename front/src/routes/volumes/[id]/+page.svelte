@@ -3,12 +3,14 @@
     const id = data.name;
     console.log(data);
 
+    const volume = data;
+
 
 
     import {onMount, createEventDispatcher} from "svelte";
 	import FileExplorer from "../FileExplorer.svelte";
 	import { goto } from '$app/navigation';
-
+    import PortsBox from "../../containers/[id]/PortsBox.svelte";
     
     let showModal = false;
     const dispatch = createEventDispatcher();
@@ -178,4 +180,9 @@
     <h2>Filesystem</h2>
     <FileExplorer {id}>
     </FileExplorer>
+</div>
+
+<div>
+	<br>
+	<PortsBox {volume}></PortsBox>
 </div>
