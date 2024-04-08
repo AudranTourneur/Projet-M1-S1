@@ -1,15 +1,19 @@
 <script lang="ts">
 	import { formatBytes, formatCreatedDate } from '$lib/FormatUtils.js';
 	import type { ImageData } from '$lib/types/ImageData.js';
-	import { faCircleNotch, faEllipsisVertical, faStop, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { faCircleNotch, faEllipsisVertical, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 
 	export let image: ImageData;
-	console.log(image);
 
-	const deleteVolume = () => {
-		// Implement the logic to delete the volume with the given index
-		console.log(`Deleting volume with id ${image.id}`);
+	let isLoadingRemove = false;
+	const deleteVolume = async () => {
+		isLoadingRemove = true;
+		await fetch(`/images/${image.id}/api/remove`, {
+			method: 'POST'
+		});
+		isLoadingRemove = false;
+		// refresh();
 	};
 </script>
 
@@ -36,8 +40,8 @@
 	</div>
 
 	<div class="flex gap-1">
-		<button class="btn variant-filled-error p-2" on:click={deleteVolume}>
-			<Fa icon={faTrash} fw />
+		<button class="btn variant-filled-error p-2" on:click={deleteVolume} disabled={isLoadingRemove}>
+			<Fa icon={!isLoadingRemove ? faTrash : faCircleNotch} spin={isLoadingRemove} fw />
 		</button>
 		<a href="/images/{image.id}" class="btn variant-ghost p-2">
 			<Fa icon={faEllipsisVertical} fw />
