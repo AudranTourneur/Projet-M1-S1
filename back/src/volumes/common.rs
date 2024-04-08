@@ -3,7 +3,11 @@ use bollard::service::Volume;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
-use base64::{alphabet, decode, engine::{self, general_purpose::{self, URL_SAFE}}, Engine as _};
+use base64::{alphabet, engine::{self, general_purpose::{self}}, Engine as _};
+
+use crate::docker::get_docker_socket;
+
+use super::models::VolumeData;
 
 // Define the static HashMap inside a lazy_static block
 lazy_static! {
@@ -55,13 +59,34 @@ pub fn remove_prefix_from_path(path: String, prefix: &str) -> String {
 }
 
 
-fn _to_base64_url(data: &str) -> String {
-    URL_SAFE.encode(data.as_bytes())
-}
-
 pub fn _from_base64_url(data: &str) -> Vec<u8> {
     engine::GeneralPurpose::new(
         &alphabet::URL_SAFE,
         general_purpose::NO_PAD)
 .decode(data).unwrap()
+}
+
+pub async fn get_all_volumes() -> Vec<VolumeData> {
+    let docker = get_docker_socket();
+    let volumes = docker.list_volumes::<String>(None).await.unwrap();
+
+    let volumes = volumes.volumes;
+    let volumes = volumes.unwrap_or_default();
+
+    let mut volumes_data: Vec<VolumeData> = volumes
+        .iter()
+        .map(|volume| {
+            let volume_data = VolumeData {
+                name: volume.name.clone(),
+                created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
+                mountpoint: volume.mountpoint.clone(),
+                size: get_volume_size(volume.clone()),
+            };
+            volume_data
+        })
+        .collect();
+
+    volumes_data.sort_by(|a, b| a.name.cmp(&b.name));
+
+    volumes_data
 }

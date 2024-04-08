@@ -151,6 +151,9 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
         Some(container_name) => Some(
             CreateContainerOptions {
                 name: container_name,
+                // TODO: ne pas oublier le reste
+                // le reste ???
+                //platform : Some("linux/amd64"), //par ex?
                 ..Default::default()
             }
         ),
@@ -173,7 +176,7 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
 
 let port_bindings = Some(input.ports.clone().into_iter().map(|p| {
         let port_binding = PortBinding {
-            host_ip: Some("0.0.0.0".into()),
+            host_ip: Some(p.ip.into()),
             host_port: Some(p.internal.to_string()),
         };
 

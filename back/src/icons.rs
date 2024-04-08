@@ -139,7 +139,7 @@ pub async fn resolve_icon_url_from_image_name(image: &str) -> Option<String> {
     let row = match first_elem {
         Some(res) => res,
         None => {
-            println!("No such icon for image name in database: {}", image);
+            // println!("No such icon for image name in database: {}", image);
             return None;
         },
     };

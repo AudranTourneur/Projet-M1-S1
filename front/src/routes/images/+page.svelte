@@ -1,12 +1,10 @@
 <script lang="ts">
+	import type { ImageData } from '$lib/types/ImageData.js';
 	import ImageBox from './ImageBox.svelte';
-
 	export let data;
 
-	const images = data.images;
-
+	let images : ImageData[] = data.images;
 	let visibleImages = [...images];
-
 	let search = '';
 
 	$: {
@@ -16,6 +14,15 @@
 				img.tags.some((tag) => tag.toLowerCase().includes(search.toLowerCase()))
 		);
 	}
+
+	const refetchImages = async () => {
+		await fetch("/images/api/list")
+			.then(response => response.json())
+			.then(data => {
+				images = data.images;
+			});
+	}
+
 </script>
 
 <h1 class="text-center text-4xl mb-5">Images</h1>
@@ -25,6 +32,6 @@
 
 <div class="flex flex-col gap-4">
 	{#each visibleImages as image}
-		<ImageBox {image} />
+		<ImageBox {image} refresh={refetchImages} />
 	{/each}
 </div>

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    containers::{common::get_all_containers, models::ContainerData}, sqlitedb::get_sqlite_connection
+    containers::{common::get_all_containers, models::ContainerData}, sqlitedb::get_sqlite_connection, volumes::{common::get_all_volumes, models::VolumeData}, images::models::ImageData, images::common::get_all_images
 };
 
 #[derive(Serialize, Deserialize, TS, Debug)]
@@ -19,11 +19,7 @@ pub struct Position {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TopologyContainer {
-    pub name: String,
-    pub image: String,
-    pub icon_url: String,
-    pub exposed_ports: Vec<u16>,
-    pub exposed_volumes: Vec<String>,
+    pub data: ContainerData,
     pub connected_to: Vec<String>,
     pub position: Option<Position>,
 }
@@ -42,8 +38,7 @@ pub struct TopologyPort {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TopologyVolume {
-    pub name: String,
-    pub size: u64,
+    pub data: VolumeData,
     pub connected_to: Vec<String>,
     pub position: Option<Position>,
 }
@@ -55,7 +50,8 @@ pub struct Topology {
     pub containers: Vec<TopologyContainer>,
     pub ports: Vec<TopologyPort>,
     pub volumes: Vec<TopologyVolume>,
-    pub position: Option<Position>,
+    pub images: Vec<ImageData>,
+    pub clusters: Vec<Vec<TopologyContainer>>,
 }
 
 use sqlx::Row;
@@ -100,12 +96,7 @@ async fn create_topology_containers() -> Vec<TopologyContainer> {
             println!("obtained container_position: {:?} for {}", container_position, container.id.clone());
 
             let container_data = TopologyContainer {
-                name: container.id.clone(),
-                image: container.image.clone(),
-                icon_url: "https://cdn.iconscout.com/icon/free/png-256/nginx-226046.png"
-                    .to_string(),
-                exposed_ports: vec![],
-                exposed_volumes: vec![],
+                data: container.clone(),
                 connected_to: vec![],
                 position: container_position,
             };
@@ -114,6 +105,10 @@ async fn create_topology_containers() -> Vec<TopologyContainer> {
         .collect();
 
     topology_containers
+}
+
+async fn create_topology_clusters() -> Vec<Vec<TopologyContainer>> {
+    vec![]
 }
 
 fn create_topology_ports() -> Vec<TopologyPort> {
@@ -133,45 +128,22 @@ fn create_topology_ports() -> Vec<TopologyPort> {
     ]
 }
 
-fn create_topology_volumes() -> Vec<TopologyVolume> {
-    vec![
-        TopologyVolume {
-            name: "nginx".to_string(),
-            size: 100,
-            connected_to: vec!["nginx".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-        TopologyVolume {
-            name: "mysql".to_string(),
-            size: 100,
-            connected_to: vec!["mysql".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-        TopologyVolume {
-            name: "postgres".to_string(),
-            size: 100,
-            connected_to: vec!["nginx".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-        TopologyVolume {
-            name: "node".to_string(),
-            size: 100,
-            connected_to: vec!["nginx".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-        TopologyVolume {
-            name: "python".to_string(),
-            size: 100,
-            connected_to: vec!["nginx".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-        TopologyVolume {
-            name: "ruby".to_string(),
-            size: 100,
-            connected_to: vec!["nginx".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-    ]
+async fn create_topology_volumes() -> Vec<TopologyVolume> {
+    let volumes : Vec<VolumeData> = get_all_volumes().await;
+
+    let topology_volumes: Vec<TopologyVolume> = volumes
+        .iter()
+        .map(|data| {
+            let volume_data = TopologyVolume {
+                data: data.clone(),
+                connected_to: vec![],
+                position: None,
+            };
+            volume_data
+        })
+        .collect();
+
+    topology_volumes
 }
 
 #[get("/topology")]
@@ -179,8 +151,9 @@ pub async fn topology_handler() -> Json<Topology> {
     let topo = Topology {
         containers: create_topology_containers().await,
         ports: create_topology_ports(),
-        volumes: create_topology_volumes(),
-        position: Some(Position { x: 100, y: 100 }),
+        volumes: create_topology_volumes().await,
+        images: get_all_images().await,
+        clusters: create_topology_clusters().await,
     };
 
     Json(topo)

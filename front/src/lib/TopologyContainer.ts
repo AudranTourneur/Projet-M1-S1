@@ -1,12 +1,13 @@
 import * as PIXI from 'pixi.js';
 import type { TopologyApp } from './TopologyApp';
 import { BackgroundGrid } from './BackgroundGrid';
+import type { TopologyContainer } from './types/TopologyContainer';
 
-export class TopologyContainer {
+export class TopologyContainerPixi {
 	isDragging: boolean = false;
 	pixiContainer = new PIXI.Container();
 
-	constructor(app: TopologyApp, x: number, y: number, public data: any) {
+	constructor(app: TopologyApp, x: number, y: number, public data: TopologyContainer) {
 		const container = this.pixiContainer;
 		// Create a gray rectangle
 		const graphics = new PIXI.Graphics();
