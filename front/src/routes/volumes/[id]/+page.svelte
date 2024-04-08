@@ -182,7 +182,7 @@
     </FileExplorer>
 </div>
 
-<div>
+<!--<div>
 	<br>
 	<PortsBox {volume}></PortsBox>
-</div>
+</div>-->
