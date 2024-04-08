@@ -5,6 +5,7 @@
 	import { Fa } from 'svelte-fa';
 
 	export let image: ImageData;
+	export let refresh: () => void;
 
 	let isLoadingRemove = false;
 	const deleteVolume = async () => {
@@ -13,7 +14,7 @@
 			method: 'POST'
 		});
 		isLoadingRemove = false;
-		// refresh();
+		refresh();
 	};
 </script>
 
