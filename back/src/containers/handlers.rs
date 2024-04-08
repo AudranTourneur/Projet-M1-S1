@@ -9,7 +9,7 @@ use rocket::serde::json::Json;
 use crate::containers::models::ContainerPortRebindRequest;
 use crate::docker::get_docker_socket;
 
-use super::common::{get_all_containers, get_container_by_id};
+use super::common::{get_all_containers, get_container_by_id, modify_container_yml};
 use super::models::{ContainerData, ContainerList, ContainerStatsResponse};
 
 
@@ -67,12 +67,16 @@ pub async fn container_filesystem_handler(id: &str) -> String {
 
 #[get("/container/<id>")]
 pub async fn container_handler(id: &str) -> Json<Option<ContainerData>> {
+    
     let container = get_container_by_id(id).await;
+    modify_container_yml(id).await;
 
     match container {
         Some(container) => Json(Some(container)),
         None => Json(None),
     }
+
+    
 }
 
 #[post("/container/<id>/start")]
