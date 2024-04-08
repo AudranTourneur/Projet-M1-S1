@@ -1,8 +1,7 @@
 <script lang="ts">
+    export let data;
     const id = data.name;
     console.log(data);
-
-
 
 
 
@@ -10,12 +9,6 @@
 	import FileExplorer from "../FileExplorer.svelte";
 	import { goto } from '$app/navigation';
 
-    export let data: any;
-
-    let volume: VolumeData = {
-        path: '/path/to/volume',
-        mountPath: '/mount/path'
-    };
     
     let showModal = false;
     const dispatch = createEventDispatcher();
@@ -185,10 +178,4 @@
     <h2>Filesystem</h2>
     <FileExplorer {id}>
     </FileExplorer>
-</div>
-
-
-<div>
-    <br>
-    <PortsBox {Volume} />
 </div>
