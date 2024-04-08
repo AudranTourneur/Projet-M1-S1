@@ -1,5 +1,4 @@
 <script lang="ts">
-    export let data;
     const id = data.name;
     console.log(data);
 
