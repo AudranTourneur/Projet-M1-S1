@@ -1,7 +1,7 @@
 use rocket::serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct VolumeData {
@@ -11,14 +11,14 @@ pub struct VolumeData {
     pub size: u64,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct VolumeList {
     pub volumes: Vec<VolumeData>,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct VolumeExplorerData {
@@ -29,7 +29,7 @@ pub struct VolumeExplorerData {
     pub files: Vec<FileData>,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct FileData {

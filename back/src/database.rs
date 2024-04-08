@@ -54,7 +54,10 @@ pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
 
     match res {
         Ok(_) => println!("Clickhouse database initialized"),
-        Err(e) => panic!("Error initializing clickhouse database: {}", e),
+        Err(e) => {
+            println!("WARNING: Error initializing clickhouse database: {}", e);
+            return Err(Box::new(e));
+        }
     };
 
     let init_query_volumes  = include_str!("../resources/clickhouse_init_volumes.sql");
@@ -63,7 +66,10 @@ pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
 
     match res {
         Ok(_) => println!("Clickhouse database initialized"),
-        Err(e) => panic!("Error initializing clickhouse database: {}", e),
+        Err(e) => {
+            println!("Error initializing clickhouse database: {}", e);
+            return Err(Box::new(e));
+        },
     };
 
     Ok(())

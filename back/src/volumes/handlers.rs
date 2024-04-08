@@ -1,36 +1,17 @@
 use std::str::from_utf8;
 use std::collections::HashSet;
-use std::collections::HashMap;
 use rocket::serde::json::Json;
 use bollard::volume::RemoveVolumeOptions;
 use fs_extra::dir::{DirOptions, DirEntryAttr, DirEntryValue, get_details_entry, get_dir_content2};
 
 use crate::{docker::get_docker_socket, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}};
 
+use super::common::get_all_volumes;
 use super::{common::{get_volume_size, _from_base64_url}, models::{VolumeData, VolumeList, FileData}};
 
 #[get("/volumes")]
 pub async fn volumes_handler() -> Json<VolumeList> {
-    let docker = get_docker_socket();
-    let volumes = docker.list_volumes::<String>(None).await.unwrap();
-
-    let volumes = volumes.volumes;
-    let volumes = volumes.unwrap_or_default();
-
-    let mut volumes_data: Vec<VolumeData> = volumes
-        .iter()
-        .map(|volume| {
-            let volume_data = VolumeData {
-                name: volume.name.clone(),
-                created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
-                mountpoint: volume.mountpoint.clone(),
-                size: get_volume_size(volume.clone()),
-            };
-            volume_data
-        })
-        .collect();
-
-    volumes_data.sort_by(|a, b| a.name.cmp(&b.name));
+    let volumes_data = get_all_volumes().await;
 
     let response = VolumeList {
         volumes: volumes_data,

@@ -1,0 +1,19 @@
+FROM ubuntu:22.04 AS runtime
+RUN apt-get update -y && apt-get install ca-certificates -y && update-ca-certificates
+RUN apt-get update -y && apt-get install curl -y
+RUN apt-get update -y && apt-get install -y cargo
+RUN curl https://sh.rustup.rs -sSf | sh
+RUN cargo install cargo-watch
+RUN rustup component add rustfmt
+RUN rustup component add clippy
+RUN apt-get update -y && apt-get install libssl-dev pkg-config gcc g++ libpq-dev libsqlite3-0 libsqlite3-dev rust-src -y
+RUN apt-get update -y && apt-get install apt-transport-https curl software-properties-common -y
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN apt update -y
+RUN apt-cache policy docker-ce
+RUN apt-get install docker-ce -y
+WORKDIR app
+COPY . .
+CMD ["cargo", "watch", "-x", "run", "-w", "src"]
+
