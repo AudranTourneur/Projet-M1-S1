@@ -10,7 +10,7 @@
     import {onMount, createEventDispatcher} from "svelte";
 	import FileExplorer from "../FileExplorer.svelte";
 	import { goto } from '$app/navigation';
-    import PortsBox from "../../containers/[id]/PortsBox.svelte";
+    import PortsBox from "../../volumes/[id]/PortsBox.svelte";
     
     let showModal = false;
     const dispatch = createEventDispatcher();
