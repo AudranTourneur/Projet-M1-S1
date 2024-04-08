@@ -5,9 +5,13 @@
 
 
 
+
+
     import {onMount, createEventDispatcher} from "svelte";
 	import FileExplorer from "../FileExplorer.svelte";
 	import { goto } from '$app/navigation';
+    import PortsBox from './PortsBox.svelte';
+    import type { VolumeData } from '$lib/types/VolumeData'; 
 
     
     let showModal = false;
@@ -178,4 +182,10 @@
     <h2>Filesystem</h2>
     <FileExplorer {id}>
     </FileExplorer>
+</div>
+
+
+<div>
+    <br>
+    <PortsBox {Volume} />
 </div>
