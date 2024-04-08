@@ -174,41 +174,9 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
     };
     */
 
-    /* 
-    pub struct PortBinding {
-        pub host_ip: Option<String>,
-        pub host_port: Option<String>,
-    }; 
-    
-
-    type ExtendedPortData = {
-		port: PortData;					//
-		isEditingPublicPort: boolean;	//
-		isEditingIPPort: boolean;		//
-		isEditingPrivatePort: bolean;	//
-		isEditingTypePort: boolean;		//  tab data
-		currentlyEditingValuePublicPort: number;
-		currentlyEditingValueIPPort: string;
-		currentlyEditingValuePrivatePort: number;
-		currentlyEditingValueTypePort: OurPortTypeEnum
-	};
-
-
-    pub struct ContainerPortRebind {
-    pub host: u16,
-    pub internal: u16
-    }
-
-    pub struct ContainerPortRebindRequest {
-    pub ports: Vec<ContainerPortRebind>
-    }
-
-
-    */
-
 let port_bindings = Some(input.ports.clone().into_iter().map(|p| {
         let port_binding = PortBinding {
-            host_ip: Some("0.0.0.0".into()),
+            host_ip: Some(p.ip.into()),
             host_port: Some(p.internal.to_string()),
         };
 
