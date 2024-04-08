@@ -1,6 +1,8 @@
 use bollard::container::{Config, CreateContainerOptions};
 use bollard::image::{CreateImageOptions, RemoveImageOptions};
+use bollard::secret::ImageDeleteResponseItem;
 use bollard::Docker;
+use diesel::result::Error::NotFound;
 use futures::StreamExt;
 use rocket::serde::json::Json;
 use crate::docker::get_docker_socket;
@@ -108,14 +110,14 @@ pub async fn create_container_from_image_handler(input: Json<ImageCreateContaine
 
 
 #[post("/images/<id>/remove")]
-pub async fn delete_image(id :&str) -> &'static str{
+pub async fn delete_image(id :&str) -> &'static str {
     let docker : Docker = Docker::connect_with_local_defaults().unwrap();
     let options:Option<RemoveImageOptions> = Some(RemoveImageOptions {
         force: true,
         ..Default::default()
     });
 
-    let _ = docker.remove_image(id, options, None).await;
+    let _res = docker.remove_image(id, options, None).await;
     
     "Success."
 }

@@ -1,17 +1,21 @@
 import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
-import { TopologyContainerPixi } from './TopologyContainer';
+import { TopologyContainerPixi } from './TopologyContainerPixi';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyInitData } from './topology';
-import { TopologyLink } from './TopologyLinkPixi';
+import { TopologyLinkPixi } from './TopologyLinkPixi';
+import { TopologyVolumePixi } from './TopologyVolume';
+import type { TopologyEntityPixi } from './TopologyEntityPixi';
 
 export class TopologyApp {
 	app: PIXI.Application;
 	viewport: Viewport;
 
-	currentlySelected: TopologyContainerPixi | null = null;
+	currentlySelected: TopologyEntityPixi | null = null;
 
 	allContainers: Array<TopologyContainerPixi> = [];
+	allVolumes: Array<TopologyVolumePixi> = [];
+	allLinks: Array<TopologyLinkPixi> = [];
 
 	constructor(canvas: HTMLCanvasElement, parent: HTMLElement, public data: TopologyInitData) {
 		const app = new PIXI.Application({ background: '#2A547E', resizeTo: parent, view: canvas, antialias: true });
@@ -42,14 +46,6 @@ export class TopologyApp {
 		for (let i = 0; i < data.containers.length; i++) {
 			const container = data.containers[i];
 			console.log('set', container)
-			let threeRandomIds = data.containers.map(container => container.id);
-			console.log(threeRandomIds);
-			threeRandomIds.sort(() => Math.random() - 0.5);
-			console.log(threeRandomIds);
-			threeRandomIds = threeRandomIds.slice(0, 3);
-			console.log(threeRandomIds);
-
-			container.connectedTo = threeRandomIds;
 
 			const x = container.position?.x ?? getRandomCoord();
 			const y = container.position?.y ?? getRandomCoord();
@@ -60,12 +56,27 @@ export class TopologyApp {
 			for (const targetId of source.data.connectedTo) {
 				const target = this.allContainers.find(container => container.data.data.id === targetId);
 				if (!target) continue
-				TopologyLink.createLink(this, source, target)
+				TopologyLinkPixi.createLinkIfNeeded(this, source, target)
+			}
+		}
+
+		for (const volume of data.volumes) {
+			const x = volume.position?.x ?? getRandomCoord();
+			const y = volume.position?.y ?? getRandomCoord();
+			this.allVolumes.push(new TopologyVolumePixi(this, x, y, volume))
+		}
+
+		for (const container of this.allContainers) {
+			const volumeIds = container.data.data.volumes || []
+			const volumes = this.allVolumes.filter(volume => volumeIds.includes(volume.data.data.name))
+			console.log('vol', volumeIds, volumes)
+			for (const volume of volumes) {
+				TopologyLinkPixi.createLinkIfNeeded(this, container, volume)
 			}
 		}
 	}
 
-	select(container: TopologyContainerPixi) {
+	select(container: TopologyEntityPixi) {
 		this.currentlySelected = container;
 		// disable viewport plugins
 		this.viewport.plugins.pause('drag');

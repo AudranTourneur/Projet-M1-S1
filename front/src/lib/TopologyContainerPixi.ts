@@ -2,12 +2,25 @@ import * as PIXI from 'pixi.js';
 import type { TopologyApp } from './TopologyApp';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyContainer } from './types/TopologyContainer';
+import type { TopologyLinkPixi } from './TopologyLinkPixi';
+import { TopologyEntityPixi } from './TopologyEntityPixi';
 
-export class TopologyContainerPixi {
+export class TopologyContainerPixi extends TopologyEntityPixi {
 	isDragging: boolean = false;
 	pixiContainer = new PIXI.Container();
+	links: Array<TopologyLinkPixi> = [];
 
-	constructor(app: TopologyApp, x: number, y: number, public data: TopologyContainer) {
+	constructor(public app: TopologyApp, public x: number, public y: number, public data: TopologyContainer) {
+		super(app);
+		this.create();
+	}
+
+	create() {
+		const app = this.app;
+		const data = this.data;
+		const x = this.x;
+		const y = this.y;
+
 		const container = this.pixiContainer;
 		// Create a gray rectangle
 		const graphics = new PIXI.Graphics();
@@ -23,8 +36,6 @@ export class TopologyContainerPixi {
 			fill: '#dddddd'
 		});
 
-		const nb = Math.floor(Math.random() * 100);
-
 		const idText = new PIXI.Text('Container', styleName);
 		idText.x = 30;
 		idText.y = 30;
@@ -37,7 +48,7 @@ export class TopologyContainerPixi {
 		});
 
 		// const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
-		const actualName = data.image;
+		const actualName = data.data.image;
 
 		const image = new PIXI.Text(actualName, styleImage);
 		image.x = 30;
@@ -91,43 +102,23 @@ export class TopologyContainerPixi {
 			container.addChild(status);
 		}
 
+		// if (data.iconUrl) {
+			// const img = PIXI.Sprite.from(data.iconUrl);
+			const img = PIXI.Sprite.from('https://cdn-icons-png.flaticon.com/512/888/888879.png')
+			img.width = BackgroundGrid.GRID_SIZE * 0.4;
+			img.height = BackgroundGrid.GRID_SIZE * 0.4;
+
+			img.x = 0.2 * BackgroundGrid.GRID_SIZE;
+			img.y = 1.4 * BackgroundGrid.GRID_SIZE;
+
+			container.addChild(img);
+		// }
+
 		container.x = x;
 		container.y = y;
 
 		app.viewport.addChild(container);
 
-		container.interactive = true;
-
-		container.on('pointerdown', () => {
-			container.alpha = 0.5;
-			this.isDragging = true;
-			app.select(this);
-		});
-
-		container.on('pointerup', () => {
-			container.alpha = 1;
-			this.isDragging = false;
-			app.unselect();
-		});
-
-		container.on('pointerupoutside', () => {
-			container.alpha = 1;
-			this.isDragging = false;
-			app.unselect();
-		});
-
-		const onDrag = (event: PIXI.FederatedPointerEvent) => {
-			if (!this.isDragging) return;
-			const pos = event.data.getLocalPosition(app.viewport);
-			const rawX = pos.x - container.width / 2;
-			const rawY = pos.y - container.height / 2;
-			const gridStep = BackgroundGrid.GRID_SIZE;
-			const x = Math.round(rawX / gridStep) * gridStep;
-			const y = Math.round(rawY / gridStep) * gridStep;
-			container.x = x;
-			container.y = y;
-		};
-
-		container.parent.on('pointermove', (event) => onDrag(event));
+		TopologyEntityPixi.addDragBehaviour(app, this);
 	}
 }
