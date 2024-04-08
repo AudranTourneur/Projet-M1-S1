@@ -4,8 +4,10 @@
 	import type { PortData } from '$lib/types/PortData';
 	import { Fa } from 'svelte-fa';
 	import { faPenToSquare, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
-	import { number } from 'zod';
+	import { map, number } from 'zod';
 	import Input from 'postcss/lib/input';
+	import type { ContainerPortRebindRequest} from '$lib/types/ContainerPortRebindRequest';
+	import type { ContainerPortRebind } from '$lib/types/ContainerPortRebind';
 
 	export let container: ContainerData;
 
@@ -20,7 +22,7 @@
 		currentlyEditingValuePublicPort: number;
 		currentlyEditingValueIPPort: string;
 		currentlyEditingValuePrivatePort: number;
-		currentlyEditingValueTypePort: OurPortTypeEnum
+		currentlyEditingValueTypePort: OurPortTypeEnum;
 	};
 
 	let ports: ExtendedPortData[] = c.ports
@@ -59,7 +61,6 @@
 		ports = ports;
 		console.log(ports);
 	}
-
 
 	function togglePublicPortEditition(p: ExtendedPortData, change: boolean) {
 		if (p.isEditingPublicPort) {
@@ -108,6 +109,31 @@
 		ports = ports;
 		console.log(ports);
 	}
+
+	let response = [{ text: `EMPTY` }, { text: `TCP` }, { text: `UDP` }, { text: `SCTP` }];
+
+
+
+
+	async function sumbit() {
+		const newPorts: ContainerPortRebind[] = ports.map(x=>{
+
+			return {host: x.port.privatePort , internal: x.port.publicPort || 0 , ip: x.port.ip || '' , protocol: x.port.type || ''}
+		})
+		const portFinal: ContainerPortRebindRequest = {ports: newPorts}
+		
+
+		const res = await fetch('/containers/' + container.id + '/api/rebind', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				portFinal
+			})
+		});
+		console.log(res);
+	}
 </script>
 
 <div>
@@ -133,7 +159,8 @@
 		{:else}
 			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, false)}>
 				<Fa icon={faCheck} />
-			</button>
+			</button>'EMPTY';
+
 			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, true)}>
 				<Fa icon={faXmark} />
 			</button>
@@ -196,11 +223,12 @@
 		{#if !p.isEditingTypePort}
 			{p.port.type}
 		{:else}
-			<select class="select w-40">
-				<option value="1">EMPTY</option>
-				<option value="2">TCP</option>
-				<option value="3">UDP</option>
-				<option value="4">SCTP</option>
+			<select bind:value={p.currentlyEditingValueTypePort} class="select w-40">
+				{#each response as response}
+					<option value={response.text}>
+						{response.text}
+					</option>
+				{/each}
 			</select>
 		{/if}
 
@@ -235,4 +263,5 @@
 	{/each}
 
 	<button class="btn variant-glass-primary" on:click={() => addPort()}>Add port</button>
+	<button class="btn variant-glass-primary" on:click={() => sumbit()}>sumbit</button>
 </div>
