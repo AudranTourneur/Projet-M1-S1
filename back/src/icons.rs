@@ -118,7 +118,7 @@ pub async fn spawn_info_service() {
 }
 
 pub async fn resolve_icon_url_from_image_name(image: &str) -> Option<String> {
-    // println!("Attempting to resolve icon for image {}", image);
+    println!("Attempting to resolve icon for image {}", image);
 
     let mut conn = get_sqlite_connection().await.unwrap();
 
