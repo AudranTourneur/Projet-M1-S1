@@ -87,19 +87,17 @@
             <div>
                 <b>Containers :</b>
                 {#if network.containers}
-                    <div class="mt-5">
-                       <div class="grid grid-cols-1 gap-2">
-                            {#each Object.entries(network.containers) as [id, c]}
-                                <div class="flex items-center gap-4 border border-1 p-2 px-4 rounded-lg">
-                                    <div class="flex flex-col">
-                                        <a href="/containers/{id}" class="text-xl font-semibold hover:text-surface-500">{c.name}</a>
-                                        <span class="text-surface-600-300-token">{c.ipv4Address}</span>
-                                        <span class="text-surface-600-300-token">{c.macAddress}</span>
-                                    </div>
-                                    <br />
+                    <div class="mt-5 grid grid-cols-3 gap-4">
+                        {#each Object.entries(network.containers) as [id, c]}
+                            <div class="flex items-center gap-4 border border-1 p-2 px-4 rounded-lg">
+                                <div class="flex flex-col">
+                                    <a href="/containers/{id}" class="text-xl font-semibold hover:text-surface-500">{c.name}</a>
+                                    <span class="text-surface-600-300-token">{c.ipv4Address}</span>
+                                    <span class="text-surface-600-300-token">{c.macAddress}</span>
                                 </div>
-                            {/each}
-                        </div>
+                                <br />
+                            </div>
+                        {/each}
                     </div>
                 {:else}
                     none
