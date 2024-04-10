@@ -4,4 +4,4 @@ import type { TopologyContainer } from "./TopologyContainer";
 import type { TopologyPort } from "./TopologyPort";
 import type { TopologyVolume } from "./TopologyVolume";
 
-export type Topology = { containers: Array<TopologyContainer>, ports: Array<TopologyPort>, volumes: Array<TopologyVolume>, images: Array<ImageData>, };
+export type Topology = { containers: Array<TopologyContainer>, ports: Array<TopologyPort>, volumes: Array<TopologyVolume>, images: Array<ImageData>, clusters: Array<Array<TopologyContainer>>, };

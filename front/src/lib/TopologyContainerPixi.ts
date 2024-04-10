@@ -105,8 +105,8 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 			container.addChild(status);
 		}
 
-		if (data.iconUrl) {
-			const img = PIXI.Sprite.from(data.iconUrl);
+		if (data.data.iconUrl) {
+			const img = PIXI.Sprite.from(data.data.iconUrl);
 			console.log('IMG', img)
 			// const img = PIXI.Sprite.from('https://cdn-icons-png.flaticon.com/512/888/888879.png')
 			img.width = BackgroundGrid.GRID_SIZE * 0.4;

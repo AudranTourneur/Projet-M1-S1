@@ -2,4 +2,4 @@
 import type { ContainerData } from "./ContainerData";
 import type { Position } from "./Position";
 
-export type TopologyContainer = { data: ContainerData, name: string, image: string, iconUrl: string, exposedPorts: Array<number>, exposedVolumes: Array<string>, connectedTo: Array<string>, position: Position | null, };
+export type TopologyContainer = { data: ContainerData, connectedTo: Array<string>, position: Position | null, };
