@@ -1,5 +1,8 @@
+use std::{fs::File, io::{Read}};
+
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
+use serde_yaml::{from_str, Value};
 
 use crate::{docker::get_docker_socket, icons::resolve_icon_url_from_image_name};
 
@@ -174,14 +177,17 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
 
 
 
-pub fn yaml_read(yaml_path : String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn yaml_read(yaml_path : String) -> Result<String, Box<dyn std::error::Error>> {
     println!("yaml_read A");
-    let f = std::fs::File::open(yaml_path)?;
-    println!("yam_read B");
-    let d: String = serde_yaml::from_reader(f)?;
-    println!("yaml_read C");
-    println!("Read YAML string: {}", d);
-    Ok(())
+    let path = format!("/rootfs/{}",yaml_path);
+    println!("path reminder {:?}", path.clone());
+    let mut file = File::open(path)?;
+    println!("yaml_read B");
+    let mut contents = String::new();
+    let file_to_string = file.read_to_string(&mut contents)?;
+    println!("yaml_read C{}", contents);
+
+    Ok(contents)
 }
 
 pub async fn modify_container_yml(id: &str){ //rebind: ContainerPortRebind
@@ -194,6 +200,6 @@ pub async fn modify_container_yml(id: &str){ //rebind: ContainerPortRebind
     }
     else {
         println!("Docker compose found at : {:?}", path_string.clone());
-        let compose_result = yaml_read(path_string);
+        yaml_read(path_string);
     }
 }
