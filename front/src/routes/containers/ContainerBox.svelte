@@ -178,7 +178,7 @@
 		</button>
 		<button
 			class="btn variant-filled-error p-2"
-			disabled={container.status.includes('Exited') || isLoadingStop}
+			disabled={container.status.includes('Exited') || container.status === 'Created' || isLoadingStop}
 			on:click={stopContainer}>
 			<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
 		</button>

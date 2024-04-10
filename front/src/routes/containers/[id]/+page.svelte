@@ -63,12 +63,14 @@
 		<span class="font-bold">Date of creation :</span>
 		<span>{data.networks}</span>
 	</div>
-	<div class="flex justify-between items-center mb-2">
+	<div class="mb-2">
 		{#each data.ports as port}
-			<span>IP: {port.ip}</span>
-			<span>PrivatePort: {port.privatePort}</span>
-			<span>PublicPort: {port.publicPort}</span>
-			<span>Type: {port.type}</span>
+			<div class="flex flex-col-5 mb-2">	
+				<span>IP: {port.ip}</span>
+				<span>PrivatePort: {port.privatePort}</span>
+				<span>PublicPort: {port.publicPort}</span>
+				<span>Type: {port.type}</span>
+			</div>
 		{/each}
 	</div>
 	<div class="flex justify-between items-center mb-2">
@@ -76,6 +78,7 @@
 		<span>{data.volumes}</span>
 	</div>
 </div>
+
 
 <button class="btn variant-ghost-error" on:click={removeContainer}>Delete container</button>
 

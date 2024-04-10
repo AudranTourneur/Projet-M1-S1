@@ -142,7 +142,7 @@ fn details_fdir(dir_folders : Vec<String>, full_path : String, root_folder_witho
 
     let folder_data : Vec<Option<FileData>> = dir_folders.iter().map(|x| {
         println!("full path {}",full_path.clone());
-        let tmp = format!("{}{}", root_folder_without_slash.clone(), x.clone());
+        let tmp = format!("{}{}", root_folder_without_slash, x.clone());
         println!("{}",tmp);
 
         let mut config = HashSet::new();

@@ -35,7 +35,7 @@ pub async fn dns_list_handler() -> Json<DnsList> {
     Json(dns)
 }
 
-#[post("/dns/upsert", data = "<dns>")]
-pub fn dns_upsert_handler(dns: Json<DnsData>) -> Json<bool> {
-    Json(false)
-}
+// #[post("/dns/upsert", data = "<dns>")]
+// pub fn dns_upsert_handler(dns: Json<DnsData>) -> Json<bool> {
+//     Json(false)
+// }

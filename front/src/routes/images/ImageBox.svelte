@@ -9,7 +9,7 @@
 	export let refresh: () => void;
 
 	let isLoadingRemove = false;
-	const deleteVolume = async () => {
+	const deleteImage = async () => {
 		isLoadingRemove = true;
 		await fetch(`/images/${image.id}/api/remove`, {
 			method: 'POST'
@@ -44,7 +44,7 @@
 	</div>
 
 	<div class="flex gap-1">
-		<button class="btn variant-filled-error p-2" on:click={deleteVolume} disabled={isLoadingRemove}>
+		<button class="btn variant-filled-error p-2" on:click={deleteImage} disabled={isLoadingRemove}>
 			<Fa icon={!isLoadingRemove ? faTrash : faCircleNotch} spin={isLoadingRemove} fw />
 		</button>
 		<a href="/images/{image.id}" class="btn variant-ghost p-2">

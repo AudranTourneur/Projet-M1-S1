@@ -1,9 +1,11 @@
+use std::{fs::File, io::Read};
+
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
 
 use crate::{docker::get_docker_socket, icons::resolve_icon_url_from_image_name};
 
-use super::models::{ContainerData, ContainerPortRebind, OurPortTypeEnum, PortData};
+use super::models::{ContainerData, OurPortTypeEnum, PortData};
 
 pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let docker: Docker = get_docker_socket();
@@ -96,12 +98,6 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
 
     let networks: Vec<String> = endpoint_settings.keys().cloned().collect();
 
-    let status = container.status.clone();
-    let status = match status {
-        Some(status) => status,
-        None => return None,
-    };
-
     let image_name = container.image.clone();
     let imgname = image_name.clone();
    
@@ -174,20 +170,32 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
 
 
 
-//pub fn yaml_read(yaml_path : String) -> Result<(), Box<dyn std::error::Error>> {
-//    let f = std::fs::File::open(yaml_path)?;
-//    let d: String = serde_yaml::from_reader(f)?;
-//    println!("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
-//    println!("Read YAML string: {}", d);
-//    Ok(())
-//}
+pub fn yaml_read(yaml_path : String) -> Result<String, Box<dyn std::error::Error>> {
+    println!("yaml_read A");
+    let path = format!("/rootfs/{}",yaml_path);
+    println!("path reminder {:?}", path.clone());
+    let mut file = File::open(path)?;
+    println!("yaml_read B");
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    println!("yaml_read C{}", contents);
+
+    Ok(contents)
+}
 
 pub async fn modify_container_yml(id: &str){ //rebind: ContainerPortRebind
     let my_cont_data = get_container_by_id(id).await;
     let yml_path = my_cont_data.unwrap().compose_file;
-    println!("docker compose path : {}", yml_path.clone().unwrap());
+    let path_string = yml_path.clone().unwrap_or_default();
     //ex : /home/abyuka/Documents/Projet-M1-S1/docker-compose.yml
 
 //    yaml_read(yml_path.unwrap());
 
+    if path_string.is_empty(){
+        println!("No docker compose found.")
+    }
+    else {
+        println!("Docker compose found at : {:?}", path_string.clone());
+        let _ = yaml_read(path_string);
+    }
 }
