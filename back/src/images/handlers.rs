@@ -54,11 +54,8 @@ pub async fn image_handler(id: &str) -> Json<ImageData> {
     Json(response)
 }
 
-#[post("/images/pull", data = "<input>")]
-pub async fn pull_image_handler(input: Json<ImagePullRequest>) -> &'static str {
-
-    println!("pull_image input: {:?}", input);
-
+#[post("/images/<id>/pull")]
+pub async fn pull_image_handler(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let options = Some(CreateImageOptions {
         from_image: input.id.clone(),
