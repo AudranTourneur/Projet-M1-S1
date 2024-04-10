@@ -174,13 +174,13 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
 
 
 
-pub fn yaml_read(yaml_path : String) -> Result<(), Box<dyn std::error::Error>> {
-    let f = std::fs::File::open(yaml_path)?;
-    let d: String = serde_yaml::from_reader(f)?;
-    println!("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
-    println!("Read YAML string: {}", d);
-    Ok(())
-}
+//pub fn yaml_read(yaml_path : String) -> Result<(), Box<dyn std::error::Error>> {
+//    let f = std::fs::File::open(yaml_path)?;
+//    let d: String = serde_yaml::from_reader(f)?;
+//    println!("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
+//    println!("Read YAML string: {}", d);
+//    Ok(())
+//}
 
 pub async fn modify_container_yml(id: &str){ //rebind: ContainerPortRebind
     let my_cont_data = get_container_by_id(id).await;
@@ -188,6 +188,6 @@ pub async fn modify_container_yml(id: &str){ //rebind: ContainerPortRebind
     println!("docker compose path : {}", yml_path.clone().unwrap());
     //ex : /home/abyuka/Documents/Projet-M1-S1/docker-compose.yml
 
-    yaml_read(yml_path.unwrap());
+//    yaml_read(yml_path.unwrap());
 
 }
