@@ -22,11 +22,11 @@
 	}
 
 	onMount(async () => {
-		//const response = await fetch('/containers/' + $page.params.id + '/api/stats');
-		//const statsRes = (await response.json()) as ContainerStatsResponse;
-		//console.log(statsRes);
+		const response = await fetch('/containers/' + $page.params.id + '/api/stats');
+		const statsRes = (await response.json()) as ContainerStatsResponse;
+		console.log(statsRes);
 
-		//inputData = generateDayWiseTimeSeries(statsRes.stats)
+		inputData = generateDayWiseTimeSeries(statsRes.stats)
 	});
 
 	async function removeContainer() {
