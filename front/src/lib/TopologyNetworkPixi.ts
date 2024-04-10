@@ -23,7 +23,19 @@ export class TopologyNetworkPixi extends TopologyEntityPixi {
 		graphics.beginFill(0xFF0000);
 		graphics.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 3, BackgroundGrid.GRID_SIZE * 2, 20);
 		graphics.endFill();
-		container.addChild(graphics); 
+		container.addChild(graphics);
+
+        // add text
+		const styleName = new PIXI.TextStyle({
+			fontFamily: 'Arial',
+			fontSize: 30,
+			fill: '#dddddd'
+		});
+
+		const idText = new PIXI.Text(data, styleName);
+		idText.x = 30;
+		idText.y = 30;
+		container.addChild(idText);
 
         container.x = x;
 		container.y = y;
