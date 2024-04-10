@@ -48,6 +48,7 @@
     "apexcharts": "^3.44.2",
     "copy-to-clipboard": "^3.3.3",
     "graphology": "^0.25.4",
+    "graphology-layout-force": "^0.2.4",
     "highlight.js": "^11.9.0",
     "js-base64": "^3.7.7",
     "pixi-graphpaper": "^2.0.1",
