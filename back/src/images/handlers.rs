@@ -73,7 +73,7 @@ pub async fn pull_image_handler(id: &str) -> &'static str {
 }
 
 #[post("/images/create-container", data = "<input>")]
-pub async fn create_container_from_image_handler(input: Json<ImageCreateContainerRequest>) -> Json<bool> {
+pub async fn create_container_from_image_handler(input: Json<ImageCreateContainerRequest>) -> Json<String> {
     let docker: Docker = get_docker_socket();
 
     let user_image_name = input.image_name.clone();
@@ -99,9 +99,9 @@ pub async fn create_container_from_image_handler(input: Json<ImageCreateContaine
     match res {
         Ok(_) => {
             println!("Container created successfully {:?}", res);
-            Json(true)
+            Json(res.unwrap().id)
         },
-        Err(_) => Json(false),
+        Err(_) => Json("Error creating container".to_string()),
     }
 }
 

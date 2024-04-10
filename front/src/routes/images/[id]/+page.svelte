@@ -14,9 +14,9 @@
 	let isLoadingCreate = false;
 	let isLoadingRemove = false;
 
-	const CreateNewContainer = async () => {
+	const createNewContainer = async () => {
 		isLoadingCreate = true;
-		await fetch('/images/' + data.id + '/api/create-container', {
+		const res = await fetch('/images/' + data.id + '/api/create-container', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -25,6 +25,7 @@
 				containerName: !!name ? name : null
 			})
 		});
+		goto('/containers/' + (await res.json()));
 		isLoadingCreate = false;
 	};
 
@@ -56,7 +57,7 @@
 	</div>
 	<div class="flex justify-end mt-4">
 		<input class="input" bind:value={name} placeholder="Container name" />
-		<button class="btn variant-ghost-success ml-2" on:click={CreateNewContainer} disabled={isLoadingCreate}>
+		<button class="btn variant-ghost-success ml-2" on:click={createNewContainer} disabled={isLoadingCreate}>
 			<Fa icon={isLoadingCreate ? faCircleNotch : faPlusCircle} spin={isLoadingCreate} fw class="mr-1" />
 			Create a new container from this image
 		</button>
