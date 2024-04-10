@@ -7,7 +7,6 @@ use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 
 use crate::containers::{common::get_all_containers, models::ContainerData};
 
-
 #[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -17,7 +16,6 @@ pub struct ComposeData {
     pub id: String,
     pub containers: Vec<ContainerData>,
 }
-
 
 #[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -31,9 +29,7 @@ fn to_base64_url(data: &str) -> String {
 }
 
 pub async fn get_all_composes() -> ComposeList {
-    let mut compose_data = ComposeList {
-        composes: vec![],
-    };
+    let mut compose_data = ComposeList { composes: vec![] };
 
     let listed_containers: Vec<ContainerData> = get_all_containers().await;
 
@@ -99,7 +95,6 @@ pub async fn compose_handler(id: String) -> Json<Option<ComposeData>> {
         Some(compose) => compose,
         None => return Json(None),
     };
-
 
     Json(Some(compose.clone()))
 }

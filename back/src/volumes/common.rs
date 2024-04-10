@@ -1,9 +1,15 @@
-
+use base64::{
+    alphabet,
+    engine::{
+        self,
+        general_purpose::{self},
+    },
+    Engine as _,
+};
 use bollard::service::Volume;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
-use base64::{alphabet, engine::{self, general_purpose::{self}}, Engine as _};
 
 use crate::docker::get_docker_socket;
 
@@ -58,12 +64,10 @@ pub fn remove_prefix_from_path(path: String, prefix: &str) -> String {
     path.to_string()
 }
 
-
 pub fn _from_base64_url(data: &str) -> Vec<u8> {
-    engine::GeneralPurpose::new(
-        &alphabet::URL_SAFE,
-        general_purpose::NO_PAD)
-.decode(data).unwrap()
+    engine::GeneralPurpose::new(&alphabet::URL_SAFE, general_purpose::NO_PAD)
+        .decode(data)
+        .unwrap()
 }
 
 pub async fn get_all_volumes() -> Vec<VolumeData> {

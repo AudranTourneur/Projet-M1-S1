@@ -1,7 +1,7 @@
 use rocket::serde::{Deserialize, Serialize};
-use ts_rs::TS;
 use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
+use ts_rs::TS;
 
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]

@@ -25,10 +25,12 @@ pub async fn insert_container_stats(
 
     let res = insert.execute().await;
 
-
     match res {
         Ok(_) => (),
-        Err(e) => println!("Error inserting container statistics: {} | REQ = {}", e, insert_query),
+        Err(e) => println!(
+            "Error inserting container statistics: {} | REQ = {}",
+            e, insert_query
+        ),
     };
 
     Ok(())
@@ -48,7 +50,7 @@ pub fn get_clickhouse_client() -> Client {
 pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();
 
-    let init_query_containers  = include_str!("../resources/clickhouse_init_containers.sql");
+    let init_query_containers = include_str!("../resources/clickhouse_init_containers.sql");
 
     let res = client.query(init_query_containers).execute().await;
 
@@ -60,7 +62,7 @@ pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
         }
     };
 
-    let init_query_volumes  = include_str!("../resources/clickhouse_init_volumes.sql");
+    let init_query_volumes = include_str!("../resources/clickhouse_init_volumes.sql");
 
     let res = client.query(init_query_volumes).execute().await;
 
@@ -69,14 +71,14 @@ pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
         Err(e) => {
             println!("Error initializing clickhouse database: {}", e);
             return Err(Box::new(e));
-        },
+        }
     };
 
     Ok(())
 }
 
-use serde::{Deserialize, Serialize};
 use clickhouse::Row;
+use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Row, Deserialize, Serialize, Debug, TS)]
@@ -107,25 +109,19 @@ pub async fn get_historical_statistics_for_container(
     Ok(vector_response)
 }
 
-
-pub async fn _insert_volume_stats(
-    volume_statistics: VolumeStats,
-) -> Result<(), Box<dyn Error>> {
+pub async fn _insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), Box<dyn Error>> {
     let clickhouse_client = get_clickhouse_client();
 
     let insert_query = format!(
         "INSERT INTO volume_statistics (id, timestamp, disk_usage)
         VALUES ('{}', '{}', '{}')",
-        volume_statistics.volume_id,
-        volume_statistics.timestamp,
-        volume_statistics.disk_usage,
+        volume_statistics.volume_id, volume_statistics.timestamp, volume_statistics.disk_usage,
     );
 
     // todo: replace by prepared statement!!!
     let insert = clickhouse_client.query(&insert_query);
 
     let res = insert.execute().await;
-
 
     match res {
         Ok(_) => (),

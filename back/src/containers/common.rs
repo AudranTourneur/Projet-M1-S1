@@ -16,18 +16,17 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
             all: true,
             ..Default::default()
         }))
-        .await.unwrap_or(Vec::new());
+        .await
+        .unwrap_or(Vec::new());
 
-    let container = containers
-        .iter()
-        .find(|container| {
-            let container_id = container.id.clone();
-            let container_id = match container_id {
-                Some(container_id) => container_id,
-                None => return false,
-            };
-            container_id == id
-        });
+    let container = containers.iter().find(|container| {
+        let container_id = container.id.clone();
+        let container_id = match container_id {
+            Some(container_id) => container_id,
+            None => return false,
+        };
+        container_id == id
+    });
 
     let container = match container {
         Some(container) => container,
@@ -45,12 +44,13 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
                 return name;
             }
             return volume.source.clone().unwrap_or_default();
-            
         })
         .collect();
 
     let labels = container.labels.clone().unwrap_or_default();
-    let compose_file = labels.get("com.docker.compose.project.config_files").map(|x| x.to_string());
+    let compose_file = labels
+        .get("com.docker.compose.project.config_files")
+        .map(|x| x.to_string());
 
     let ports: Vec<PortData> = container
         .ports
@@ -92,7 +92,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         None => return None,
     };
 
-    let endpoint_settings =  network_settings.networks.clone();
+    let endpoint_settings = network_settings.networks.clone();
     let endpoint_settings = match endpoint_settings {
         Some(endpoint_settings) => endpoint_settings,
         None => return None,
@@ -104,7 +104,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         Some(id) => get_image_by_id(&id).await,
         None => None,
     };
-   
+
     let icon_url: Option<String> = match image_data {
         Some(image_data) => image_data.icon_url,
         None => None,
@@ -157,11 +157,9 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
     listed_containers
 }
 
-
-
-pub fn yaml_read(yaml_path : String) -> Result<String, Box<dyn std::error::Error>> {
+pub fn yaml_read(yaml_path: String) -> Result<String, Box<dyn std::error::Error>> {
     println!("yaml_read A");
-    let path = format!("/rootfs/{}",yaml_path);
+    let path = format!("/rootfs/{}", yaml_path);
     println!("path reminder {:?}", path.clone());
     let mut file = File::open(path)?;
     println!("yaml_read B");
@@ -172,18 +170,18 @@ pub fn yaml_read(yaml_path : String) -> Result<String, Box<dyn std::error::Error
     Ok(contents)
 }
 
-pub async fn modify_container_yml(id: &str){ //rebind: ContainerPortRebind
+pub async fn modify_container_yml(id: &str) {
+    //rebind: ContainerPortRebind
     let my_cont_data = get_container_by_id(id).await;
     let yml_path = my_cont_data.unwrap().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
     //ex : /home/abyuka/Documents/Projet-M1-S1/docker-compose.yml
 
-//    yaml_read(yml_path.unwrap());
+    //    yaml_read(yml_path.unwrap());
 
-    if path_string.is_empty(){
+    if path_string.is_empty() {
         println!("No docker compose found.")
-    }
-    else {
+    } else {
         println!("Docker compose found at : {:?}", path_string.clone());
         let _ = yaml_read(path_string);
     }

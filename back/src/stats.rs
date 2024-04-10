@@ -61,7 +61,7 @@ pub async fn get_container_statistics(container_id_to_get: String) {
 
         if diff < time_threshold {
             continue;
-        } 
+        }
         //else {
         //    println!(
         //        "Getting statistics for <Name={}, ID={}>",

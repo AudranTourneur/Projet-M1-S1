@@ -52,23 +52,19 @@ pub struct ContainerStatsResponse {
     pub stats: Vec<crate::database::ContainerStatisticsRow>,
 }
 
-
 #[derive(Serialize, Debug, TS, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ContainerPortRebindRequest {
-    pub ports: Vec<ContainerPortRebind>
+    pub ports: Vec<ContainerPortRebind>,
 }
-
 
 #[derive(Serialize, Debug, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ContainerPortRebind {
-    pub host: u16,      //public port
-    pub internal: u16,   //private
-    pub ip : String ,
-    pub protocol : String,
-    
-    
+    pub host: u16,     //public port
+    pub internal: u16, //private
+    pub ip: String,
+    pub protocol: String,
 }

@@ -1,25 +1,25 @@
 use database::init_clickhouse_database;
-use sqlitedb::init_sqlite_database;
 use icons::spawn_info_service;
+use sqlitedb::init_sqlite_database;
 
-mod docker;
 mod auth;
 mod containers;
+mod docker;
 mod images;
 mod models;
 mod networks;
 mod overview;
 mod schema;
 //mod stats;
+mod composes;
 mod database;
+mod dns;
+mod icons;
+mod ports;
+mod sqlitedb;
 mod stats;
 mod topology;
 mod volumes;
-mod ports;
-mod sqlitedb;
-mod icons;
-mod composes;
-mod dns;
 mod web;
 
 // #[macro_use]
@@ -29,19 +29,19 @@ mod web;
 extern crate rocket;
 
 fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
-    let base_routes =   routes![
-            auth::auth_handler,
-            overview::overview_handler,
-            ports::ports_handler,
-            topology::topology_handler,
-            topology::topology_save_handler,
-            composes::composes_handler,
-            composes::compose_handler,
-            composes::compose_start_handler,
-            composes::compose_stop_handler,
-            dns::dns_list_handler,
-            // dns::dns_upsert_handler,
-        ];
+    let base_routes = routes![
+        auth::auth_handler,
+        overview::overview_handler,
+        ports::ports_handler,
+        topology::topology_handler,
+        topology::topology_save_handler,
+        composes::composes_handler,
+        composes::compose_handler,
+        composes::compose_start_handler,
+        composes::compose_stop_handler,
+        dns::dns_list_handler,
+        // dns::dns_upsert_handler,
+    ];
 
     let images_handlers = images::register::get_all_image_handlers();
     let containers_handlers = containers::register::get_all_container_handlers();
@@ -57,10 +57,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
         .map(|route| route.clone())
         .collect::<Vec<_>>();
 
-    rocket::build().mount(
-        "/",
-        all_handlers
-    )
+    rocket::build().mount("/", all_handlers)
 }
 
 async fn spawn_statistics_subsystem() {

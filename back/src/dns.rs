@@ -18,7 +18,7 @@ pub struct DnsList {
 
 #[get("/dns")]
 pub async fn dns_list_handler() -> Json<DnsList> {
-    //let caddyfile_content = std::fs::read_to_string("/etc/caddy/Caddyfile").unwrap();    
+    //let caddyfile_content = std::fs::read_to_string("/etc/caddy/Caddyfile").unwrap();
     let client = reqwest::Client::new();
 
     // let url = "http://localhost:2019/config/apps/http/servers/srv0/routes";
@@ -28,9 +28,7 @@ pub async fn dns_list_handler() -> Json<DnsList> {
 
     println!("{:?}", response);
 
-    let dns = DnsList {
-        dns: vec![]
-    };
+    let dns = DnsList { dns: vec![] };
 
     Json(dns)
 }

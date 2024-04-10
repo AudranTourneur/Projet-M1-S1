@@ -1,6 +1,8 @@
 use rocket::Route;
 
-use crate::volumes::handlers::{volume_explorer_handler, volume_handler, volumes_handler, delete_volume};
+use crate::volumes::handlers::{
+    delete_volume, volume_explorer_handler, volume_handler, volumes_handler,
+};
 
 pub fn get_all_volumes_handlers() -> Vec<Route> {
     routes![

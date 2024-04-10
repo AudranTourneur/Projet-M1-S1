@@ -1,5 +1,7 @@
+use crate::images::handlers::{
+    create_container_from_image_handler, delete_image, pull_image_handler,
+};
 use rocket::Route;
-use crate::images::handlers::{create_container_from_image_handler, pull_image_handler, delete_image};
 
 use super::handlers::{image_handler, images_handler};
 

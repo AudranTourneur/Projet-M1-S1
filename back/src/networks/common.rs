@@ -5,7 +5,7 @@ use futures::future::join_all;
 
 use crate::docker::get_docker_socket;
 
-use super::models::{NetworkContainerData, IpamConfigData, NetworkData};
+use super::models::{IpamConfigData, NetworkContainerData, NetworkData};
 
 pub fn get_ipam(network_response: Network) -> Vec<IpamConfigData> {
     let ipam = network_response.ipam.clone();
@@ -14,10 +14,7 @@ pub fn get_ipam(network_response: Network) -> Vec<IpamConfigData> {
         None => return Vec::new(),
     };
 
-    
-    let ipam_configs = ipam
-        .clone()
-        .config;
+    let ipam_configs = ipam.clone().config;
     let ipam_configs = match ipam_configs {
         Some(ipam_configs) => ipam_configs,
         None => return Vec::new(),
@@ -40,9 +37,7 @@ pub fn get_ipam(network_response: Network) -> Vec<IpamConfigData> {
 }
 
 pub fn get_containers(network_response: Network) -> HashMap<String, NetworkContainerData> {
-    let network_containers = network_response
-        .clone()
-        .containers;
+    let network_containers = network_response.clone().containers;
     let network_containers = match network_containers {
         Some(network_containers) => network_containers,
         None => return HashMap::new(),
@@ -73,36 +68,37 @@ pub async fn get_all_networks() -> Vec<NetworkData> {
         Err(_) => return vec![],
     };
 
-    let my_networks = join_all(base_networks
-        .iter()
-        .map(|network| async {
-            let docker: Docker = get_docker_socket();
-            let network_response = docker.inspect_network::<String>(network.id.as_deref().unwrap_or(""), None).await;
-            let network_response = match network_response {
-                Ok(network_response) => network_response,
-                Err(_) => return NetworkData {
+    let my_networks = join_all(base_networks.iter().map(|network| async {
+        let docker: Docker = get_docker_socket();
+        let network_response = docker
+            .inspect_network::<String>(network.id.as_deref().unwrap_or(""), None)
+            .await;
+        let network_response = match network_response {
+            Ok(network_response) => network_response,
+            Err(_) => {
+                return NetworkData {
                     id: "UNDEFINED".to_string(),
                     name: "UNDEFINED".to_string(),
                     created: "UNDEFINED".to_string(),
                     labels: None,
                     ipam_config: None,
                     containers: None,
-                },
-            };
-            let config = get_ipam(network_response.clone());
-            let containers = get_containers(network_response);
+                }
+            }
+        };
+        let config = get_ipam(network_response.clone());
+        let containers = get_containers(network_response);
 
-            let our_network = NetworkData {
-                id: network.id.clone().unwrap_or("UNDEFINED".to_string()),
-                name: network.name.clone().unwrap_or("UNDEFINED".to_string()),
-                created: network.created.clone().unwrap_or("UNDEFINED".to_string()),
-                labels: network.labels.clone(),
-                ipam_config: Some(config),
-                containers: Some(containers),
-            };
-            our_network
-        })
-    );
+        let our_network = NetworkData {
+            id: network.id.clone().unwrap_or("UNDEFINED".to_string()),
+            name: network.name.clone().unwrap_or("UNDEFINED".to_string()),
+            created: network.created.clone().unwrap_or("UNDEFINED".to_string()),
+            labels: network.labels.clone(),
+            ipam_config: Some(config),
+            containers: Some(containers),
+        };
+        our_network
+    }));
 
     my_networks.await
 }

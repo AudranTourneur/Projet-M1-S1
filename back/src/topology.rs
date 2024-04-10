@@ -5,7 +5,11 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    containers::{common::get_all_containers, models::ContainerData}, sqlitedb::get_sqlite_connection, volumes::{common::get_all_volumes, models::VolumeData}, images::models::ImageData, images::common::get_all_images
+    containers::{common::get_all_containers, models::ContainerData},
+    images::common::get_all_images,
+    images::models::ImageData,
+    sqlitedb::get_sqlite_connection,
+    volumes::{common::get_all_volumes, models::VolumeData},
 };
 
 #[derive(Serialize, Deserialize, TS, Debug)]
@@ -91,9 +95,16 @@ async fn create_topology_containers() -> Vec<TopologyContainer> {
         .map(|container| {
             let container_position: Option<Position> = all_containers_positions
                 .get(&container.id)
-                .map(|(x, y)| Position { x: *x as i32, y: *y as i32 });
+                .map(|(x, y)| Position {
+                    x: *x as i32,
+                    y: *y as i32,
+                });
 
-            println!("obtained container_position: {:?} for {}", container_position, container.id.clone());
+            println!(
+                "obtained container_position: {:?} for {}",
+                container_position,
+                container.id.clone()
+            );
 
             let container_data = TopologyContainer {
                 data: container.clone(),
@@ -129,7 +140,7 @@ fn create_topology_ports() -> Vec<TopologyPort> {
 }
 
 async fn create_topology_volumes() -> Vec<TopologyVolume> {
-    let volumes : Vec<VolumeData> = get_all_volumes().await;
+    let volumes: Vec<VolumeData> = get_all_volumes().await;
 
     let topology_volumes: Vec<TopologyVolume> = volumes
         .iter()

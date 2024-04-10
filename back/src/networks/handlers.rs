@@ -3,7 +3,10 @@ use rocket::serde::json::Json;
 
 use crate::docker::get_docker_socket;
 
-use super::{common::{get_all_networks, get_containers, get_ipam}, models::{NetworkList, NetworkData}};
+use super::{
+    common::{get_all_networks, get_containers, get_ipam},
+    models::{NetworkData, NetworkList},
+};
 
 #[get("/networks")]
 pub async fn networks_handler() -> Json<NetworkList> {
@@ -19,15 +22,12 @@ pub async fn networks_handler() -> Json<NetworkList> {
 #[get("/networks/<id>")]
 pub async fn network_handler(id: &str) -> Json<Option<NetworkData>> {
     let all_networks: Vec<NetworkData> = get_all_networks().await;
-    let network = all_networks
-        .iter()
-        .find(|network| network.id == id);
+    let network = all_networks.iter().find(|network| network.id == id);
     let network = match network {
         Some(network) => network,
         None => return Json(None),
     };
-    
-    
+
     let docker: Docker = get_docker_socket();
     let network_response = docker.inspect_network::<String>(id, None).await;
     let network_response = match network_response {

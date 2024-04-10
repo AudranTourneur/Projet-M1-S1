@@ -3,7 +3,7 @@ use rocket::serde::json::Json;
 #[derive(serde::Serialize)]
 pub struct PortData {
     ip: String,
-    port: u16
+    port: u16,
 }
 
 #[derive(serde::Serialize)]
@@ -16,17 +16,15 @@ pub fn ports_handler() -> Json<PortsResponse> {
     let ports = vec![
         PortData {
             ip: "0.0.0.0".to_string(),
-            port: 8080
+            port: 8080,
         },
         PortData {
             ip: "0.0.0.0".to_string(),
-            port: 3306
+            port: 3306,
         },
     ];
-  
-    let res = PortsResponse {
-        ports
-    };
+
+    let res = PortsResponse { ports };
 
     Json(res)
 }

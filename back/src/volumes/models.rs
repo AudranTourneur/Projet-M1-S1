@@ -33,8 +33,8 @@ pub struct VolumeExplorerData {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct FileData {
-    pub name : String,
-    pub size : String,
+    pub name: String,
+    pub size: String,
     //pub name64 : String,
     /* pub creation_time : String,
     pub permissions : String,
