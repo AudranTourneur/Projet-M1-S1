@@ -16,6 +16,5 @@ export const POST: RequestHandler = async ({ params, fetch , request}) => {
             containerName,
         }),
     });
-    console.log('Backend response is', await serverResponse.text())
-    return json('fini');
+    return json(await serverResponse.json());
 };

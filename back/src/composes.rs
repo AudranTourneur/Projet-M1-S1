@@ -1,4 +1,4 @@
-use std::{fmt::Display, process::{Command, ExitStatus}};
+use std::process::Command;
 
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;

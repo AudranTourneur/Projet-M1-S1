@@ -128,11 +128,9 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({
-				portFinal
-			})
+			body: JSON.stringify(portFinal)
 		});
-		console.log(res);
+		console.log(portFinal);
 	}
 </script>
 

@@ -20,6 +20,7 @@ mod sqlitedb;
 mod icons;
 mod composes;
 mod dns;
+mod web;
 
 // #[macro_use]
 // extern crate debug_stub_derive;
@@ -39,7 +40,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
             composes::compose_start_handler,
             composes::compose_stop_handler,
             dns::dns_list_handler,
-            dns::dns_upsert_handler,
+            // dns::dns_upsert_handler,
         ];
 
     let images_handlers = images::register::get_all_image_handlers();

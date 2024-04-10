@@ -12,5 +12,11 @@ CREATE TABLE IF NOT EXISTS topology (
     position_y INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS web_cache (
+    request_url TEXT PRIMARY KEY,
+    last_updated_at BIGINT NOT NULL,
+    response_status INTEGER NOT NULL,
+    response_text TEXT NOT NULL
+);
 
 COMMIT;
