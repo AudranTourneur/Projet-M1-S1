@@ -3,7 +3,7 @@ use futures::future::join_all;
 
 use crate::{docker::get_docker_socket, icons::resolve_icon_url_from_image_name};
 
-use super::models::{ContainerData, ContainerPortRebind, OurPortTypeEnum, PortData};
+use super::models::{ContainerData, OurPortTypeEnum, PortData};
 
 pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let docker: Docker = get_docker_socket();
@@ -95,12 +95,6 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     };
 
     let networks: Vec<String> = endpoint_settings.keys().cloned().collect();
-
-    let status = container.status.clone();
-    let status = match status {
-        Some(status) => status,
-        None => return None,
-    };
 
     let image_name = container.image.clone();
     let imgname = image_name.clone();
