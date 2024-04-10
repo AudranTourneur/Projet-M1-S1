@@ -3,9 +3,11 @@ use std::{fs::File, io::Read};
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
 
-use crate::{docker::get_docker_socket, icons::resolve_icon_url_from_image_name};
+use crate::docker::get_docker_socket;
 
 use super::models::{ContainerData, OurPortTypeEnum, PortData};
+
+use crate::images::common::get_image_by_id;
 
 pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let docker: Docker = get_docker_socket();
@@ -98,28 +100,15 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
 
     let networks: Vec<String> = endpoint_settings.keys().cloned().collect();
 
-    let image_name = container.image.clone();
-    let imgname = image_name.clone();
+    let image_data = match &container.image_id {
+        Some(id) => get_image_by_id(&id).await,
+        None => None,
+    };
    
-    let mut icon_url: Option<String> = None;
-
-    if imgname.is_some() {
-        let image_name = imgname.unwrap();
-        let image_history = docker.image_history(&image_name).await;
-   
-
-        if let Ok(history) = image_history {
-            for history in history {
-                let image_id = history.id.clone();
-                let image_id = image_id.to_string();
-                icon_url = resolve_icon_url_from_image_name(&image_id).await;
-                if icon_url.is_some() {
-                    break;
-                }
-            }
-        }
-   
-    }
+    let icon_url: Option<String> = match image_data {
+        Some(image_data) => image_data.icon_url,
+        None => None,
+    };
 
     let container_data = ContainerData {
         icon_url,

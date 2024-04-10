@@ -39,3 +39,11 @@ pub async fn get_all_images() -> Vec<ImageData> {
     my_images
 }
 
+pub async fn get_image_by_id(id: &str) -> Option<ImageData> {
+    let all_images: Vec<ImageData> = get_all_images().await;
+    let img = all_images.iter().find(|image| image.id == id);
+    match img {
+        Some(img) => Some(img.clone()),
+        None => None,
+    }
+}
