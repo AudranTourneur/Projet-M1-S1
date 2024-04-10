@@ -6,10 +6,6 @@ import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyVolume } from './types/TopologyVolume';
 
 export class TopologyVolumePixi extends TopologyEntityPixi {
-    isDragging: boolean = false;
-    pixiContainer = new PIXI.Container();
-    links: Array<TopologyLinkPixi> = [];
-
     constructor(public app: TopologyApp, public x: number, public y: number, public data: TopologyVolume) {
         super(app);
         this.create();

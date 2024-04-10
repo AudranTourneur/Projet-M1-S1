@@ -6,6 +6,8 @@ import type { TopologyInitData } from './topology';
 import { TopologyLinkPixi } from './TopologyLinkPixi';
 import { TopologyVolumePixi } from './TopologyVolume';
 import type { TopologyEntityPixi } from './TopologyEntityPixi';
+import { TopologyNetworkPixi } from './TopologyNetworkPixi';
+
 
 export class TopologyApp {
 	app: PIXI.Application;
@@ -16,6 +18,7 @@ export class TopologyApp {
 	allContainers: Array<TopologyContainerPixi> = [];
 	allVolumes: Array<TopologyVolumePixi> = [];
 	allLinks: Array<TopologyLinkPixi> = [];
+	allNetworks: Array<TopologyNetworkPixi> = []
 
 	constructor(canvas: HTMLCanvasElement, parent: HTMLElement, public data: TopologyInitData) {
 		const app = new PIXI.Application({ background: '#2A547E', resizeTo: parent, view: canvas, antialias: true });
@@ -73,6 +76,29 @@ export class TopologyApp {
 			for (const volume of volumes) {
 				TopologyLinkPixi.createLinkIfNeeded(this, container, volume)
 			}
+		}
+
+		let networksSet = new Set<string>()
+
+		for (const container of data.containers) {
+			for (const networkName of container.data.networks) {
+				networksSet.add(networkName)
+
+			}
+		}
+
+		const networksArray = [...networksSet]
+
+		console.log('all nets', networksArray)
+
+		for (const networkName of networksArray) {
+			console.log('name', networkName)
+
+
+			const x =  getRandomCoord();
+			const y =  getRandomCoord();
+			this.allNetworks.push(new TopologyNetworkPixi(this, x, y, networkName))
+
 		}
 	}
 

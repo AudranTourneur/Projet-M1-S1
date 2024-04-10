@@ -2,14 +2,9 @@ import * as PIXI from 'pixi.js';
 import type { TopologyApp } from './TopologyApp';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyContainer } from './types/TopologyContainer';
-import type { TopologyLinkPixi } from './TopologyLinkPixi';
 import { TopologyEntityPixi } from './TopologyEntityPixi';
 
 export class TopologyContainerPixi extends TopologyEntityPixi {
-	isDragging: boolean = false;
-	pixiContainer = new PIXI.Container();
-	links: Array<TopologyLinkPixi> = [];
-
 	constructor(public app: TopologyApp, public x: number, public y: number, public data: TopologyContainer) {
 		super(app);
 		this.create();
