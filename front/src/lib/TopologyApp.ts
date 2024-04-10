@@ -101,6 +101,14 @@ export class TopologyApp {
 			this.allNetworks.push(new TopologyNetworkPixi(this, x, y, networkName))
 		}
 
+		for (const container of this.allContainers) {
+			for (const networkName of container.data.data.networks) {
+				const pixiNetworkObj = this.allNetworks.find(n => n.name === networkName)
+				if (!pixiNetworkObj) continue;
+				TopologyLinkPixi.createLinkIfNeeded(this, container, pixiNetworkObj)
+			}
+		}
+
 		for (const container of data.containers) {
 			for (const port of container.data.ports) {
 				const portPixi = new TopologyPortPixi(this, getRandomCoord(), getRandomCoord(), port)
