@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formatBytes } from '$lib/FormatUtils.js';
 	import type { ImageData } from '$lib/types/ImageData.js';
-	import { faCircleNotch, faEllipsisVertical, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { faCircleNotch, faCube, faEllipsisVertical, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import Tooltip from '../../components/Tooltip.svelte';
 
@@ -22,7 +22,13 @@
 <div
 	class="flex justify-between items-center gap-2 p-3 rounded-container-token overflow-auto bg-surface-300/30 dark:bg-surface-600/30 shadow border-token border-surface-300-600-token">
 	<div class="flex items-center gap-2">
-		<img src={image.iconUrl} alt="icon" class="w-8 h-8 rounded-full" />
+		<div class="flex items-center justify-center gap-2 w-[70px]">
+			{#if image.iconUrl}
+				<img src={image.iconUrl} alt={image.tags[0]} class="max-w-full max-h-[60px]" />
+			{:else}
+				<Fa icon={faCube} class="text-surface-400-500-token text-xl" />
+			{/if}
+		</div>
 		<div class="flex flex-col">
 			<div class="font-bold text-lg">
 				{image.tags}

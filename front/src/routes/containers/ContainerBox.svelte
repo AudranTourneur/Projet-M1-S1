@@ -79,13 +79,14 @@
 
 <div
 	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4 flex justify-between items-center gap-2">
-	<div class="flex items-center gap-2 md:gap-4">
-		<div class="flex flex-col items-center gap-2 w-6">
+	<div class="flex items-center gap-2">
+		<div class="flex items-center justify-center gap-2 w-[70px]">
 			{#if container.iconUrl}
-				<img src={container.iconUrl} alt={container.image} class="w-6 h-6" />
+				<img src={container.iconUrl} alt={container.image} class="max-w-full max-h-[60px]" />
 			{:else}
-				<Fa icon={faCube} class="text-surface-300-600-token text-xl" />
+				<Fa icon={faCube} class="text-surface-400-500-token text-xl" />
 			{/if}
+		</div>
 			<Tooltip tooltipText={container.status}>
 				{#if container.status.includes('Paused')}
 					<Fa icon={faGear} class="text-warning-500 animate-pulse text-xl" />
@@ -95,7 +96,6 @@
 					<Fa icon={faGear} class="text-error-400 text-xl" />
 				{/if}
 			</Tooltip>
-		</div>
 		<div class="flex flex-col w-36">
 			<div class="font-bold copy-to-clipboard">
 				{#if container.names[0].length < 15}
