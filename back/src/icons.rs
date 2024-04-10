@@ -30,7 +30,7 @@ pub async fn spawn_info_service() {
     let image_names = get_all_image_names().await;
 
     for image_name in image_names.split(", ") {
-        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
         let mut conn = get_sqlite_connection().await.unwrap();
 
         let url = get_url_from_tag_name(&image_name);
@@ -76,6 +76,10 @@ fn get_url_from_tag_name(tag_name: &str) -> String {
 }
 
 pub async fn resolve_icon_url_from_image_name(image_tag: &str) -> Option<String> {
+    if image_tag == "<missing>" {
+        return None;
+    }
+
     let url = get_url_from_tag_name(&image_tag);
     println!("Attempting to resolve icon for image {} | URL = {}", image_tag, url.clone());
 
