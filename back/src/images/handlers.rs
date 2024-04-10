@@ -58,8 +58,8 @@ pub async fn image_handler(id: &str) -> Json<ImageData> {
 pub async fn pull_image_handler(id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let options = Some(CreateImageOptions {
-        from_image: id.clone(),
-        tag: "latest".to_string(),
+        from_image: id,
+        tag: "latest",
         ..Default::default()
     });
 
