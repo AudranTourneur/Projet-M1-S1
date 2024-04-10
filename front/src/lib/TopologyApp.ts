@@ -7,6 +7,7 @@ import { TopologyLinkPixi } from './TopologyLinkPixi';
 import { TopologyVolumePixi } from './TopologyVolume';
 import type { TopologyEntityPixi } from './TopologyEntityPixi';
 import { TopologyNetworkPixi } from './TopologyNetworkPixi';
+import { TopologyPortPixi } from './TopologyPortPixi';
 
 
 export class TopologyApp {
@@ -19,6 +20,7 @@ export class TopologyApp {
 	allVolumes: Array<TopologyVolumePixi> = [];
 	allLinks: Array<TopologyLinkPixi> = [];
 	allNetworks: Array<TopologyNetworkPixi> = []
+	allPorts: Array<TopologyPortPixi> = []
 
 	constructor(canvas: HTMLCanvasElement, parent: HTMLElement, public data: TopologyInitData) {
 		const app = new PIXI.Application({ background: '#2A547E', resizeTo: parent, view: canvas, antialias: true });
@@ -94,12 +96,22 @@ export class TopologyApp {
 		for (const networkName of networksArray) {
 			console.log('name', networkName)
 
-
 			const x =  getRandomCoord();
 			const y =  getRandomCoord();
 			this.allNetworks.push(new TopologyNetworkPixi(this, x, y, networkName))
-
 		}
+
+		for (const container of data.containers) {
+			for (const port of container.data.ports) {
+				const portPixi = new TopologyPortPixi(this, getRandomCoord(), getRandomCoord(), port)
+				this.allPorts.push(portPixi)
+
+				const containerPixi = this.allContainers.find(c => container.data.id === c.data.data.id)
+				if (!containerPixi) continue
+				TopologyLinkPixi.createLinkIfNeeded(this, containerPixi, portPixi)
+			}
+		}
+
 	}
 
 	select(container: TopologyEntityPixi) {
@@ -117,7 +129,7 @@ export class TopologyApp {
 	getSaveData(): SaveData {
 		return {
 			containers: this.allContainers.map(container => ({
-				id: container.data.name,
+				id: container.data.data.id,
 				x: Math.round(container.pixiContainer.x),
 				y: Math.round(container.pixiContainer.y),
 			}))
