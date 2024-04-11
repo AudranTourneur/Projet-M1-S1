@@ -19,11 +19,14 @@
         }
 	}
 
-    function confirmNameChange() {
+    async function confirmNameChange() {
         if (currentlyEditingValueName == null) return;
 
         actualNameValue = currentlyEditingValueName;
         currentlyEditingValueName = null;
+		//A fetch ici
+		//const response = await fetch()
+
     }
 
     function cancelNameChange() {
