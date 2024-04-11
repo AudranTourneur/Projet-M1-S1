@@ -96,8 +96,20 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 			const img = PIXI.Sprite.from(data.data.iconUrl);
 			console.log('IMG', img)
 			// const img = PIXI.Sprite.from('https://cdn-icons-png.flaticon.com/512/888/888879.png')
-			img.width = BackgroundGrid.GRID_SIZE * 1;
-			img.height = BackgroundGrid.GRID_SIZE * 1;
+			const maxWidthOrHeight = BackgroundGrid.GRID_SIZE * 1;
+
+			const originalWidth = img.width;
+			const originalHeight = img.height;
+
+			const aspectRatio = originalWidth / originalHeight;
+
+			if (originalWidth > originalHeight) {
+				img.width = maxWidthOrHeight;
+				img.height = maxWidthOrHeight / aspectRatio;
+			} else {
+				img.height = maxWidthOrHeight;
+				img.width = maxWidthOrHeight * aspectRatio;
+			}
 
 			img.x = 0.2 * BackgroundGrid.GRID_SIZE;
 			img.y = 0.9 * BackgroundGrid.GRID_SIZE;

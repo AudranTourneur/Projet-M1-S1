@@ -21,7 +21,7 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 		const graphics = new PIXI.Graphics();
 		// purple
 		graphics.beginFill(0xa44cd3);
-		const size = BackgroundGrid.GRID_SIZE;
+		const size = BackgroundGrid.GRID_SIZE * 0.8;
 		graphics.drawRoundedRect(0, 0, size, size, 5);
 		graphics.endFill();
 		graphics.angle = 45;
@@ -41,6 +41,22 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 
         container.x = x;
 		container.y = y;
+
+        const portIconUrl = '/static/plug.svg'
+        const portTexture = PIXI.Texture.from(portIconUrl);
+        const portIcon = new PIXI.Sprite(portTexture);
+
+		const scaleIcon = 0.7;
+
+		portIcon.width = size * scaleIcon;
+		portIcon.height = size * scaleIcon;
+
+		portIcon.x = -size * scaleIcon/2;
+		portIcon.y = size * scaleIcon/2;
+
+		portIcon.tint = 0x444444;
+
+		container.addChild(portIcon);
 
 		app.viewport.addChild(container);
 
