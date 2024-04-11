@@ -2,11 +2,14 @@ import * as PIXI from 'pixi.js';
 import type { TopologyApp } from './TopologyApp';
 import type { TopologyLinkPixi } from './TopologyLinkPixi';
 import { BackgroundGrid } from './BackgroundGrid';
+import { nanoid } from 'nanoid'
+
 
 export abstract class TopologyEntityPixi {
     isDragging: boolean = false;
     pixiContainer = new PIXI.Container();
     links: Array<TopologyLinkPixi> = [];
+	uuid: string = nanoid();
 
     constructor(public app: TopologyApp) {
         // this.create()

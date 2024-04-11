@@ -9,6 +9,7 @@ import type { TopologyEntityPixi } from './TopologyEntityPixi';
 import { TopologyNetworkPixi } from './TopologyNetworkPixi';
 import { TopologyPortPixi } from './TopologyPortPixi';
 import { currentlySelectedEntity } from './TopologyStore';
+import { simulatePositions } from './GraphSimulation';
 
 
 export class TopologyApp {
@@ -122,6 +123,9 @@ export class TopologyApp {
 			}
 		}
 
+		const allEntities = [...this.allContainers, ...this.allVolumes, ...this.allNetworks, ...this.allPorts]
+
+		simulatePositions(allEntities)
 	}
 
 	select(entity: TopologyEntityPixi) {
