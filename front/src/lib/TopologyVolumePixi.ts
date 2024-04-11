@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
 import type { TopologyApp } from './TopologyApp';
-import type { TopologyLinkPixi } from './TopologyLinkPixi';
 import { TopologyEntityPixi } from './TopologyEntityPixi';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyVolume } from './types/TopologyVolume';
@@ -24,10 +23,22 @@ export class TopologyVolumePixi extends TopologyEntityPixi {
         // a gray with a bit of green
         const colorBg = 0x4d6b53;
 
+        const SIZE = BackgroundGrid.GRID_SIZE * 0.8;
+
         graphics.beginFill(colorBg);
-        graphics.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 3, BackgroundGrid.GRID_SIZE * 2, 20);
+        graphics.drawCircle(SIZE, SIZE, SIZE * 2);
         graphics.endFill();
         container.addChild(graphics);
+
+        const dbIconUrl = '/static/database.svg'
+        const dbTexture = PIXI.Texture.from(dbIconUrl);
+        const dbIcon = new PIXI.Sprite(dbTexture);
+        dbIcon.tint = 0x121212;
+        dbIcon.width = SIZE * 1.5;
+        dbIcon.height = SIZE * 1.5;
+        dbIcon.x = SIZE - dbIcon.width / 2;
+        dbIcon.y = SIZE - dbIcon.height / 2;
+        container.addChild(dbIcon);
 
         // add text
         const styleName = new PIXI.TextStyle({
@@ -36,12 +47,10 @@ export class TopologyVolumePixi extends TopologyEntityPixi {
             fill: '#dddddd'
         });
 
-        const nb = Math.floor(Math.random() * 100);
-
         const idText = new PIXI.Text('Volume', styleName);
-        idText.x = 30;
-        idText.y = 30;
-        container.addChild(idText);
+        idText.x = 0;
+        idText.y = 0;
+        // container.addChild(idText);
 
 
         const styleImage = new PIXI.TextStyle({
@@ -53,10 +62,10 @@ export class TopologyVolumePixi extends TopologyEntityPixi {
         // const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
         const actualName = data.data.name.substring(0, 20) + '...';
 
-        const image = new PIXI.Text(actualName, styleImage);
-        image.x = 30;
-        image.y = 80;
-        container.addChild(image);
+        const text = new PIXI.Text(actualName, styleImage);
+        text.x = 0;
+        text.y = 3.2 * SIZE;
+        container.addChild(text);
 
         container.x = x;
         container.y = y;

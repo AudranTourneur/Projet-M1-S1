@@ -45,6 +45,8 @@ export abstract class TopologyEntityPixi {
 			const gridStep = BackgroundGrid.GRID_SIZE;
 			const x = Math.round(rawX / gridStep) * gridStep;
 			const y = Math.round(rawY / gridStep) * gridStep;
+			// const width = container.width;
+			// const height = container.height;
 			container.x = x;
 			container.y = y;
 

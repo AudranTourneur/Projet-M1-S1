@@ -4,7 +4,7 @@ import { TopologyContainerPixi } from './TopologyContainerPixi';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyInitData } from './topology';
 import { TopologyLinkPixi } from './TopologyLinkPixi';
-import { TopologyVolumePixi } from './TopologyVolume';
+import { TopologyVolumePixi } from './TopologyVolumePixi';
 import type { TopologyEntityPixi } from './TopologyEntityPixi';
 import { TopologyNetworkPixi } from './TopologyNetworkPixi';
 import { TopologyPortPixi } from './TopologyPortPixi';
