@@ -3,6 +3,7 @@
 	import Fa from 'svelte-fa';
 	import { faCircleNotch, faPlusCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
+	import { Table, type TableSource, tableMapperValues } from '@skeletonlabs/skeleton';
 
 	export let data;
 
@@ -37,6 +38,20 @@
 		isLoadingRemove = false;
 		goto('/images');
 	};
+
+	const formatedHistory = image.history?.map((h) => {
+		return {
+			id: h.id === '<missing>' ? 'missing' : h.id.substring(0, 20) + '...',
+			createdBy: h.createdBy,
+			created: new Date(h.created).toLocaleString(),
+			size: formatBytes(h.size)
+		};
+	});
+
+	const historyTableData: TableSource= {
+		head: ['Id', 'Date', "Size", 'Created by'],
+		body: tableMapperValues(formatedHistory, ['id', 'created', 'size', 'createdBy'])
+	}
 </script>
 
 <div class="relative p-3 m-2 shadow rounded-lg overflow-auto">
@@ -69,3 +84,4 @@
 		</button>
 	</div>
 </div>
+<Table source={historyTableData} interactive={true} />
