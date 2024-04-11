@@ -27,35 +27,22 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 		// add text
 		const styleName = new PIXI.TextStyle({
 			fontFamily: 'Arial',
-			fontSize: 30,
+			fontSize: 25,
 			fill: '#dddddd'
 		});
 
-		const idText = new PIXI.Text('Container', styleName);
-		idText.x = 30;
-		idText.y = 30;
-		container.addChild(idText);
-
-		const styleImage = new PIXI.TextStyle({
-			fontFamily: 'Arial',
-			fontSize: 20,
-			fill: '#cccccc'
-		});
-
-
-
 		let actualName;
-		// const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
 		if (data.data.image.length > 20) {
 			actualName = data.data.image.substring(0, 20) + '...';
 		} else {
 			actualName = data.data.image;
 		}
 
-		const image = new PIXI.Text(actualName, styleImage);
-		image.x = 30;
-		image.y = 80;
-		container.addChild(image);
+		const idText = new PIXI.Text(actualName, styleName);
+		idText.x = 30;
+		idText.y = 30;
+		container.addChild(idText);
+
 
 		const isOnline = true;
 
@@ -109,11 +96,11 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 			const img = PIXI.Sprite.from(data.data.iconUrl);
 			console.log('IMG', img)
 			// const img = PIXI.Sprite.from('https://cdn-icons-png.flaticon.com/512/888/888879.png')
-			img.width = BackgroundGrid.GRID_SIZE * 0.4;
-			img.height = BackgroundGrid.GRID_SIZE * 0.4;
+			img.width = BackgroundGrid.GRID_SIZE * 1;
+			img.height = BackgroundGrid.GRID_SIZE * 1;
 
 			img.x = 0.2 * BackgroundGrid.GRID_SIZE;
-			img.y = 1.4 * BackgroundGrid.GRID_SIZE;
+			img.y = 0.9 * BackgroundGrid.GRID_SIZE;
 
 			container.addChild(img);
 		}

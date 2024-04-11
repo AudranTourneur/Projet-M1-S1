@@ -18,23 +18,27 @@ export class TopologyNetworkPixi extends TopologyEntityPixi {
 		const y = this.y;
 
 		const container = this.pixiContainer;
-		// Create a gray rectangle
-		const graphics = new PIXI.Graphics();
-		graphics.beginFill(0xFF0000);
-		graphics.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 3, BackgroundGrid.GRID_SIZE * 2, 20);
-		graphics.endFill();
-		container.addChild(graphics);
+		const size = BackgroundGrid.GRID_SIZE * 1.5;
+
+        const routerIconUrl = '/static/router.svg'
+        const routerTexture = PIXI.Texture.from(routerIconUrl);
+        const routerIcon = new PIXI.Sprite(routerTexture);
+
+		routerIcon.width = size * 1.5;
+		routerIcon.height = size * 1.5;	
+
+		container.addChild(routerIcon);
 
         // add text
 		const styleName = new PIXI.TextStyle({
 			fontFamily: 'Arial',
-			fontSize: 30,
+			fontSize: 40,
 			fill: '#dddddd'
 		});
 
 		const idText = new PIXI.Text(data, styleName);
-		idText.x = 30;
-		idText.y = 30;
+		idText.x = 0;
+		idText.y = 1.6 * size;
 		container.addChild(idText);
 
         container.x = x;

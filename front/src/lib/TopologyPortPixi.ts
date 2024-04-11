@@ -19,11 +19,12 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 		const container = this.pixiContainer;
 		// Create a gray rectangle
 		const graphics = new PIXI.Graphics();
-		graphics.beginFill(0x00aa00);
+		// purple
+		graphics.beginFill(0xa44cd3);
 		const size = BackgroundGrid.GRID_SIZE;
 		graphics.drawRoundedRect(0, 0, size, size, 5);
 		graphics.endFill();
-		graphics.rotation = Math.PI / 2;
+		graphics.angle = 45;
 		container.addChild(graphics);
 
         // add text
@@ -34,8 +35,8 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 		});
 
 		const idText = new PIXI.Text(data, styleName);
-		idText.x = 30;
-		idText.y = 30;
+		idText.x = 0;
+		idText.y = 1.4 * size;
 		container.addChild(idText);
 
         container.x = x;
