@@ -23,14 +23,33 @@ pub fn get_used_ports() -> Result<Vec<PortData>, std::io::Error> {
     let mut ports: Vec<PortData> = Vec::new();
 
     for line in lines {
+        println!("line: {}", line);
         let parts: Vec<&str> = line.split_whitespace().collect();
         if parts.len() < 4 {
             continue;
         }
 
         let ip_port: Vec<&str> = parts[3].split(":").collect();
-        let ip = ip_port[0];
-        let port = ip_port[1].parse::<u16>().unwrap();
+        let mut ip = ip_port[0];
+        let port = ip_port[1].parse::<u16>();
+        let port = match port {
+            Ok(port) => port,
+            Err(_) => {
+                println!("Error parsing port: {}", parts[3]);
+
+                let port = ip_port[3].parse::<u16>();
+                match port {
+                    Ok(port) => {
+                        ip = "::";
+                        port
+                    },
+                    Err(_) => {
+                        println!("Error parsing port: {}", parts[3]);
+                        continue;
+                    },
+                }
+            },
+        };
         ports.push(PortData {
             ip: ip.to_string(),
             port,
