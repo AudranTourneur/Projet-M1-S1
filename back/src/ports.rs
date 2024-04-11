@@ -1,26 +1,32 @@
 use rocket::serde::json::Json;
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(serde::Serialize)]
-pub struct PortData {
+#[derive(Serialize, Deserialize, Clone, TS, Debug)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SimplePortData {
     ip: String,
     port: u16,
 }
 
-#[derive(serde::Serialize)]
+#[derive(Serialize, TS, Debug)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct PortsResponse {
-    ports: Vec<PortData>,
+    ports: Vec<SimplePortData>,
 }
 
-pub fn get_used_ports() -> Result<Vec<PortData>, std::io::Error> {
+pub fn get_used_ports() -> Result<Vec<SimplePortData>, std::io::Error> {
     let cmd = "netstat -tulpn | grep LISTEN";
     let output = std::process::Command::new("sh")
         .arg("-c")
         .arg(cmd)
         .output()?;
-    
+
     let output = String::from_utf8(output.stdout).unwrap_or("".into());
     let lines: Vec<&str> = output.split("\n").collect();
-    let mut ports: Vec<PortData> = Vec::new();
+    let mut ports: Vec<SimplePortData> = Vec::new();
 
     for line in lines {
         println!("line: {}", line);
@@ -42,15 +48,15 @@ pub fn get_used_ports() -> Result<Vec<PortData>, std::io::Error> {
                     Ok(port) => {
                         ip = "::";
                         port
-                    },
+                    }
                     Err(_) => {
                         println!("Error parsing port: {}", parts[3]);
                         continue;
-                    },
+                    }
                 }
-            },
+            }
         };
-        ports.push(PortData {
+        ports.push(SimplePortData {
             ip: ip.to_string(),
             port,
         });
@@ -67,7 +73,7 @@ pub fn ports_handler() -> Json<PortsResponse> {
         Err(e) => {
             println!("Error getting ports: {}", e);
             Vec::new()
-        },
+        }
     };
 
     let res = PortsResponse { ports };
