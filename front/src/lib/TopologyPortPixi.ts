@@ -20,8 +20,10 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 		// Create a gray rectangle
 		const graphics = new PIXI.Graphics();
 		graphics.beginFill(0x00aa00);
-		graphics.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 2.5, BackgroundGrid.GRID_SIZE * 1, 20);
+		const size = BackgroundGrid.GRID_SIZE;
+		graphics.drawRoundedRect(0, 0, size, size, 5);
 		graphics.endFill();
+		graphics.rotation = Math.PI / 2;
 		container.addChild(graphics);
 
         // add text
