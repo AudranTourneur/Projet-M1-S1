@@ -1,5 +1,6 @@
 use database::init_clickhouse_database;
 use icons::spawn_info_service;
+use sniffer::sniff_packets;
 use sqlitedb::init_sqlite_database;
 
 mod auth;
@@ -21,6 +22,7 @@ mod stats;
 mod topology;
 mod volumes;
 mod web;
+mod sniffer;
 
 // #[macro_use]
 // extern crate debug_stub_derive;
@@ -75,6 +77,8 @@ async fn main() {
     rocket::tokio::spawn(spawn_statistics_subsystem());
 
     rocket::tokio::spawn(spawn_info_service());
+
+    // rocket::tokio::spawn(sniff_packets());
 
     let _ = app.launch().await;
 }
