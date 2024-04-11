@@ -4,7 +4,6 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ params, fetch }) => {
     const name = params.id;
-    const nameChanged = params.currentlyEditingValueName;
     const response = await fetch(`${PUBLIC_API_URL}/volume/${name}/changeName`, {
         method: 'POST',
       });
