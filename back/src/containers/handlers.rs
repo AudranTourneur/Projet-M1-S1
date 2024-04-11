@@ -70,7 +70,6 @@ pub async fn container_filesystem_handler(id: &str) -> String {
 pub async fn container_handler(id: &str) -> Json<Option<ContainerData>> {
     let container = get_container_by_id(id).await;
     modify_container_yml(id).await;
-
     match container {
         Some(container) => Json(Some(container)),
         None => Json(None),
@@ -213,6 +212,8 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
         Ok(_) => (),
         Err(_) => return Json(false),
     };
+
+
 
     Json(true)
 }

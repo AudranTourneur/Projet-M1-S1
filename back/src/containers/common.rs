@@ -2,8 +2,9 @@ use std::{fs::File, io::Read};
 
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
+use rocket::form::name;
 
-use crate::docker::get_docker_socket;
+use crate::docker::{self, get_docker_socket};
 
 use super::models::{ContainerData, OurPortTypeEnum, PortData};
 
@@ -157,7 +158,7 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
     listed_containers
 }
 
-pub fn yaml_read(yaml_path: String) -> Result<String, Box<dyn std::error::Error>> {
+pub fn yaml_string(yaml_path: String) -> Result<String, Box<dyn std::error::Error>> {
     println!("yaml_read A");
     let path = format!("/rootfs/{}", yaml_path);
     println!("path reminder {:?}", path.clone());
@@ -170,19 +171,43 @@ pub fn yaml_read(yaml_path: String) -> Result<String, Box<dyn std::error::Error>
     Ok(contents)
 }
 
-pub async fn modify_container_yml(id: &str) {
+pub async fn modify_container_yml(id: &str) { //, port, new_port
     //rebind: ContainerPortRebind
     let my_cont_data = get_container_by_id(id).await;
-    let yml_path = my_cont_data.unwrap().compose_file;
+    let yml_path = my_cont_data.clone().unwrap().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
     //ex : /home/abyuka/Documents/Projet-M1-S1/docker-compose.yml
-
-    //    yaml_read(yml_path.unwrap());
 
     if path_string.is_empty() {
         println!("No docker compose found.")
     } else {
         println!("Docker compose found at : {:?}", path_string.clone());
-        let _ = yaml_read(path_string);
+        let docker_compose_str = yaml_string(path_string);
+        
+        match docker_compose_str {
+            Ok(docker_compose_str) => {
+                let docker_compose : serde_yaml::Value = serde_yaml::from_str(&docker_compose_str).unwrap();
+                let dc_services = docker_compose["services"].as_mapping().unwrap();
+                println!("Docker compose services: {:?}", dc_services.clone());
+                let name    = my_cont_data.clone().unwrap().names.clone();
+                let name = name.join("");
+                let name = name.replace("/", "");
+                println!("New name: {:?}", name);
+                //let dc_container = dc_services.get(&serde_yaml::Value::String()); //là je sais pas quoi mettre pour récupérer mes ports, j'ai essayé 83843274 façons ça doit être évident mais j'ai pas (là je sais que l'état est ridicule pitié me juge pas pitié pitié pitié j'en peux plus je me juge déjà pour 342342214124 j'en peux plus je jure que j'en ai marre je suis à CA de plus me ramener en projet tellement j'ai honte de mon manque d'utilité ça me PETE LES CouILELS J'EN PEUX pLUS)
+                //println!("Docker compose container: {:?}", dc_container.clone());
+            }
+            Err(e) => {
+                println!("Error: {:?}", e);
+            }
+        }
+
     }
+
+    
+
+
 }
+
+
+// récupere PORTS ok
+// route rebind ports change le docker compose avec les ports voulus YUMP
