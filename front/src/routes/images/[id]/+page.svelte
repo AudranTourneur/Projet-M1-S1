@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { formatBytes } from '$lib/FormatUtils';
 	import Fa from 'svelte-fa';
-	import { faCircleNotch, faPlusCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowLeft, faCircleNotch, faPlusCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import { Table, type TableSource, tableMapperValues } from '@skeletonlabs/skeleton';
 
 	export let data;
-
-	console.log(data);
 
 	let image = data;
 
@@ -54,6 +52,10 @@
 	};
 </script>
 
+<a href="/images" class="btn btn-sm variant-soft mb-4">
+	<Fa icon={faArrowLeft} fw class="mr-1" />
+	Back to images
+</a>
 <div
 	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4 flex justify-start items-center gap-5">
 	{#if image.iconUrl}
@@ -62,7 +64,7 @@
 	<div class="overflow-hidden">
 		<div class="flex flex-wrap gap-2 items-center mb-3">
 			<h1 class="font-heading-token text-lg md:text-2xl chip variant-filled-primary">{image.tags}</h1>
-			<button class="btn variant-filled-error py-1 px-3" on:click={deleteVolume} disabled={isLoadingRemove}>
+			<button class="btn variant-filled-error btn-sm" on:click={deleteVolume} disabled={isLoadingRemove}>
 				<Fa icon={isLoadingRemove ? faCircleNotch : faTrash} spin={isLoadingRemove} fw class="mr-1" />
 				Delete image
 			</button>
