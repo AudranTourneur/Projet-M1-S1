@@ -3,11 +3,11 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 
 
-export const POST: RequestHandler = async ({ params, fetch }) => {
-    const body = await Request.json();
+export const POST: RequestHandler = async ({ request, fetch }) => {
+    const body = await request.json();
 
     const name = body.name;
-    
+
     const response = await fetch(`${PUBLIC_API_URL}/volume/${name}/changeName`, {
         method: 'POST',
       });
