@@ -29,10 +29,12 @@
 	}
 </script>
 
+<div class='flex items-baseline'>
+<div bind:this={parentElement} class="flex justify-end w-[80vw] h-[72vh]">
+	<canvas bind:this={canvasElement} id="topology-canvas" />
+</div>
+
 <div class="flex justify-end items-center">
 	<button type="button" class="btn variant-filled" on:click={save}>Save</button>
 </div>
-
-<div bind:this={parentElement} class="w-[80vw] h-[72vh]">
-	<canvas bind:this={canvasElement} id="topology-canvas" />
 </div>

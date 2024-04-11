@@ -8,6 +8,7 @@ import { TopologyVolumePixi } from './TopologyVolume';
 import type { TopologyEntityPixi } from './TopologyEntityPixi';
 import { TopologyNetworkPixi } from './TopologyNetworkPixi';
 import { TopologyPortPixi } from './TopologyPortPixi';
+import { currentlySelectedEntity } from './TopologyStore';
 
 
 export class TopologyApp {
@@ -15,6 +16,7 @@ export class TopologyApp {
 	viewport: Viewport;
 
 	currentlySelected: TopologyEntityPixi | null = null;
+
 
 	allContainers: Array<TopologyContainerPixi> = [];
 	allVolumes: Array<TopologyVolumePixi> = [];
@@ -122,10 +124,13 @@ export class TopologyApp {
 
 	}
 
-	select(container: TopologyEntityPixi) {
-		this.currentlySelected = container;
+	select(entity: TopologyEntityPixi) {
+		this.currentlySelected = entity;
+		
 		// disable viewport plugins
 		this.viewport.plugins.pause('drag');
+
+		this.selectEntity(entity)
 	}
 
 	unselect() {
@@ -142,6 +147,10 @@ export class TopologyApp {
 				y: Math.round(container.pixiContainer.y),
 			}))
 		};
+	}
+
+	selectEntity(entity: TopologyEntityPixi){
+		currentlySelectedEntity.set({ entity });
 	}
 }
 
