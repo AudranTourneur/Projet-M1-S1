@@ -44,8 +44,12 @@
     async function saveToServer(actualNameValue: any) {
         const response = await fetch(`/volumes/${id}/api/change-name`, {
 			method: 'POST',
-		})
-		console.log(await response.text())
+			body: JSON.stringify({ name: actualNameValue})
+		});
+
+		const responseData = await response.json();
+		console.log(responseData);
+
 		dispatch('Name changed on server with', {actualNameValue} );
     }
 </script>
