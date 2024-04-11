@@ -2,9 +2,8 @@ use std::{fs::File, io::Read};
 
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
-use rocket::form::name;
 
-use crate::docker::{self, get_docker_socket};
+use crate::docker::get_docker_socket;
 
 use super::models::{ContainerData, OurPortTypeEnum, PortData};
 
@@ -171,43 +170,81 @@ pub fn yaml_string(yaml_path: String) -> Result<String, Box<dyn std::error::Erro
     Ok(contents)
 }
 
-pub async fn modify_container_yml(id: &str) { //, port, new_port
+pub async fn modify_container_yml(id: &str) {
+    //, port, new_port
+    println!("Called modify_container_yml with id: {:?}", id);
     //rebind: ContainerPortRebind
-    let my_cont_data = get_container_by_id(id).await;
-    let yml_path = my_cont_data.clone().unwrap().compose_file;
+    let container_data = get_container_by_id(id).await.unwrap();
+    let yml_path = container_data.clone().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
     //ex : /home/abyuka/Documents/Projet-M1-S1/docker-compose.yml
 
     if path_string.is_empty() {
-        println!("No docker compose found.")
-    } else {
-        println!("Docker compose found at : {:?}", path_string.clone());
-        let docker_compose_str = yaml_string(path_string);
-        
-        match docker_compose_str {
-            Ok(docker_compose_str) => {
-                let docker_compose : serde_yaml::Value = serde_yaml::from_str(&docker_compose_str).unwrap();
-                let dc_services = docker_compose["services"].as_mapping().unwrap();
-                println!("Docker compose services: {:?}", dc_services.clone());
-                let name    = my_cont_data.clone().unwrap().names.clone();
-                let name = name.join("");
-                let name = name.replace("/", "");
-                println!("New name: {:?}", name);
-                //let dc_container = dc_services.get(&serde_yaml::Value::String()); //là je sais pas quoi mettre pour récupérer mes ports, j'ai essayé 83843274 façons ça doit être évident mais j'ai pas (là je sais que l'état est ridicule pitié me juge pas pitié pitié pitié j'en peux plus je me juge déjà pour 342342214124 j'en peux plus je jure que j'en ai marre je suis à CA de plus me ramener en projet tellement j'ai honte de mon manque d'utilité ça me PETE LES CouILELS J'EN PEUX pLUS)
-                //println!("Docker compose container: {:?}", dc_container.clone());
-            }
-            Err(e) => {
-                println!("Error: {:?}", e);
-            }
-        }
-
+        println!("No docker compose found.");
+        return;
     }
 
-    
+    println!("Docker compose found at : {:?}", path_string.clone());
+    let docker_compose_str = yaml_string(path_string);
 
+    let docker_compose_str = match docker_compose_str {
+        Ok(docker_compose_str) => docker_compose_str,
+        Err(e) => {
+            println!("Error: {:?}", e);
+            return;
+        }
+    };
 
+    let docker_compose: serde_yaml::Value = serde_yaml::from_str(&docker_compose_str).unwrap();
+    let dc_services = docker_compose["services"].as_mapping().unwrap();
+    println!("Docker compose services: {:?}", dc_services.clone());
+
+    let labels = container_data.clone().labels;
+
+    let key = "com.docker.compose.service";
+
+    let service_name = match labels {
+        Some(labels) => match labels.get(key) {
+            Some(service_name) => service_name.clone(),
+            None => {
+                println!("No service name found in labels.");
+                return;
+            }
+        },
+        None => {
+            println!("No labels found.");
+            return;
+        }
+    };
+
+    let service = dc_services.get(&serde_yaml::Value::String(service_name.clone()));
+    let service = match service {
+        Some(service) => service,
+        None => {
+            let all_available_keys: Vec<&serde_yaml::Value> = dc_services.keys().collect();
+            println!(
+                "Failed to get service, available keys: {:?}",
+                all_available_keys
+            );
+            return;
+        }
+    };
+
+    let ports = service.get("ports");
+    let ports = match ports {
+        Some(ports) => ports,
+        None => {
+            let all_available_keys: Vec<&serde_yaml::Value> = dc_services.keys().collect();
+            println!(
+                "Failed to get ports, available keys: {:?}",
+                all_available_keys
+            );
+            return;
+        }
+    };
+
+    println!("Ports: {:?}", ports.clone());
 }
-
 
 // récupere PORTS ok
 // route rebind ports change le docker compose avec les ports voulus YUMP
