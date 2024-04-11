@@ -12,6 +12,7 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/d
 RUN apt update -y
 RUN apt-cache policy docker-ce
 RUN apt-get install docker-ce -y
+RUN apt-get install net-tools -y
 WORKDIR app
 COPY . .
 CMD ["cargo", "watch", "-x", "run", "-w", "src"]
