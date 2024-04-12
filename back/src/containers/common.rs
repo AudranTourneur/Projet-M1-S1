@@ -1,11 +1,13 @@
-use std::{fs::File, io::Read};
-use rocket::serde::json::Json;
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
+use rocket::serde::json::Json;
+use std::{fs::File, io::{Read, Write}};
 
 use crate::docker::get_docker_socket;
 
-use super::models::{ContainerData, ContainerPortRebind, ContainerPortRebindRequest, OurPortTypeEnum, PortData};
+use super::models::{
+    ContainerData, ContainerPortRebind, ContainerPortRebindRequest, OurPortTypeEnum, PortData,
+};
 
 use crate::images::common::get_image_by_id;
 
@@ -165,9 +167,9 @@ pub fn yaml_string(yaml_path: String) -> Result<String, Box<dyn std::error::Erro
     Ok(contents)
 }
 
-pub async fn check_for_yml(id: &str) -> bool{
+pub async fn check_for_yml(id: &str) -> bool {
     println!("Checking for existing yml: {:?}", id);
-    
+
     let container_data = get_container_by_id(id).await.unwrap();
     let yml_path = container_data.clone().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
@@ -183,18 +185,18 @@ pub async fn check_for_yml(id: &str) -> bool{
 
 pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindRequest>) {
     println!("Called modify_container_yml with id: {:?}", id);
-    
+
     let container_data = get_container_by_id(id).await.unwrap();
     let yml_path = container_data.clone().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
 
-    if path_string.is_empty() {
+    if path_string.clone().is_empty() {
         println!("No docker compose found.");
         return;
     }
 
     println!("Docker compose found at : {:?}", path_string.clone());
-    let docker_compose_str = yaml_string(path_string);
+    let docker_compose_str = yaml_string(path_string.clone());
 
     let docker_compose_str = match docker_compose_str {
         Ok(docker_compose_str) => docker_compose_str,
@@ -205,8 +207,8 @@ pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindReque
     };
 
     println!("Docker compose string: {:?}", docker_compose_str.clone());
-    let docker_compose: serde_yaml::Value = serde_yaml::from_str(&docker_compose_str).unwrap();
-    let dc_services = docker_compose["services"].as_mapping().unwrap();
+    let mut docker_compose: serde_yaml::Value = serde_yaml::from_str(&docker_compose_str).unwrap();
+    let dc_services = docker_compose["services"].as_mapping_mut().unwrap();
     println!("Docker compose services: {:?}", dc_services.clone());
 
     let labels = container_data.clone().labels;
@@ -227,9 +229,9 @@ pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindReque
         }
     };
 
-    let service = dc_services.get(&serde_yaml::Value::String(service_name.clone()));
+    let service = dc_services.get_mut(&serde_yaml::Value::String(service_name.clone()));
     let service = match service {
-        Some(service) => service,
+        Some(service) => service.as_mapping_mut().unwrap(),
         None => {
             let all_available_keys: Vec<&serde_yaml::Value> = dc_services.keys().collect();
             println!(
@@ -240,9 +242,9 @@ pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindReque
         }
     };
 
-    let ports = service.get("ports");
-    let ports = match ports {
-        Some(ports) => ports,
+    let ports = service.get_mut("ports");
+    let yaml_ports_value = match ports {
+        Some(ports) => ports.as_sequence_mut().unwrap(),
         None => {
             let all_available_keys: Vec<&serde_yaml::Value> = dc_services.keys().collect();
             println!(
@@ -253,55 +255,64 @@ pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindReque
         }
     };
 
-    println!("Ports: {:?}", ports.clone());
+    println!("Ports: {:?}", yaml_ports_value.clone());
 
-    let mut vec_of_new_ports = input.ports.clone();
+    let vec_of_new_ports = input.ports.clone();
     println!("New ports: {:?}", vec_of_new_ports.clone());
 
+    let vec_new_port_str: Vec<String> = vec_of_new_ports
+        .clone()
+        .iter()
+        .map(|port| {
+            let hostport = port.host.to_string();
+            let internalport = port.internal.to_string();
+            let ip = port.ip.to_string();
 
-    let mut newports : Vec<String> = vec_of_new_ports.clone().iter().map(|port| 
-        {
-            let mut hostport = port.host.to_string();
-            let mut internalport = port.internal.to_string();
-            let mut ip = port.ip.to_string();
-            if ip == "0.0.0.0" {
-                ip = "".to_string();
-            }
-            else {
-                ip = format!("{}:", ip);
-            }
-            let mut protocol = port.protocol.as_ref();
-            match protocol{ 
-                "TCP"  => {protocol = "/tcp"},
-                "UDP" => {protocol = "/udp"}, 
-                "SCTP "=> {protocol = "/sctp"},
-                _=> {protocol = ""}
-            }
+            let ip = if ip == "0.0.0.0" {
+                "".to_string()
+            } else {
+                format!("{}:", ip)
+            };
 
-            let mut newport = format!("{}{}:{}{}", ip, hostport, internalport, protocol);
+            let protocol = port.protocol.as_ref();
+            let protocol = match protocol {
+                "TCP" => "/tcp",
+                "UDP" => "/udp",
+                "SCTP " => "/sctp",
+                _ => "",
+            };
+
+            let newport = format!("{}{}:{}{}", ip, hostport, internalport, protocol);
             newport
         })
         .collect();
 
-    println!("New ports: {:?}", newports.clone());
+    println!("New ports: {:?}", vec_new_port_str.clone());
 
-    
+    let new_ports_vec: Vec<serde_yaml::value::Value> = vec_new_port_str.iter().map(|x| serde_yaml::Value::String(x.clone())).collect();
+
+    *yaml_ports_value = new_ports_vec;
+
+    let target_file_path = format!("/rootfs/{}", path_string.clone());
+    let mut file = File::create(target_file_path).unwrap();
+    let new_string = serde_yaml::to_string(&docker_compose).unwrap();
+    file.write_all(new_string.as_bytes()).unwrap();
+
 }
 
 // route rebind ports change le docker compose avec les ports voulus YUMP
-//protocole : que si udp/tcp 
+//protocole : que si udp/tcp
 //0.0.0.0 : idem que pas noter d'ip
 //ne pas marquer de protocole : idem que marquer tous les protocoles
 
-
 /* ports:
-  - "3000"
-  - "3000-3005"
-  - "8000:8000"
-  - "9090-9091:8080-8081"
-  - "49100:22"
-  - "127.0.0.1:8001:8001"
-  - "127.0.0.1:5000-5010:5000-5010"
-  - "127.0.0.1::5000"
-  - "6060:6060/udp"
-  - "12400-12500:1240" */
+- "3000"
+- "3000-3005"
+- "8000:8000"
+- "9090-9091:8080-8081"
+- "49100:22"
+- "127.0.0.1:8001:8001"
+- "127.0.0.1:5000-5010:5000-5010"
+- "127.0.0.1::5000"
+- "6060:6060/udp"
+- "12400-12500:1240" */
