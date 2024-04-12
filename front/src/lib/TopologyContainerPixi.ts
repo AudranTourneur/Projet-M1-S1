@@ -5,6 +5,9 @@ import type { TopologyContainer } from './types/TopologyContainer';
 import { TopologyEntityPixi } from './TopologyEntityPixi';
 
 export class TopologyContainerPixi extends TopologyEntityPixi {
+
+	private selectionRect : PIXI.Graphics | null = null;
+
 	constructor(public app: TopologyApp, public x: number, public y: number, public data: TopologyContainer) {
 		super(app);
 		this.create();
@@ -122,10 +125,28 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 
 		app.viewport.addChild(container);
 
+		const orange = 0xffa500;
+		const orangeRect = new PIXI.Graphics();
+		orangeRect.lineStyle(5, orange, 1);
+		orangeRect.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 3, BackgroundGrid.GRID_SIZE * 2, 20);
+		orangeRect.endFill();
+		orangeRect.visible = false;
+		container.addChild(orangeRect);
+
+		this.selectionRect = orangeRect;
+
 		TopologyEntityPixi.addDragBehaviour(app, this);
 	}
 
-	select() { }
+	select(): void { 
+		if (this.selectionRect) {
+			this.selectionRect.visible = true;
+		}
+	}
 
-	unselect() { }
+	unselect() { 
+		if (this.selectionRect) {
+			this.selectionRect.visible = false;
+		}
+	}
 }
