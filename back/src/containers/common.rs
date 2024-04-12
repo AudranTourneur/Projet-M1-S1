@@ -45,10 +45,10 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         .iter()
         .map(|volume| {
             let name = volume.name.clone().unwrap_or_default();
-            if name.len() > 0 {
+            if !name.is_empty() {
                 return name;
             }
-            return volume.source.clone().unwrap_or_default();
+            volume.source.clone().unwrap_or_default()
         })
         .collect();
 
@@ -63,7 +63,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         .unwrap_or_default()
         .iter()
         .map(|port| {
-            let our_port = PortData {
+            PortData {
                 ip: port.ip.clone(),
                 private_port: port.private_port,
                 public_port: port.public_port,
@@ -73,8 +73,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
                     PortTypeEnum::UDP => OurPortTypeEnum::UDP,
                     PortTypeEnum::SCTP => OurPortTypeEnum::SCTP,
                 }),
-            };
-            our_port
+            }
         })
         .collect();
 
@@ -106,7 +105,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let networks: Vec<String> = endpoint_settings.keys().cloned().collect();
 
     let image_data = match &container.image_id {
-        Some(id) => get_image_by_id(&id).await,
+        Some(id) => get_image_by_id(id).await,
         None => None,
     };
 
@@ -183,7 +182,8 @@ pub async fn check_for_yml(id: &str) -> bool {
     }
 
     println!("Docker compose found at : {:?}", path_string.clone());
-    return true;
+
+    true
 }
 
 pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindRequest>) {

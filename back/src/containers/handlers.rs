@@ -82,7 +82,7 @@ pub async fn container_start(id: &str) -> &'static str {
 
     let start_options: StartContainerOptions<String> = StartContainerOptions::default();
 
-    match docker.start_container(&id, Some(start_options)).await {
+    match docker.start_container(id, Some(start_options)).await {
         Ok(_) => "Container started",
         Err(_) => "Error starting container",
     }
@@ -94,7 +94,7 @@ pub async fn container_stop(id: &str) -> &'static str {
 
     let options = Some(StopContainerOptions { t: 30 });
 
-    match docker.stop_container(&id, options).await {
+    match docker.stop_container(id, options).await {
         Ok(_) => "Container stopped",
         Err(_) => "Error stopping container",
     }
@@ -113,7 +113,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
 
 #[post("/containers/<id>/rebind-ports", data = "<input>")]
 pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &str) -> Json<bool> {
-    if (check_for_yml(id).await == false) {
+    if check_for_yml(id).await == false {
         let docker: Docker = get_docker_socket();
 
         let res = docker
@@ -147,13 +147,18 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
             Err(_) => return Json(false),
         };
 
-        let create_options = match res.name {
-            Some(container_name) => Some(CreateContainerOptions {
-                name: container_name,
-                ..Default::default()
-            }),
-            None => None,
-        };
+        // let create_options = match res.name {
+        //     Some(container_name) => Some(CreateContainerOptions {
+        //         name: container_name,
+        //         ..Default::default()
+        //     }),
+        //     None => None,
+        // };
+
+        let create_options = res.name.map(|container_name| CreateContainerOptions {
+            name: container_name,
+            ..Default::default()
+        });
 
         let image_name = res.image;
 

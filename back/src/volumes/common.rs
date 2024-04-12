@@ -42,8 +42,12 @@ pub fn get_volume_size(vol: Volume) -> u64 {
 
     let maybe_size = get_value_from_static_map(&name);
 
-    if maybe_size.is_some() {
-        return maybe_size.unwrap();
+    // if maybe_size.is_some() {
+    //     return maybe_size.unwrap();
+    // }
+
+    if let Some(maybe_size) = maybe_size {
+        return maybe_size;
     }
 
     println!("Calculating size for mountpoint {}", mountpoint);

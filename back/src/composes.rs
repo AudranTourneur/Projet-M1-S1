@@ -101,8 +101,7 @@ pub async fn compose_handler(id: String) -> Json<Option<ComposeData>> {
 
 fn from_base64_url(data: &str) -> String {
     let vec: Vec<u8> = URL_SAFE.decode(data).unwrap();
-    let str = String::from_utf8(vec).unwrap();
-    str
+    String::from_utf8(vec).unwrap()
 }
 
 #[derive(Serialize, Deserialize, TS, Clone, Debug)]
@@ -135,7 +134,7 @@ pub async fn compose_start_handler(id: &str) -> Json<ShellOutput> {
 
     println!("docker-compose up -d {:?}", shell_output);
 
-    return Json(shell_output);
+    Json(shell_output)
 }
 
 #[get("/composes/<id>/stop")]
@@ -153,5 +152,5 @@ pub async fn compose_stop_handler(id: &str) -> Json<bool> {
 
     println!("docker-compose up -d {}", hello);
 
-    return Json(true);
+    Json(true)
 }

@@ -25,7 +25,7 @@ pub fn get_used_ports() -> Result<Vec<SimplePortData>, std::io::Error> {
         .output()?;
 
     let output = String::from_utf8(output.stdout).unwrap_or("".into());
-    let lines: Vec<&str> = output.split("\n").collect();
+    let lines: Vec<&str> = output.split('\n').collect();
     let mut ports: Vec<SimplePortData> = Vec::new();
 
     for line in lines {
@@ -35,7 +35,7 @@ pub fn get_used_ports() -> Result<Vec<SimplePortData>, std::io::Error> {
             continue;
         }
 
-        let ip_port: Vec<&str> = parts[3].split(":").collect();
+        let ip_port: Vec<&str> = parts[3].split(':').collect();
         let mut ip = ip_port[0];
         let port = ip_port[1].parse::<u16>();
         let port = match port {

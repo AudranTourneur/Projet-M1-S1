@@ -29,23 +29,22 @@ pub async fn image_handler(id: &str) -> Json<ImageData> {
     let history = whole_history
         .iter()
         .map(|history| {
-            let history_data = HistoryResponse {
+            HistoryResponse {
                 id: history.id.clone(),
-                created: history.created.clone(),
+                created: history.created,
                 created_by: history.created_by.clone(),
                 tags: history.tags.clone(),
                 size: history.size,
                 comment: history.comment.clone(),
-            };
-            history_data
+            }
         })
         .collect();
 
     let response = ImageData {
         id: image.id.clone(),
         tags: image.tags.clone(),
-        size: image.size.clone(),
-        created: image.created.clone(),
+        size: image.size,
+        created: image.created,
         history: Some(history),
         // icon_url: Some("https://cdn.iconscout.com/icon/free/png-256/nginx-226046.png".into())
         icon_url: resolve_icon_url_from_image_name(&image.tags[0].clone()).await,

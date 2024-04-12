@@ -24,15 +24,14 @@ pub async fn get_all_images() -> Vec<ImageData> {
                 let tag = image.repo_tags.get(0).unwrap_or(&binding);
 
                 println!("Resolving img tag {}", tag);
-                let image_data = ImageData {
+                ImageData {
                     id: image.id.clone(),
                     tags: image.repo_tags.clone(),
-                    size: image.size.clone(),
-                    created: image.created.clone(),
+                    size: image.size,
+                    created: image.created,
                     history: None,
                     icon_url: resolve_icon_url_from_image_name(tag).await,
-                };
-                image_data
+                }
             })
             .collect::<Vec<_>>(),
     )
@@ -44,8 +43,6 @@ pub async fn get_all_images() -> Vec<ImageData> {
 pub async fn get_image_by_id(id: &str) -> Option<ImageData> {
     let all_images: Vec<ImageData> = get_all_images().await;
     let img = all_images.iter().find(|image| image.id == id);
-    match img {
-        Some(img) => Some(img.clone()),
-        None => None,
-    }
+    
+    img.map(|img| img.clone())
 }

@@ -212,8 +212,7 @@ pub(crate) async fn sniff_packets() {
     let interfaces = datalink::interfaces();
     let interface = interfaces
         .into_iter()
-        .filter(interface_names_match)
-        .next()
+        .find(interface_names_match)
         .unwrap_or_else(|| panic!("No such network interface: {}", iface_name));
 
     // Create a channel to receive on

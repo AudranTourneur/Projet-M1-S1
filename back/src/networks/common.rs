@@ -23,13 +23,12 @@ pub fn get_ipam(network_response: Network) -> Vec<IpamConfigData> {
     let config: Vec<IpamConfigData> = ipam_configs
         .iter()
         .map(|cfg| {
-            let config = IpamConfigData {
+            IpamConfigData {
                 subnet: cfg.subnet.clone().unwrap_or_default(),
                 ip_range: cfg.ip_range.clone().unwrap_or_default(),
                 gateway: cfg.gateway.clone().unwrap_or_default(),
                 aux_addresses: cfg.auxiliary_addresses.clone(),
-            };
-            config
+            }
         })
         .collect();
 
@@ -89,15 +88,14 @@ pub async fn get_all_networks() -> Vec<NetworkData> {
         let config = get_ipam(network_response.clone());
         let containers = get_containers(network_response);
 
-        let our_network = NetworkData {
+        NetworkData {
             id: network.id.clone().unwrap_or("UNDEFINED".to_string()),
             name: network.name.clone().unwrap_or("UNDEFINED".to_string()),
             created: network.created.clone().unwrap_or("UNDEFINED".to_string()),
             labels: network.labels.clone(),
             ipam_config: Some(config),
             containers: Some(containers),
-        };
-        our_network
+        }
     }));
 
     my_networks.await
