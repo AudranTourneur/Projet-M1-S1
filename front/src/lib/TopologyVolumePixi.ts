@@ -5,6 +5,9 @@ import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyVolume } from './types/TopologyVolume';
 
 export class TopologyVolumePixi extends TopologyEntityPixi {
+
+    private selectionCircle: PIXI.Graphics | null = null;
+
     constructor(public app: TopologyApp, public x: number, public y: number, public data: TopologyVolume) {
         super(app);
         this.create();
@@ -23,10 +26,10 @@ export class TopologyVolumePixi extends TopologyEntityPixi {
         // a gray with a bit of green
         const colorBg = 0x4d6b53;
 
-        const SIZE = BackgroundGrid.GRID_SIZE * 0.8;
+        const size = BackgroundGrid.GRID_SIZE * 1.3;
 
         graphics.beginFill(colorBg);
-        graphics.drawCircle(SIZE, SIZE, SIZE * 2);
+        graphics.drawCircle(size, size, size);
         graphics.endFill();
         container.addChild(graphics);
 
@@ -34,43 +37,57 @@ export class TopologyVolumePixi extends TopologyEntityPixi {
         const dbTexture = PIXI.Texture.from(dbIconUrl);
         const dbIcon = new PIXI.Sprite(dbTexture);
         dbIcon.tint = 0x121212;
-        dbIcon.width = SIZE * 1.5;
-        dbIcon.height = SIZE * 1.5;
-        dbIcon.x = SIZE - dbIcon.width / 2;
-        dbIcon.y = SIZE - dbIcon.height / 2;
+        dbIcon.width = size * 1;
+        dbIcon.height = size * 1;
+        dbIcon.x = size - dbIcon.width / 2;
+        dbIcon.y = size - dbIcon.height / 2;
         container.addChild(dbIcon);
 
-        // add text
-        const styleName = new PIXI.TextStyle({
+        const styleImageName = new PIXI.TextStyle({
             fontFamily: 'Arial',
             fontSize: 30,
-            fill: '#dddddd'
-        });
-
-        const idText = new PIXI.Text('Volume', styleName);
-        idText.x = 0;
-        idText.y = 0;
-        // container.addChild(idText);
-
-
-        const styleImage = new PIXI.TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 20,
             fill: '#cccccc'
         });
 
-        // const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
-        const actualName = data.data.name.substring(0, 20) + '...';
+        
+        const actualName = data.data.name;
+        const MAX_SIZE = 20;
+        const nameToDisplay = actualName.length > MAX_SIZE ? (actualName.substring(0, MAX_SIZE) + '...') : actualName;
 
-        const text = new PIXI.Text(actualName, styleImage);
-        text.x = 0;
-        text.y = 3.2 * SIZE;
+        const text = new PIXI.Text(nameToDisplay, styleImageName);
+
+        const textWidth = PIXI.TextMetrics.measureText(nameToDisplay, styleImageName).width;
+
+        text.x = size - textWidth / 2;
+        text.y = 2.3 * size;
         container.addChild(text);
 
         container.x = x;
         container.y = y;
         this.app.viewport.addChild(container);
 
+        const orange = 0xffa500;
+        const orangeCircle = new PIXI.Graphics();
+        orangeCircle.lineStyle(5, orange, 1);
+        orangeCircle.drawCircle(size, size, size);
+        orangeCircle.endFill();
+        orangeCircle.visible = false;
+        container.addChild(orangeCircle);
+
+        this.selectionCircle = orangeCircle;
+
 		TopologyEntityPixi.addDragBehaviour(this.app, this);
+    }
+
+    select(): void {
+        if (this.selectionCircle) {
+            this.selectionCircle.visible = true;
+        } 
+    }
+
+    unselect(): void {
+        if (this.selectionCircle) {
+            this.selectionCircle.visible = false;
+        }
     }
 }

@@ -12,9 +12,11 @@ export class BackgroundGrid {
 
         const lineWidth = 10;
 
+		const color = 0x252e35;
+
 		for (let i = 0; i < lines; i++) {
 			const vertical = new PIXI.Graphics();
-            vertical.lineStyle(lineWidth, 0x252e35, 0.5);
+            vertical.lineStyle(lineWidth, color, 0.5);
 			vertical.moveTo(i * size - maxSize, -maxSize);
 			vertical.lineTo(i * size - maxSize, maxSize);
 			app.viewport.addChild(vertical);
@@ -22,7 +24,7 @@ export class BackgroundGrid {
 
 		for (let i = 0; i < lines; i++) {
 			const horizontal = new PIXI.Graphics();
-			horizontal.lineStyle(lineWidth, 0x252e35, 0.5);
+			horizontal.lineStyle(lineWidth, color, 0.5);
 			horizontal.moveTo(-maxSize, i * size - maxSize);
 			horizontal.lineTo(maxSize, i * size - maxSize);
 			app.viewport.addChild(horizontal);

@@ -46,8 +46,11 @@ export abstract class TopologyEntityPixi {
 			const rawX = pos.x - container.width / 2;
 			const rawY = pos.y - container.height / 2;
 			const gridStep = BackgroundGrid.GRID_SIZE;
-			const x = Math.round(rawX / gridStep) * gridStep;
-			const y = Math.round(rawY / gridStep) * gridStep;
+			// const x = Math.round(rawX / gridStep) * gridStep;
+			// const y = Math.round(rawY / gridStep) * gridStep;
+
+			const x = rawX;
+			const y = rawY;
 			// const width = container.width;
 			// const height = container.height;
 			container.x = x;
@@ -60,5 +63,9 @@ export abstract class TopologyEntityPixi {
 
 		container.parent.on('pointermove', (event) => onDrag(event));
     }
+
+	abstract select(): void;
+
+	abstract unselect(): void;
 }
 

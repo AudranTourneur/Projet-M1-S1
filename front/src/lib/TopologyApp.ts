@@ -10,6 +10,7 @@ import { TopologyNetworkPixi } from './TopologyNetworkPixi';
 import { TopologyPortPixi } from './TopologyPortPixi';
 import { currentlySelectedEntity } from './TopologyStore';
 import { simulatePositions } from './GraphSimulation';
+import { get } from 'svelte/store';
 
 
 export class TopologyApp {
@@ -17,7 +18,6 @@ export class TopologyApp {
 	viewport: Viewport;
 
 	currentlySelected: TopologyEntityPixi | null = null;
-
 
 	allContainers: Array<TopologyContainerPixi> = [];
 	allVolumes: Array<TopologyVolumePixi> = [];
@@ -99,8 +99,8 @@ export class TopologyApp {
 		for (const networkName of networksArray) {
 			console.log('name', networkName)
 
-			const x =  getRandomCoord();
-			const y =  getRandomCoord();
+			const x = getRandomCoord();
+			const y = getRandomCoord();
 			this.allNetworks.push(new TopologyNetworkPixi(this, x, y, networkName))
 		}
 
@@ -126,21 +126,59 @@ export class TopologyApp {
 		const allEntities = [...this.allContainers, ...this.allVolumes, ...this.allNetworks, ...this.allPorts]
 
 		simulatePositions(allEntities)
+
+
+		// const redSquare = new PIXI.Graphics();
+		// redSquare.beginFill(0Xffffff);
+		// redSquare.drawRoundedRect(0, 0, 100, 100, 20);
+		// redSquare.endFill();
+
+		// this.viewport.addChild(redSquare);
+
+		// redSquare.interactive = true;
+
+		// let isRunning = true
+
+		// setInterval(() => {
+		// 	if (isRunning) {
+		// 		redSquare.x += 1;
+		// 		redSquare.y += 1;
+		// 		redSquare.rotation += 0.1;
+		// 	}
+		// }, 20)
+
+		// redSquare.on('pointerdown', () => {
+		// 	console.log('??????')
+		// 	isRunning = !isRunning
+		// 	redSquare.tint = isRunning ? 0Xffffff : 0Xff0000
+		// })
 	}
 
 	select(entity: TopologyEntityPixi) {
+		const previouslySelectedEntity = get(currentlySelectedEntity)
+		if (previouslySelectedEntity) {
+			previouslySelectedEntity.entity.unselect();
+		}
+
 		this.currentlySelected = entity;
-		
+
 		// disable viewport plugins
 		this.viewport.plugins.pause('drag');
 
-		this.selectEntity(entity)
+		currentlySelectedEntity.set({ entity });
+
+		entity.select();
 	}
 
 	unselect() {
+		if (!this.currentlySelected) return;
+		// this.currentlySelected.unselect();
+		// this.currentlySelected.unselect();
+
 		this.currentlySelected = null;
 		// enable viewport plugins
 		this.viewport.plugins.resume('drag');
+
 	}
 
 	getSaveData(): SaveData {
@@ -151,10 +189,6 @@ export class TopologyApp {
 				y: Math.round(container.pixiContainer.y),
 			}))
 		};
-	}
-
-	selectEntity(entity: TopologyEntityPixi){
-		currentlySelectedEntity.set({ entity });
 	}
 }
 

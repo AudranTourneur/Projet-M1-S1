@@ -124,4 +124,8 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 
 		TopologyEntityPixi.addDragBehaviour(app, this);
 	}
+
+	select() { }
+
+	unselect() { }
 }

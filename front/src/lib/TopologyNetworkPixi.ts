@@ -48,4 +48,8 @@ export class TopologyNetworkPixi extends TopologyEntityPixi {
 
 		TopologyEntityPixi.addDragBehaviour(app, this);
     }
+
+	select() {}
+
+	unselect() {}
 }

@@ -30,17 +30,18 @@
 
 <div class="w-[400px] h-[72vh] flex flex-col justify-between border border-blue-500">
 	<div>
-		{#if $currentlySelectedEntity?.entity instanceof TopologyContainerPixi}
-			<SidebarContainerPanel entity={$currentlySelectedEntity?.entity} />
-		{:else if $currentlySelectedEntity?.entity instanceof TopologyNetworkPixi}
-			{$currentlySelectedEntity?.entity.name}
-			TODO
-		{:else if $currentlySelectedEntity?.entity instanceof TopologyVolumePixi}
-			<SidebarVolumePanel entity={$currentlySelectedEntity?.entity} />
-        {:else}
-            Please select something to get more details.
-		{/if}
-
+		{#key $currentlySelectedEntity}
+			{#if $currentlySelectedEntity?.entity instanceof TopologyContainerPixi}
+				<SidebarContainerPanel entity={$currentlySelectedEntity?.entity} />
+			{:else if $currentlySelectedEntity?.entity instanceof TopologyNetworkPixi}
+				{$currentlySelectedEntity?.entity.name}
+				TODO
+			{:else if $currentlySelectedEntity?.entity instanceof TopologyVolumePixi}
+				<SidebarVolumePanel entity={$currentlySelectedEntity?.entity} />
+			{:else}
+				Please select something to get more details.
+			{/if}
+		{/key}
 	</div>
 
 	<div class="border border-red-500 flex justify-center">

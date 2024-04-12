@@ -62,4 +62,8 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 
 		TopologyEntityPixi.addDragBehaviour(app, this);
     }
+
+	select() {}
+
+	unselect() {}
 }
