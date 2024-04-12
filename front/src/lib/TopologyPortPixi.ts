@@ -5,6 +5,9 @@ import { TopologyEntityPixi } from './TopologyEntityPixi';
 import type { PortData } from './types/PortData';
 
 export class TopologyPortPixi extends TopologyEntityPixi {
+
+	private selectedPort : PIXI.Graphics | null = null;
+
     constructor(public app: TopologyApp, public x: number, public y: number, public data: PortData){
         super(app);
         this.create();
@@ -35,7 +38,8 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 		});
 
 		const idText = new PIXI.Text(data, styleName);
-		idText.x = 0;
+		const idTextWidth = PIXI.TextMetrics.measureText(data, styleName).width;
+		idText.x = -idTextWidth/2;
 		idText.y = 1.4 * size;
 		container.addChild(idText);
 
@@ -60,10 +64,28 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 
 		app.viewport.addChild(container);
 
+		const orange = 0xffa500;
+		const selectedPort = new PIXI.Graphics();
+		selectedPort.lineStyle(5, orange, 1);
+		selectedPort.drawRoundedRect(0, 0, size, size, 5);
+		selectedPort.endFill();
+		selectedPort.angle = 45;
+		selectedPort.visible = false;
+		container.addChild(selectedPort);
+
+		this.selectedPort = selectedPort;
+
 		TopologyEntityPixi.addDragBehaviour(app, this);
     }
 
-	select() {}
-
-	unselect() {}
+	select(): void{
+		if(this.selectedPort){
+			this.selectedPort.visible = true;
+		}
+	}
+	unselect(): void {
+		if(this.selectedPort){
+			this.selectedPort.visible = false;
+		}
+	}
 }
