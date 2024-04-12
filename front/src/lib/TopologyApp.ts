@@ -45,6 +45,8 @@ export class TopologyApp {
 		// activate plugins
 		viewport.drag().pinch().wheel().decelerate();
 
+		viewport.sortableChildren = true;
+
 		new BackgroundGrid(this);
 
 		function getRandomCoord() {
@@ -126,6 +128,7 @@ export class TopologyApp {
 		const allEntities = [...this.allContainers, ...this.allVolumes, ...this.allNetworks, ...this.allPorts]
 
 		simulatePositions(allEntities)
+
 
 
 		// const redSquare = new PIXI.Graphics();
