@@ -200,8 +200,7 @@ pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &
         };
 
         Json(true)
-    }
-    else {
+    } else {
         modify_container_yml(id, input).await;
         Json(true)
     }

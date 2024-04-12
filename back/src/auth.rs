@@ -1,5 +1,5 @@
 use rocket::http::Status;
-use rocket::request::{Outcome, Request, FromRequest};
+use rocket::request::{FromRequest, Outcome, Request};
 
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
@@ -31,7 +31,6 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
     }
 }
 
-
 #[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -48,7 +47,5 @@ pub struct LoginResponse {
 
 #[post("/login", format = "json", data = "<input>")]
 pub fn login(input: Json<LoginRequest>) -> Json<LoginResponse> {
-    Json(LoginResponse {
-        token: None,
-    })
+    Json(LoginResponse { token: None })
 }

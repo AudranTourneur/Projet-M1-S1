@@ -105,12 +105,11 @@ async fn create_topology_containers() -> Vec<TopologyContainer> {
                 container.id.clone()
             );
 
-            let container_data = TopologyContainer {
+            TopologyContainer {
                 data: container.clone(),
                 connected_to: vec![],
                 position: container_position,
-            };
-            container_data
+            }
         })
         .collect();
 
@@ -149,12 +148,11 @@ async fn create_topology_volumes() -> Vec<TopologyVolume> {
     let topology_volumes: Vec<TopologyVolume> = volumes
         .iter()
         .map(|data| {
-            let volume_data = TopologyVolume {
+            TopologyVolume {
                 data: data.clone(),
                 connected_to: vec![],
                 position: None,
-            };
-            volume_data
+            }
         })
         .collect();
 

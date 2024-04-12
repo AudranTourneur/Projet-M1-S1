@@ -17,12 +17,12 @@ mod database;
 mod dns;
 mod icons;
 mod ports;
+mod sniffer;
 mod sqlitedb;
 mod stats;
 mod topology;
 mod volumes;
 mod web;
-mod sniffer;
 
 // #[macro_use]
 // extern crate debug_stub_derive;
@@ -56,7 +56,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
         .chain(containers_handlers.iter())
         .chain(networks_handlers.iter())
         .chain(volumes_handlers.iter())
-        .map(|route| route.clone())
+        .cloned()
         .collect::<Vec<_>>();
 
     rocket::build().mount("/", all_handlers)

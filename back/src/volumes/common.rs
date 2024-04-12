@@ -80,13 +80,12 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
     let mut volumes_data: Vec<VolumeData> = volumes
         .iter()
         .map(|volume| {
-            let volume_data = VolumeData {
+            VolumeData {
                 name: volume.name.clone(),
                 created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
                 mountpoint: volume.mountpoint.clone(),
                 size: get_volume_size(volume.clone()),
-            };
-            volume_data
+            }
         })
         .collect();
 

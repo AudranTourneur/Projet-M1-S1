@@ -9,11 +9,11 @@ pub async fn get_url_response_cached(url: String) -> Result<String, Box<dyn std:
         .fetch_all(&mut conn)
         .await?;
 
-    let row = res.get(0);
+    let row = res.first();
     match row {
         Some(res) => {
             let response_text: String = res.get("response_text");
-            return Ok(response_text);
+            Ok(response_text)
         }
         None => {
             println!("No such cached response for URL: {}", url.clone());
@@ -33,7 +33,7 @@ pub async fn get_url_response_cached(url: String) -> Result<String, Box<dyn std:
                     .execute(&mut conn)
                     .await?;
 
-            return Ok(body);
+            Ok(body)
         }
-    };
+    }
 }

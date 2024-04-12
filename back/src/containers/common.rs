@@ -1,7 +1,10 @@
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
 use rocket::serde::json::Json;
-use std::{fs::File, io::{Read, Write}};
+use std::{
+    fs::File,
+    io::{Read, Write},
+};
 
 use crate::docker::get_docker_socket;
 
@@ -289,7 +292,10 @@ pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindReque
 
     println!("New ports: {:?}", vec_new_port_str.clone());
 
-    let new_ports_vec: Vec<serde_yaml::value::Value> = vec_new_port_str.iter().map(|x| serde_yaml::Value::String(x.clone())).collect();
+    let new_ports_vec: Vec<serde_yaml::value::Value> = vec_new_port_str
+        .iter()
+        .map(|x| serde_yaml::Value::String(x.clone()))
+        .collect();
 
     *yaml_ports_value = new_ports_vec;
 
@@ -297,7 +303,6 @@ pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindReque
     let mut file = File::create(target_file_path).unwrap();
     let new_string = serde_yaml::to_string(&docker_compose).unwrap();
     file.write_all(new_string.as_bytes()).unwrap();
-
 }
 
 // route rebind ports change le docker compose avec les ports voulus YUMP
