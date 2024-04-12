@@ -1,11 +1,11 @@
 use std::{fs::File, io::Read};
-
+use rocket::serde::json::Json;
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
 
 use crate::docker::get_docker_socket;
 
-use super::models::{ContainerData, OurPortTypeEnum, PortData};
+use super::models::{ContainerData, ContainerPortRebind, ContainerPortRebindRequest, OurPortTypeEnum, PortData};
 
 use crate::images::common::get_image_by_id;
 
@@ -158,26 +158,35 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
 }
 
 pub fn yaml_string(yaml_path: String) -> Result<String, Box<dyn std::error::Error>> {
-    println!("yaml_read A");
     let path = format!("/rootfs/{}", yaml_path);
-    println!("path reminder {:?}", path.clone());
     let mut file = File::open(path)?;
-    println!("yaml_read B");
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
-    println!("yaml_read C{}", contents);
-
     Ok(contents)
 }
 
-pub async fn modify_container_yml(id: &str) {
-    //, port, new_port
-    println!("Called modify_container_yml with id: {:?}", id);
-    //rebind: ContainerPortRebind
+pub async fn check_for_yml(id: &str) -> bool{
+    println!("Checking for existing yml: {:?}", id);
+    
     let container_data = get_container_by_id(id).await.unwrap();
     let yml_path = container_data.clone().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
-    //ex : /home/abyuka/Documents/Projet-M1-S1/docker-compose.yml
+
+    if path_string.is_empty() {
+        println!("No docker compose found.");
+        return false;
+    }
+
+    println!("Docker compose found at : {:?}", path_string.clone());
+    return true;
+}
+
+pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindRequest>) {
+    println!("Called modify_container_yml with id: {:?}", id);
+    
+    let container_data = get_container_by_id(id).await.unwrap();
+    let yml_path = container_data.clone().compose_file;
+    let path_string = yml_path.clone().unwrap_or_default();
 
     if path_string.is_empty() {
         println!("No docker compose found.");
@@ -195,6 +204,7 @@ pub async fn modify_container_yml(id: &str) {
         }
     };
 
+    println!("Docker compose string: {:?}", docker_compose_str.clone());
     let docker_compose: serde_yaml::Value = serde_yaml::from_str(&docker_compose_str).unwrap();
     let dc_services = docker_compose["services"].as_mapping().unwrap();
     println!("Docker compose services: {:?}", dc_services.clone());
@@ -244,7 +254,54 @@ pub async fn modify_container_yml(id: &str) {
     };
 
     println!("Ports: {:?}", ports.clone());
+
+    let mut vec_of_new_ports = input.ports.clone();
+    println!("New ports: {:?}", vec_of_new_ports.clone());
+
+
+    let mut newports : Vec<String> = vec_of_new_ports.clone().iter().map(|port| 
+        {
+            let mut hostport = port.host.to_string();
+            let mut internalport = port.internal.to_string();
+            let mut ip = port.ip.to_string();
+            if ip == "0.0.0.0" {
+                ip = "".to_string();
+            }
+            else {
+                ip = format!("{}:", ip);
+            }
+            let mut protocol = port.protocol.as_ref();
+            match protocol{ 
+                "TCP"  => {protocol = "/tcp"},
+                "UDP" => {protocol = "/udp"}, 
+                "SCTP "=> {protocol = "/sctp"},
+                _=> {protocol = ""}
+            }
+
+            let mut newport = format!("{}{}:{}{}", ip, hostport, internalport, protocol);
+            newport
+        })
+        .collect();
+
+    println!("New ports: {:?}", newports.clone());
+
+    
 }
 
-// récupere PORTS ok
 // route rebind ports change le docker compose avec les ports voulus YUMP
+//protocole : que si udp/tcp 
+//0.0.0.0 : idem que pas noter d'ip
+//ne pas marquer de protocole : idem que marquer tous les protocoles
+
+
+/* ports:
+  - "3000"
+  - "3000-3005"
+  - "8000:8000"
+  - "9090-9091:8080-8081"
+  - "49100:22"
+  - "127.0.0.1:8001:8001"
+  - "127.0.0.1:5000-5010:5000-5010"
+  - "127.0.0.1::5000"
+  - "6060:6060/udp"
+  - "12400-12500:1240" */

@@ -134,7 +134,7 @@
 	}
 </script>
 
-<div>
+<div class="my-5">
 	Rebind ports
 	{#each ports as p}
 		Host port
