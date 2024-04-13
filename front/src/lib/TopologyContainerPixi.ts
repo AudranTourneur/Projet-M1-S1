@@ -5,6 +5,9 @@ import type { TopologyContainer } from './types/TopologyContainer';
 import { TopologyEntityPixi } from './TopologyEntityPixi';
 
 export class TopologyContainerPixi extends TopologyEntityPixi {
+
+	private selectionRect : PIXI.Graphics | null = null;
+
 	constructor(public app: TopologyApp, public x: number, public y: number, public data: TopologyContainer) {
 		super(app);
 		this.create();
@@ -27,35 +30,22 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 		// add text
 		const styleName = new PIXI.TextStyle({
 			fontFamily: 'Arial',
-			fontSize: 30,
+			fontSize: 25,
 			fill: '#dddddd'
 		});
 
-		const idText = new PIXI.Text('Container', styleName);
-		idText.x = 30;
-		idText.y = 30;
-		container.addChild(idText);
-
-		const styleImage = new PIXI.TextStyle({
-			fontFamily: 'Arial',
-			fontSize: 20,
-			fill: '#cccccc'
-		});
-
-
-
 		let actualName;
-		// const actualName = randomNamesList[Math.floor(Math.random() * randomNamesList.length)];
 		if (data.data.image.length > 20) {
 			actualName = data.data.image.substring(0, 20) + '...';
 		} else {
 			actualName = data.data.image;
 		}
 
-		const image = new PIXI.Text(actualName, styleImage);
-		image.x = 30;
-		image.y = 80;
-		container.addChild(image);
+		const idText = new PIXI.Text(actualName, styleName);
+		idText.x = 30;
+		idText.y = 30;
+		container.addChild(idText);
+
 
 		const isOnline = true;
 
@@ -109,11 +99,23 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 			const img = PIXI.Sprite.from(data.data.iconUrl);
 			console.log('IMG', img)
 			// const img = PIXI.Sprite.from('https://cdn-icons-png.flaticon.com/512/888/888879.png')
-			img.width = BackgroundGrid.GRID_SIZE * 0.4;
-			img.height = BackgroundGrid.GRID_SIZE * 0.4;
+			const maxWidthOrHeight = BackgroundGrid.GRID_SIZE * 1;
+
+			const originalWidth = img.width;
+			const originalHeight = img.height;
+
+			const aspectRatio = originalWidth / originalHeight;
+
+			if (originalWidth > originalHeight) {
+				img.width = maxWidthOrHeight;
+				img.height = maxWidthOrHeight / aspectRatio;
+			} else {
+				img.height = maxWidthOrHeight;
+				img.width = maxWidthOrHeight * aspectRatio;
+			}
 
 			img.x = 0.2 * BackgroundGrid.GRID_SIZE;
-			img.y = 1.4 * BackgroundGrid.GRID_SIZE;
+			img.y = 0.9 * BackgroundGrid.GRID_SIZE;
 
 			container.addChild(img);
 		}
@@ -123,6 +125,28 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 
 		app.viewport.addChild(container);
 
+		const orange = 0xffa500;
+		const orangeRect = new PIXI.Graphics();
+		orangeRect.lineStyle(5, orange, 1);
+		orangeRect.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 3, BackgroundGrid.GRID_SIZE * 2, 20);
+		orangeRect.endFill();
+		orangeRect.visible = false;
+		container.addChild(orangeRect);
+
+		this.selectionRect = orangeRect;
+
 		TopologyEntityPixi.addDragBehaviour(app, this);
+	}
+
+	select(): void { 
+		if (this.selectionRect) {
+			this.selectionRect.visible = true;
+		}
+	}
+
+	unselect() { 
+		if (this.selectionRect) {
+			this.selectionRect.visible = false;
+		}
 	}
 }

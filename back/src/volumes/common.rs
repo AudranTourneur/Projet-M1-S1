@@ -42,8 +42,12 @@ pub fn get_volume_size(vol: Volume) -> u64 {
 
     let maybe_size = get_value_from_static_map(&name);
 
-    if maybe_size.is_some() {
-        return maybe_size.unwrap();
+    // if maybe_size.is_some() {
+    //     return maybe_size.unwrap();
+    // }
+
+    if let Some(maybe_size) = maybe_size {
+        return maybe_size;
     }
 
     println!("Calculating size for mountpoint {}", mountpoint);
@@ -80,13 +84,12 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
     let mut volumes_data: Vec<VolumeData> = volumes
         .iter()
         .map(|volume| {
-            let volume_data = VolumeData {
+            VolumeData {
                 name: volume.name.clone(),
                 created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
                 mountpoint: volume.mountpoint.clone(),
                 size: get_volume_size(volume.clone()),
-            };
-            volume_data
+            }
         })
         .collect();
 

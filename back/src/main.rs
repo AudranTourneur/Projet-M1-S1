@@ -1,5 +1,6 @@
 use database::init_clickhouse_database;
 use icons::spawn_info_service;
+use sniffer::sniff_packets;
 use sqlitedb::init_sqlite_database;
 
 mod auth;
@@ -16,6 +17,7 @@ mod database;
 mod dns;
 mod icons;
 mod ports;
+mod sniffer;
 mod sqlitedb;
 mod stats;
 mod topology;
@@ -30,7 +32,7 @@ extern crate rocket;
 
 fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
     let base_routes = routes![
-        auth::auth_handler,
+        auth::login,
         overview::overview_handler,
         ports::ports_handler,
         topology::topology_handler,
@@ -54,7 +56,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
         .chain(containers_handlers.iter())
         .chain(networks_handlers.iter())
         .chain(volumes_handlers.iter())
-        .map(|route| route.clone())
+        .cloned()
         .collect::<Vec<_>>();
 
     rocket::build().mount("/", all_handlers)
@@ -75,6 +77,8 @@ async fn main() {
     rocket::tokio::spawn(spawn_statistics_subsystem());
 
     rocket::tokio::spawn(spawn_info_service());
+
+    // rocket::tokio::spawn(sniff_packets());
 
     let _ = app.launch().await;
 }

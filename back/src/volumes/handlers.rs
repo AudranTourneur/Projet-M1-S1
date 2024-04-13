@@ -49,7 +49,6 @@ pub async fn delete_volume(name: &str) -> &'static str {
 
     let options = Some(RemoveVolumeOptions {
         force: true,
-        ..Default::default()
     });
 
     let _ = docker.remove_volume(name, options).await;
@@ -183,15 +182,13 @@ fn details_fdir(
             println!("SIZE = {}", size);
 
             let file_data = FileData {
-                name: name,
-                size: size,
+                name,
+                size,
             };
 
             Some(file_data)
         })
         .collect();
 
-    let res = folder_data.into_iter().filter_map(|e| e).collect();
-
-    res
+    folder_data.into_iter().flatten().collect()
 }

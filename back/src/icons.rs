@@ -32,17 +32,17 @@ pub async fn spawn_info_service() {
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
         let mut conn = get_sqlite_connection().await.unwrap();
 
-        let url = get_url_from_tag_name(&image_name);
+        let url = get_url_from_tag_name(image_name);
 
         println!("Fetching image info for: {}", image_name);
 
         let query = sqlx::query("SELECT * FROM web_cache WHERE request_url = ?")
-            .bind(&image_name)
+            .bind(image_name)
             .fetch_all(&mut conn)
             .await
             .unwrap();
 
-        if query.len() > 0 {
+        if !query.is_empty() {
             println!("[SKIP] --- Image info already exists for {}", image_name);
             continue;
         }
@@ -62,12 +62,12 @@ pub async fn spawn_info_service() {
 }
 
 fn get_url_from_tag_name(tag_name: &str) -> String {
-    let before_colon = tag_name.split(":").collect::<Vec<&str>>()[0];
+    let before_colon = tag_name.split(':').collect::<Vec<&str>>()[0];
     let image_name = before_colon;
 
-    if image_name.contains("/") {
-        let before_slash = image_name.split("/").collect::<Vec<&str>>()[0];
-        let after_slash = image_name.split("/").collect::<Vec<&str>>()[1];
+    if image_name.contains('/') {
+        let before_slash = image_name.split('/').collect::<Vec<&str>>()[0];
+        let after_slash = image_name.split('/').collect::<Vec<&str>>()[1];
         format!("{}/{}/{}", API_LINK, before_slash, after_slash)
     } else {
         format!("{}/{}/{}", API_LINK, "library", image_name)
@@ -79,7 +79,7 @@ pub async fn resolve_icon_url_from_image_name(image_tag: &str) -> Option<String>
         return None;
     }
 
-    let url = get_url_from_tag_name(&image_tag);
+    let url = get_url_from_tag_name(image_tag);
     println!(
         "Attempting to resolve icon for image {} | URL = {}",
         image_tag,
@@ -104,7 +104,7 @@ pub async fn resolve_icon_url_from_image_name(image_tag: &str) -> Option<String>
         }
     };
 
-    let db_res = db_res.get(0);
+    let db_res = db_res.first();
     let db_res = match db_res {
         Some(res) => res,
         None => {

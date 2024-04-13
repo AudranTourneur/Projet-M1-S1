@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { TopologyApp } from '$lib/TopologyApp.js';
 	import { onMount } from 'svelte';
+	import Sidebar from './Sidebar.svelte';
 
 	let parentElement: HTMLDivElement;
 	let canvasElement: HTMLCanvasElement;
@@ -15,24 +16,13 @@
 
 		console.log('Topology data', data);
 	});
-
-	async function save() {
-		console.log('save')
-		const res = await fetch('/topology/api/save', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(app.getSaveData()),
-		})
-		console.log('RES', await res.text())
-	}
 </script>
 
-<div class="flex justify-end items-center">
-	<button type="button" class="btn variant-filled" on:click={save}>Save</button>
-</div>
+<div
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4 flex justify-between items-center gap-2 h-full">
+	<div bind:this={parentElement} class="justify-end w-[80vw] h-[72vh]">
+		<canvas bind:this={canvasElement} id="topology-canvas" />
+	</div>
 
-<div bind:this={parentElement} class="w-[80vw] h-[72vh]">
-	<canvas bind:this={canvasElement} id="topology-canvas" />
+	<Sidebar {app} />
 </div>

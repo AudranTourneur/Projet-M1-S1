@@ -134,6 +134,5 @@ pub async fn _get_volumes_size(id_to_inspect: String) {
 }
 
 pub async fn _get_mountpoint_size(mountpoint_source: String) -> u64 {
-    let size = get_size(mountpoint_source.clone()).unwrap_or(0);
-    size
+    get_size(mountpoint_source.clone()).unwrap_or(0)
 }

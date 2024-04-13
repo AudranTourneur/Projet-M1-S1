@@ -6,13 +6,13 @@ use ts_rs::TS;
 
 use crate::{
     containers::{common::get_all_containers, models::ContainerData},
-    images::common::get_all_images,
-    images::models::ImageData,
+    images::{common::get_all_images, models::ImageData},
+    ports::{get_used_ports, SimplePortData},
     sqlitedb::get_sqlite_connection,
     volumes::{common::get_all_volumes, models::VolumeData},
 };
 
-#[derive(Serialize, Deserialize, TS, Debug)]
+#[derive(Serialize, Deserialize, TS, Clone, Debug)]
 #[ts(export)]
 pub struct Position {
     x: i32,
@@ -28,12 +28,11 @@ pub struct TopologyContainer {
     pub position: Option<Position>,
 }
 
-#[derive(Serialize, Deserialize, TS)]
+#[derive(Serialize, Deserialize, Clone, TS, Debug)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TopologyPort {
-    pub interface: String,
-    pub number: u16,
+    pub data: SimplePortData,
     pub connected_to: Vec<String>,
     pub position: Option<Position>,
 }
@@ -106,12 +105,11 @@ async fn create_topology_containers() -> Vec<TopologyContainer> {
                 container.id.clone()
             );
 
-            let container_data = TopologyContainer {
+            TopologyContainer {
                 data: container.clone(),
                 connected_to: vec![],
                 position: container_position,
-            };
-            container_data
+            }
         })
         .collect();
 
@@ -123,20 +121,25 @@ async fn create_topology_clusters() -> Vec<Vec<TopologyContainer>> {
 }
 
 fn create_topology_ports() -> Vec<TopologyPort> {
-    vec![
-        TopologyPort {
-            interface: "eth0".to_string(),
-            number: 80,
-            connected_to: vec!["nginx".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-        TopologyPort {
-            interface: "eth0".to_string(),
-            number: 3306,
-            connected_to: vec!["mysql".to_string()],
-            position: Some(Position { x: 100, y: 100 }),
-        },
-    ]
+    let used_ports = get_used_ports();
+    let used_ports = match used_ports {
+        Ok(used_ports) => used_ports,
+        Err(e) => {
+            println!("Error getting ports: {}", e);
+            Vec::new()
+        }
+    };
+
+    let final_ports = used_ports
+        .iter()
+        .map(|port| TopologyPort {
+            data: port.clone(),
+            connected_to: vec![],
+            position: None,
+        })
+        .collect();
+
+    final_ports
 }
 
 async fn create_topology_volumes() -> Vec<TopologyVolume> {
@@ -145,12 +148,11 @@ async fn create_topology_volumes() -> Vec<TopologyVolume> {
     let topology_volumes: Vec<TopologyVolume> = volumes
         .iter()
         .map(|data| {
-            let volume_data = TopologyVolume {
+            TopologyVolume {
                 data: data.clone(),
                 connected_to: vec![],
                 position: None,
-            };
-            volume_data
+            }
         })
         .collect();
 

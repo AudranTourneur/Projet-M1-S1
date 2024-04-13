@@ -4,10 +4,13 @@ import { TopologyContainerPixi } from './TopologyContainerPixi';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyInitData } from './topology';
 import { TopologyLinkPixi } from './TopologyLinkPixi';
-import { TopologyVolumePixi } from './TopologyVolume';
+import { TopologyVolumePixi } from './TopologyVolumePixi';
 import type { TopologyEntityPixi } from './TopologyEntityPixi';
 import { TopologyNetworkPixi } from './TopologyNetworkPixi';
 import { TopologyPortPixi } from './TopologyPortPixi';
+import { currentlySelectedEntity } from './TopologyStore';
+import { simulatePositions } from './GraphSimulation';
+import { get } from 'svelte/store';
 
 
 export class TopologyApp {
@@ -41,6 +44,8 @@ export class TopologyApp {
 
 		// activate plugins
 		viewport.drag().pinch().wheel().decelerate();
+
+		viewport.sortableChildren = true;
 
 		new BackgroundGrid(this);
 
@@ -96,8 +101,8 @@ export class TopologyApp {
 		for (const networkName of networksArray) {
 			console.log('name', networkName)
 
-			const x =  getRandomCoord();
-			const y =  getRandomCoord();
+			const x = getRandomCoord();
+			const y = getRandomCoord();
 			this.allNetworks.push(new TopologyNetworkPixi(this, x, y, networkName))
 		}
 
@@ -120,18 +125,63 @@ export class TopologyApp {
 			}
 		}
 
+		const allEntities = [...this.allContainers, ...this.allVolumes, ...this.allNetworks, ...this.allPorts]
+
+		simulatePositions(allEntities)
+
+
+
+		// const redSquare = new PIXI.Graphics();
+		// redSquare.beginFill(0Xffffff);
+		// redSquare.drawRoundedRect(0, 0, 100, 100, 20);
+		// redSquare.endFill();
+
+		// this.viewport.addChild(redSquare);
+
+		// redSquare.interactive = true;
+
+		// let isRunning = true
+
+		// setInterval(() => {
+		// 	if (isRunning) {
+		// 		redSquare.x += 1;
+		// 		redSquare.y += 1;
+		// 		redSquare.rotation += 0.1;
+		// 	}
+		// }, 20)
+
+		// redSquare.on('pointerdown', () => {
+		// 	console.log('??????')
+		// 	isRunning = !isRunning
+		// 	redSquare.tint = isRunning ? 0Xffffff : 0Xff0000
+		// })
 	}
 
-	select(container: TopologyEntityPixi) {
-		this.currentlySelected = container;
+	select(entity: TopologyEntityPixi) {
+		const previouslySelectedEntity = get(currentlySelectedEntity)
+		if (previouslySelectedEntity) {
+			previouslySelectedEntity.entity.unselect();
+		}
+
+		this.currentlySelected = entity;
+
 		// disable viewport plugins
 		this.viewport.plugins.pause('drag');
+
+		currentlySelectedEntity.set({ entity });
+
+		entity.select();
 	}
 
 	unselect() {
+		if (!this.currentlySelected) return;
+		// this.currentlySelected.unselect();
+		// this.currentlySelected.unselect();
+
 		this.currentlySelected = null;
 		// enable viewport plugins
 		this.viewport.plugins.resume('drag');
+
 	}
 
 	getSaveData(): SaveData {

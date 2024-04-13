@@ -63,6 +63,7 @@ services:
     #   - "7777:5173"
     volumes:
       - "./front/src:/opt/app/src"
+      - "./front/static:/opt/app/static"
 
   caddy:
     container_name: okidocky-caddy

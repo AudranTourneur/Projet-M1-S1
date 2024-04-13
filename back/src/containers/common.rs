@@ -1,11 +1,16 @@
-use std::{fs::File, io::Read};
-
 use bollard::{container::ListContainersOptions, secret::PortTypeEnum, Docker};
 use futures::future::join_all;
+use rocket::serde::json::Json;
+use std::{
+    fs::File,
+    io::{Read, Write},
+};
 
 use crate::docker::get_docker_socket;
 
-use super::models::{ContainerData, OurPortTypeEnum, PortData};
+use super::models::{
+    ContainerData, ContainerPortRebind, ContainerPortRebindRequest, OurPortTypeEnum, PortData,
+};
 
 use crate::images::common::get_image_by_id;
 
@@ -40,10 +45,10 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         .iter()
         .map(|volume| {
             let name = volume.name.clone().unwrap_or_default();
-            if name.len() > 0 {
+            if !name.is_empty() {
                 return name;
             }
-            return volume.source.clone().unwrap_or_default();
+            volume.source.clone().unwrap_or_default()
         })
         .collect();
 
@@ -58,7 +63,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         .unwrap_or_default()
         .iter()
         .map(|port| {
-            let our_port = PortData {
+            PortData {
                 ip: port.ip.clone(),
                 private_port: port.private_port,
                 public_port: port.public_port,
@@ -68,8 +73,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
                     PortTypeEnum::UDP => OurPortTypeEnum::UDP,
                     PortTypeEnum::SCTP => OurPortTypeEnum::SCTP,
                 }),
-            };
-            our_port
+            }
         })
         .collect();
 
@@ -101,7 +105,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let networks: Vec<String> = endpoint_settings.keys().cloned().collect();
 
     let image_data = match &container.image_id {
-        Some(id) => get_image_by_id(&id).await,
+        Some(id) => get_image_by_id(id).await,
         None => None,
     };
 
@@ -157,32 +161,163 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
     listed_containers
 }
 
-pub fn yaml_read(yaml_path: String) -> Result<String, Box<dyn std::error::Error>> {
-    println!("yaml_read A");
+pub fn yaml_string(yaml_path: String) -> Result<String, Box<dyn std::error::Error>> {
     let path = format!("/rootfs/{}", yaml_path);
-    println!("path reminder {:?}", path.clone());
     let mut file = File::open(path)?;
-    println!("yaml_read B");
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
-    println!("yaml_read C{}", contents);
-
     Ok(contents)
 }
 
-pub async fn modify_container_yml(id: &str) {
-    //rebind: ContainerPortRebind
-    let my_cont_data = get_container_by_id(id).await;
-    let yml_path = my_cont_data.unwrap().compose_file;
-    let path_string = yml_path.clone().unwrap_or_default();
-    //ex : /home/abyuka/Documents/Projet-M1-S1/docker-compose.yml
+pub async fn check_for_yml(id: &str) -> bool {
+    println!("Checking for existing yml: {:?}", id);
 
-    //    yaml_read(yml_path.unwrap());
+    let container_data = get_container_by_id(id).await.unwrap();
+    let yml_path = container_data.clone().compose_file;
+    let path_string = yml_path.clone().unwrap_or_default();
 
     if path_string.is_empty() {
-        println!("No docker compose found.")
-    } else {
-        println!("Docker compose found at : {:?}", path_string.clone());
-        let _ = yaml_read(path_string);
+        println!("No docker compose found.");
+        return false;
     }
+
+    println!("Docker compose found at : {:?}", path_string.clone());
+
+    true
 }
+
+pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindRequest>) {
+    println!("Called modify_container_yml with id: {:?}", id);
+
+    let container_data = get_container_by_id(id).await.unwrap();
+    let yml_path = container_data.clone().compose_file;
+    let path_string = yml_path.clone().unwrap_or_default();
+
+    if path_string.clone().is_empty() {
+        println!("No docker compose found.");
+        return;
+    }
+
+    println!("Docker compose found at : {:?}", path_string.clone());
+    let docker_compose_str = yaml_string(path_string.clone());
+
+    let docker_compose_str = match docker_compose_str {
+        Ok(docker_compose_str) => docker_compose_str,
+        Err(e) => {
+            println!("Error: {:?}", e);
+            return;
+        }
+    };
+
+    println!("Docker compose string: {:?}", docker_compose_str.clone());
+    let mut docker_compose: serde_yaml::Value = serde_yaml::from_str(&docker_compose_str).unwrap();
+    let dc_services = docker_compose["services"].as_mapping_mut().unwrap();
+    println!("Docker compose services: {:?}", dc_services.clone());
+
+    let labels = container_data.clone().labels;
+
+    let key = "com.docker.compose.service";
+
+    let service_name = match labels {
+        Some(labels) => match labels.get(key) {
+            Some(service_name) => service_name.clone(),
+            None => {
+                println!("No service name found in labels.");
+                return;
+            }
+        },
+        None => {
+            println!("No labels found.");
+            return;
+        }
+    };
+
+    let service = dc_services.get_mut(&serde_yaml::Value::String(service_name.clone()));
+    let service = match service {
+        Some(service) => service.as_mapping_mut().unwrap(),
+        None => {
+            let all_available_keys: Vec<&serde_yaml::Value> = dc_services.keys().collect();
+            println!(
+                "Failed to get service, available keys: {:?}",
+                all_available_keys
+            );
+            return;
+        }
+    };
+
+    let ports = service.get_mut("ports");
+    let yaml_ports_value = match ports {
+        Some(ports) => ports.as_sequence_mut().unwrap(),
+        None => {
+            let all_available_keys: Vec<&serde_yaml::Value> = dc_services.keys().collect();
+            println!(
+                "Failed to get ports, available keys: {:?}",
+                all_available_keys
+            );
+            return;
+        }
+    };
+
+    println!("Ports: {:?}", yaml_ports_value.clone());
+
+    let vec_of_new_ports = input.ports.clone();
+    println!("New ports: {:?}", vec_of_new_ports.clone());
+
+    let vec_new_port_str: Vec<String> = vec_of_new_ports
+        .clone()
+        .iter()
+        .map(|port| {
+            let hostport = port.host.to_string();
+            let internalport = port.internal.to_string();
+            let ip = port.ip.to_string();
+
+            let ip = if ip == "0.0.0.0" {
+                "".to_string()
+            } else {
+                format!("{}:", ip)
+            };
+
+            let protocol = port.protocol.as_ref();
+            let protocol = match protocol {
+                "TCP" => "/tcp",
+                "UDP" => "/udp",
+                "SCTP " => "/sctp",
+                _ => "",
+            };
+
+            let newport = format!("{}{}:{}{}", ip, hostport, internalport, protocol);
+            newport
+        })
+        .collect();
+
+    println!("New ports: {:?}", vec_new_port_str.clone());
+
+    let new_ports_vec: Vec<serde_yaml::value::Value> = vec_new_port_str
+        .iter()
+        .map(|x| serde_yaml::Value::String(x.clone()))
+        .collect();
+
+    *yaml_ports_value = new_ports_vec;
+
+    let target_file_path = format!("/rootfs/{}", path_string.clone());
+    let mut file = File::create(target_file_path).unwrap();
+    let new_string = serde_yaml::to_string(&docker_compose).unwrap();
+    file.write_all(new_string.as_bytes()).unwrap();
+}
+
+// route rebind ports change le docker compose avec les ports voulus YUMP
+//protocole : que si udp/tcp
+//0.0.0.0 : idem que pas noter d'ip
+//ne pas marquer de protocole : idem que marquer tous les protocoles
+
+/* ports:
+- "3000"
+- "3000-3005"
+- "8000:8000"
+- "9090-9091:8080-8081"
+- "49100:22"
+- "127.0.0.1:8001:8001"
+- "127.0.0.1:5000-5010:5000-5010"
+- "127.0.0.1::5000"
+- "6060:6060/udp"
+- "12400-12500:1240" */
