@@ -1,0 +1,1 @@
+export const selectionColor = 0xffa500;

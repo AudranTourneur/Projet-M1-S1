@@ -3,6 +3,7 @@ import type { TopologyApp } from './TopologyApp';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyContainer } from './types/TopologyContainer';
 import { TopologyEntityPixi } from './TopologyEntityPixi';
+import { selectionColor } from './Constants';
 
 export class TopologyContainerPixi extends TopologyEntityPixi {
 
@@ -26,6 +27,11 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 		graphics.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 3, BackgroundGrid.GRID_SIZE * 2, 20);
 		graphics.endFill();
 		container.addChild(graphics);
+
+		this.actualCenter = {
+			x: BackgroundGrid.GRID_SIZE * 3 / 2,
+			y: BackgroundGrid.GRID_SIZE * 2 / 2
+		}
 
 		// add text
 		const styleName = new PIXI.TextStyle({
@@ -125,9 +131,8 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 
 		app.viewport.addChild(container);
 
-		const orange = 0xffa500;
 		const orangeRect = new PIXI.Graphics();
-		orangeRect.lineStyle(5, orange, 1);
+		orangeRect.lineStyle(5, selectionColor, 1);
 		orangeRect.drawRoundedRect(0, 0, BackgroundGrid.GRID_SIZE * 3, BackgroundGrid.GRID_SIZE * 2, 20);
 		orangeRect.endFill();
 		orangeRect.visible = false;

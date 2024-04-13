@@ -170,11 +170,19 @@ export class TopologyApp {
 
 		currentlySelectedEntity.set({ entity });
 
+		for (const link of entity.links) {
+			link.isSelected = true;
+			link.update();
+		}
 		entity.select();
 	}
 
 	unselect() {
 		if (!this.currentlySelected) return;
+		for (const link of this.currentlySelected.links) {
+			link.isSelected = false;
+			link.update();
+		}
 		// this.currentlySelected.unselect();
 		// this.currentlySelected.unselect();
 

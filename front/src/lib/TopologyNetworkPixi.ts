@@ -30,6 +30,11 @@ export class TopologyNetworkPixi extends TopologyEntityPixi {
 		routerIcon.width = size * 1.5;
 		routerIcon.height = size * 1.5;
 
+		this.actualCenter = {
+			x: size * 1.5 / 2,
+			y: size * 1.5 / 2
+		}
+
 		container.addChild(routerIcon);
 
 		// add text

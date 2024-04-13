@@ -10,6 +10,7 @@ export abstract class TopologyEntityPixi {
     pixiContainer = new PIXI.Container();
     links: Array<TopologyLinkPixi> = [];
 	uuid: string = nanoid();
+	actualCenter = { x: 0, y: 0 };
 
     constructor(public app: TopologyApp) {
         // this.create()

@@ -3,6 +3,7 @@ import type { TopologyApp } from './TopologyApp';
 import { TopologyEntityPixi } from './TopologyEntityPixi';
 import { BackgroundGrid } from './BackgroundGrid';
 import type { TopologyVolume } from './types/TopologyVolume';
+import { selectionColor } from './Constants';
 
 export class TopologyVolumePixi extends TopologyEntityPixi {
 
@@ -32,6 +33,11 @@ export class TopologyVolumePixi extends TopologyEntityPixi {
         graphics.drawCircle(size, size, size);
         graphics.endFill();
         container.addChild(graphics);
+
+        this.actualCenter = {
+            x: size,
+            y: size
+        }
 
         const dbIconUrl = '/static/database.svg'
         const dbTexture = PIXI.Texture.from(dbIconUrl);
@@ -66,9 +72,8 @@ export class TopologyVolumePixi extends TopologyEntityPixi {
         container.y = y;
         this.app.viewport.addChild(container);
 
-        const orange = 0xffa500;
         const orangeCircle = new PIXI.Graphics();
-        orangeCircle.lineStyle(5, orange, 1);
+        orangeCircle.lineStyle(5, selectionColor, 1);
         orangeCircle.drawCircle(size, size, size);
         orangeCircle.endFill();
         orangeCircle.visible = false;

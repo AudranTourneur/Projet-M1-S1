@@ -3,6 +3,7 @@ import type { TopologyApp } from './TopologyApp';
 import { BackgroundGrid } from './BackgroundGrid';
 import { TopologyEntityPixi } from './TopologyEntityPixi';
 import type { PortData } from './types/PortData';
+import { selectionColor } from './Constants';
 
 export class TopologyPortPixi extends TopologyEntityPixi {
 
@@ -27,6 +28,7 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 		const size = BackgroundGrid.GRID_SIZE * 0.8;
 		graphics.drawRoundedRect(0, 0, size, size, 5);
 		graphics.endFill();
+		graphics.pivot = new PIXI.Point(size/2, size/2);
 		graphics.angle = 45;
 		container.addChild(graphics);
 
@@ -56,7 +58,7 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 		portIcon.height = size * scaleIcon;
 
 		portIcon.x = -size * scaleIcon/2;
-		portIcon.y = size * scaleIcon/2;
+		portIcon.y = -size * scaleIcon/2;
 
 		portIcon.tint = 0x444444;
 
@@ -64,16 +66,21 @@ export class TopologyPortPixi extends TopologyEntityPixi {
 
 		app.viewport.addChild(container);
 
-		const orange = 0xffa500;
 		const selectedPort = new PIXI.Graphics();
-		selectedPort.lineStyle(5, orange, 1);
+		selectedPort.lineStyle(5, selectionColor, 1);
 		selectedPort.drawRoundedRect(0, 0, size, size, 5);
 		selectedPort.endFill();
+		selectedPort.pivot = new PIXI.Point(size/2, size/2);
 		selectedPort.angle = 45;
 		selectedPort.visible = false;
 		container.addChild(selectedPort);
 
 		this.selectedPort = selectedPort;
+
+		this.actualCenter = {
+			x: 0,
+			y: 0,
+		}
 
 		TopologyEntityPixi.addDragBehaviour(app, this);
     }
