@@ -134,132 +134,128 @@
 	}
 </script>
 
-<div>
-	Rebind ports
-	{#each ports as p}
-		Host port
+<table class="table">
+    <thead>
+        <tr>
+            <th class="align-center">Rebind ports</th>
+            <th class="align-center">Host port</th>
+            <th class="align-center">on</th>
+            <th class="align-center">is binded to the internal port</th>
+            <th class="align-center">for the protocol</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each ports as p}
+            <tr>
+                <td class="align-center" colspan="5">
+                    {#if !p.isEditingPublicPort}
+                        {p.port.publicPort}
+                    {:else}
+                        <input
+                            title="Input (number)"
+                            type="number"
+                            bind:value={p.currentlyEditingValuePublicPort}
+                            placeholder="New public port"
+                            class="input w-40" />
+                    {/if}
 
-		{#if !p.isEditingPublicPort}
-			{p.port.publicPort}
-		{:else}
-			<input
-				title="Input (number)"
-				type="number"
-				bind:value={p.currentlyEditingValuePublicPort}
-				placeholder="new public port"
-				class="input w-40" />
-		{/if}
+                    {#if !p.isEditingPublicPort}
+                        <button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, false)}>
+                            <Fa icon={faPenToSquare} />
+                        </button>
+                    {:else}
+                        <button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, false)}>
+                            <Fa icon={faCheck} />
+                        </button>
 
-		{#if !p.isEditingPublicPort}
-			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, false)}>
-				<Fa icon={faPenToSquare} />
-			</button>
-		{:else}
-			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, false)}>
-				<Fa icon={faCheck} />
-			</button>'EMPTY';
+                        <button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, true)}>
+                            <Fa icon={faXmark} />
+                        </button>
+                    {/if}
 
-			<button class="btn-icon variant-filled" on:click={() => togglePublicPortEditition(p, true)}>
-				<Fa icon={faXmark} />
-			</button>
-		{/if}
+                    on
 
-		on
+                    {#if !p.isEditingIPPort}
+                        {p.port.ip}
+                    {:else}
+                        <input
+                            title="Input (text)"
+                            type="text"
+                            bind:value={p.currentlyEditingValueIPPort}
+                            placeholder="New IP port"
+                            class="input w-40" />
+                    {/if}
 
-		{#if !p.isEditingIPPort}
-			{p.port.ip}
-		{:else}
-			<input
-				title="Input (text)"
-				type="text"
-				bind:value={p.currentlyEditingValueIPPort}
-				placeholder="new IP port"
-				class="input w-40" />
-		{/if}
+                    {#if !p.isEditingIPPort}
+                        <button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, false)}>
+                            <Fa icon={faPenToSquare} />
+                        </button>
+                    {:else}
+                        <button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, false)}>
+                            <Fa icon={faCheck} />
+                        </button>
 
-		{#if !p.isEditingIPPort}
-			<button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, false)}>
-				<Fa icon={faPenToSquare} />
-			</button>
-		{:else}
-			<button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, false)}>
-				<Fa icon={faCheck} />
-			</button>
-			<button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, true)}>
-				<Fa icon={faXmark} />
-			</button>
-		{/if}
+                        <button class="btn-icon variant-filled" on:click={() => toggleIPPortEditition(p, true)}>
+                            <Fa icon={faXmark} />
+                        </button>
+                    {/if}
 
-		is binded to the internal port
+                    {#if !p.isEditingPrivatePort}
+                        {p.port.privatePort}
+                    {:else}
+                        <input
+                            title="Input (number)"
+                            type="number"
+                            bind:value={p.currentlyEditingValuePrivatePort}
+                            placeholder="New IP port"
+                            class="input w-40" />
+                    {/if}
 
-		{#if !p.isEditingPrivatePort}
-			{p.port.privatePort}
-		{:else}
-			<input
-				title="Input (number)"
-				type="number"
-				bind:value={p.currentlyEditingValuePrivatePort}
-				placeholder="new IP port"
-				class="input w-40" />
-		{/if}
+                    {#if !p.isEditingPrivatePort}
+                        <button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, false)}>
+                            <Fa icon={faPenToSquare} />
+                        </button>
+                    {:else}
+                        <button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, false)}>
+                            <Fa icon={faCheck} />
+                        </button>
 
-		{#if !p.isEditingPrivatePort}
-			<button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, false)}>
-				<Fa icon={faPenToSquare} />
-			</button>
-		{:else}
-			<button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, false)}>
-				<Fa icon={faCheck} />
-			</button>
-			<button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, true)}>
-				<Fa icon={faXmark} />
-			</button>
-		{/if}
+                        <button class="btn-icon variant-filled" on:click={() => togglePrivetPortEdition(p, true)}>
+                            <Fa icon={faXmark} />
+                        </button>
+                    {/if}
 
-		for the protocol
+                    {#if !p.isEditingTypePort}
+                        {p.port.type}
+                    {:else}
+                        <select bind:value={p.currentlyEditingValueTypePort} class="select w-40">
+                            {#each response as response}
+                                <option value={response.text}>
+                                    {response.text}
+                                </option>
+                            {/each}
+                        </select>
+                    {/if}
 
-		{#if !p.isEditingTypePort}
-			{p.port.type}
-		{:else}
-			<select bind:value={p.currentlyEditingValueTypePort} class="select w-40">
-				{#each response as response}
-					<option value={response.text}>
-						{response.text}
-					</option>
-				{/each}
-			</select>
-		{/if}
+                    {#if !p.isEditingTypePort}
+                        <button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, false)}>
+                            <Fa icon={faPenToSquare} />
+                        </button>
+                    {:else}
+                        <button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, false)}>
+                            <Fa icon={faCheck} />
+                        </button>
 
-		{#if !p.isEditingTypePort}
-			<button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, false)}>
-				<Fa icon={faPenToSquare} />
-			</button>
-		{:else}
-			<button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, false)}>
-				<Fa icon={faCheck} />
-			</button>
-			<button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, true)}>
-				<Fa icon={faXmark} />
-			</button>
-		{/if}
+                        <button class="btn-icon variant-filled" on:click={() => toggleTypePortEdition(p, true)}>
+                            <Fa icon={faXmark} />
+                        </button>
+                    {/if}
+                </td>
+            </tr>
+        {/each}
+    </tbody>
+</table>
+<button class="btn variant-glass-primary" on:click={() => addPort()}>Add port</button>
+<button class="btn variant-glass-primary" on:click={() => submit()}>Submit</button>
 
-		<!--
-		<button class="btn variant-glass-primary" on:click={() => editPortType(port)}>Edit port type</button>
-		<input title="Input (text)" type="text" bind:value={port.type} placeholder="new port type" />
-		<button on:click={showInputBox}> <Fa icon={faPenToSquare} /></button>
-		{#if showInput}
-			<input
-				title="Input (number)"
-				type="number"
-				bind:value={port.publicPort}
-				placeholder="new public port" />
-		{/if}
 
-		<button class="btn variant-glass-primary" on:click={() => deleteBiding(port)}>delete biding</button>
-		-->
-		<br />
-	{/each}
-
-	<button class="btn variant-glass-primary" on:click={() => addPort()}>Add port</button>
-	<button class="btn variant-glass-primary" on:click={() => sumbit()}>sumbit</button>
-</div>
