@@ -9,18 +9,6 @@ const loginRequestSchema = z.object({
 	password: z.string()
 });
 
-type LoginApiResponse =
-	| {
-			success: true;
-			data: {
-				token: string;
-				expiresAt: number;
-			};
-	  }
-	| {
-			success: false;
-	  };
-
 export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 	const reqJson = await request.json();
 
@@ -32,8 +20,11 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 
 	const loginRequest = loginRequestRes.data;
 
-	const apiRes = await fetch(PUBLIC_API_URL + '', {
+	const apiRes = await fetch(PUBLIC_API_URL + '/login', {
 		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
 		body: JSON.stringify({
 			username: loginRequest.username,
 			password: loginRequest.password

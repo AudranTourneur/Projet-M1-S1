@@ -32,7 +32,8 @@ extern crate rocket;
 
 fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
     let base_routes = routes![
-        auth::login,
+        auth::login_user_handler,
+        auth::auth_me_handler,
         overview::overview_handler,
         ports::ports_handler,
         topology::topology_handler,

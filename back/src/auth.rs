@@ -1,51 +1,167 @@
-use rocket::http::Status;
-use rocket::request::{FromRequest, Outcome, Request};
+use chrono::Utc;
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 
+use rocket::http::Status;
+use rocket::request::{Outcome, Request, FromRequest}; // 👈 New!
 use rocket::serde::{json::Json, Deserialize, Serialize};
+
 use ts_rs::TS;
 
-struct ApiKey<'r>(&'r str);
-
-#[derive(Debug)]
-enum ApiKeyError {
-    Missing,
-    Invalid,
+#[derive(Responder, Debug)]
+pub enum NetworkResponse {
+    // #[response(status = 201)]
+    // Created(String),
+    #[response(status = 400)]
+    BadRequest(String),
+    #[response(status = 401)]
+    Unauthorized(String),
+    // #[response(status = 404)]
+    // NotFound(String),
+    // #[response(status = 409)]
+    // Conflict(String),
 }
 
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for ApiKey<'r> {
-    type Error = ApiKeyError;
+#[derive(Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct LoginResponse {
+    pub token: String,
+}
 
-    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        /// Returns true if `key` is a valid API key string.
-        fn is_valid(key: &str) -> bool {
-            // key == "valid_api_key"
-            true
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Claims {
+    pub username: String,
+    exp: usize,
+}
+
+#[derive(Debug)]
+pub struct JWT {
+    pub claims: Claims,
+}
+
+#[derive(Serialize)]
+pub enum ResponseBody {
+    Message(String),
+}
+
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct Response {
+    pub body: ResponseBody,
+}
+
+use jsonwebtoken::errors::{Error, ErrorKind};
+
+fn get_secret() -> String {
+    "secret".into()
+}
+
+pub fn create_jwt(username: String) -> Result<String, Error> {
+    let secret = get_secret();
+
+    let expiration = Utc::now()
+        .checked_add_signed(chrono::Duration::days(7))
+        .expect("Invalid timestamp")
+        .timestamp();
+
+    let claims = Claims {
+        username,
+        exp: expiration as usize,
+    };
+
+    let header = Header::new(Algorithm::HS512);
+
+    encode(
+        &header,
+        &claims,
+        &EncodingKey::from_secret(secret.as_bytes()),
+    )
+}
+
+fn decode_jwt(token: String) -> Result<Claims, ErrorKind> {
+    let secret = get_secret();
+
+    let token = token.trim_start_matches("Bearer").trim();
+
+    match decode::<Claims>(
+        &token,
+        &DecodingKey::from_secret(secret.as_bytes()),
+        &Validation::new(Algorithm::HS512),
+    ) {
+        Ok(token) => Ok(token.claims),
+        Err(err) => Err(err.kind().to_owned()),
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct LoginRequest {
+    pub username: String,
+    pub password: String,
+}
+
+pub fn login_user(user: Json<LoginRequest>) -> Result<String, NetworkResponse> {
+    let correct_username = "admin";
+    let correct_password = "admin";
+
+    if user.username != correct_username || user.password != correct_password {
+        return Err(NetworkResponse::Unauthorized(
+            "Invalid username or password".to_string(),
+        ));
+    }
+
+    match create_jwt(user.username.clone()) {
+        Ok(token) => Ok(token),
+        Err(err) => Err(NetworkResponse::BadRequest(err.to_string())),
+    }
+}
+
+#[post("/login", format = "application/json", data = "<user>")]
+pub fn login_user_handler(user: Json<LoginRequest>) -> Result<String, NetworkResponse> {
+    let token = login_user(user)?;
+
+    let response = LoginResponse { token }; 
+
+    Ok(serde_json::to_string(&response).unwrap())
+}
+
+
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for JWT {
+    type Error = NetworkResponse;
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, NetworkResponse> {
+        // 👇 New!
+        fn is_valid(key: &str) -> Result<Claims, Error> {
+            Ok(decode_jwt(String::from(key))?)
         }
 
         match req.headers().get_one("authorization") {
-            None => Outcome::Error((Status::BadRequest, ApiKeyError::Missing)),
-            Some(key) if is_valid(key) => Outcome::Success(ApiKey(key)),
-            Some(_) => Outcome::Error((Status::BadRequest, ApiKeyError::Invalid)),
+            None => {
+                let response = Response { body: ResponseBody::Message(String::from("Error validating JWT token - No token provided"))};
+                Outcome::Error((Status::Unauthorized, NetworkResponse::Unauthorized(serde_json::to_string(&response).unwrap()))) 
+            },
+            Some(key) => match is_valid(key) {
+                Ok(claims) => Outcome::Success(JWT {claims}),
+                Err(err) => match &err.kind() {
+                    jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
+                        let response = Response { body: ResponseBody::Message(format!("Error validating JWT token - Expired Token"))};
+                        Outcome::Error((Status::Unauthorized, NetworkResponse::Unauthorized(serde_json::to_string(&response).unwrap()))) 
+                    },
+                    jsonwebtoken::errors::ErrorKind::InvalidToken => {
+                        let response = Response { body: ResponseBody::Message(format!("Error validating JWT token - Invalid Token"))};
+                        Outcome::Error((Status::Unauthorized, NetworkResponse::Unauthorized(serde_json::to_string(&response).unwrap()))) 
+                    },
+                    _ => {
+                        let response = Response { body: ResponseBody::Message(format!("Error validating JWT token - {}", err))};
+                        Outcome::Error((Status::Unauthorized, NetworkResponse::Unauthorized(serde_json::to_string(&response).unwrap()))) 
+                    }
+                }
+            },
         }
     }
 }
 
-#[derive(Serialize, Deserialize, TS, Clone)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct LoginRequest {
-    pub password: String,
-}
-
-#[derive(Serialize, Deserialize, TS, Clone)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct LoginResponse {
-    pub token: Option<String>,
-}
-
-#[post("/login", format = "json", data = "<input>")]
-pub fn login(input: Json<LoginRequest>) -> Json<LoginResponse> {
-    Json(LoginResponse { token: None })
+#[get("/me")]
+pub fn auth_me_handler(key: JWT) -> Result<String, NetworkResponse> {
+    Ok(format!("You are currently logged in as {}", key.claims.username))
 }

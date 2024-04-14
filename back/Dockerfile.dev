@@ -13,6 +13,7 @@ RUN apt update -y
 RUN apt-cache policy docker-ce
 RUN apt-get install docker-ce -y
 RUN apt-get install net-tools -y
+RUN apt update -y && apt-get install cmake clang -y
 WORKDIR app
 COPY . .
 CMD ["cargo", "watch", "-x", "run", "-w", "src"]

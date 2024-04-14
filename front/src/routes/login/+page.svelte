@@ -5,7 +5,7 @@
 
 	async function login() {
 		console.log("username: " + username, "password: " + password);
-        await fetch('../api/login', {
+        await fetch('/login/api', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -14,9 +14,6 @@
         })
 	}
 </script>
-
-
-
 
 
 <div class="container flex mx-auto items-center justify-center">
