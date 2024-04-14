@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 
 import { z } from 'zod';
 import { PUBLIC_API_URL } from '$env/static/public';
+import type { LoginResponse } from '$lib/types/LoginResponse';
 
 const loginRequestSchema = z.object({
 	username: z.string(),
@@ -10,36 +11,56 @@ const loginRequestSchema = z.object({
 });
 
 export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
-	const reqJson = await request.json();
+	try {
+		const reqJson = await request.json();
 
-	const loginRequestRes = loginRequestSchema.safeParse(reqJson);
+		const loginRequestRes = loginRequestSchema.safeParse(reqJson);
 
-	if (!loginRequestRes.success) {
-		return text('Invalid request');
-	}
+		if (!loginRequestRes.success) {
+			return text('Invalid request');
+		}
 
-	const loginRequest = loginRequestRes.data;
+		const loginRequest = loginRequestRes.data;
 
-	const apiRes = await fetch(PUBLIC_API_URL + '/login', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-			username: loginRequest.username,
-			password: loginRequest.password
-		})
-	});
-
-	const apiResJson = (await apiRes.json()) as LoginApiResponse;
-
-	if (apiResJson.success == true) {
-		cookies.set('token', apiResJson.data.token, {
-			expires: new Date(apiResJson.data.expiresAt)
+		const apiRes = await fetch(PUBLIC_API_URL + '/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				username: loginRequest.username,
+				password: loginRequest.password
+			})
 		});
-		return json(apiResJson);
-	} else {
-		// failed to auth
-		return json(apiResJson);
+
+		if (apiRes.status !== 200) {
+			return json({
+				success: false,
+				message: 'Failed to login'
+			})
+		}
+
+		const apiResJson = (await apiRes.json()) as LoginResponse;
+
+		if (apiResJson.token) {
+			cookies.set('auth', apiResJson.token, {
+				expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+				path: '/',
+			});
+			return json({
+				success: true,
+				token: apiResJson.token
+			})
+		}
+
+	} catch (e) {
+		console.error(e);
 	}
+
+
+	// failed to auth
+	return json({
+		success: false,
+		message: 'Failed to login'
+	})
 };

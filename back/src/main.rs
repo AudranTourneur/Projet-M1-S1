@@ -2,7 +2,7 @@
 
 use database::init_clickhouse_database;
 use icons::spawn_info_service;
-use sniffer::sniff_packets;
+// use sniffer::sniff_packets;
 use sqlitedb::init_sqlite_database;
 
 mod auth;
@@ -19,7 +19,7 @@ mod database;
 mod dns;
 mod icons;
 mod ports;
-mod sniffer;
+// mod sniffer;
 mod sqlitedb;
 mod stats;
 mod topology;

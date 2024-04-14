@@ -80,8 +80,6 @@ pub fn create_jwt(username: String) -> Result<String, Error> {
 fn decode_jwt(token: String) -> Result<Claims, ErrorKind> {
     let secret = get_secret();
 
-    let token = token.trim_start_matches("Bearer").trim();
-
     match decode::<Claims>(
         &token,
         &DecodingKey::from_secret(secret.as_bytes()),
@@ -135,12 +133,14 @@ impl<'r> FromRequest<'r> for JWT {
             Ok(decode_jwt(String::from(key))?)
         }
 
-        match req.headers().get_one("authorization") {
+        let auth_cookie = req.cookies().get("auth");
+
+        match auth_cookie {
             None => {
                 let response = Response { body: ResponseBody::Message(String::from("Error validating JWT token - No token provided"))};
                 Outcome::Error((Status::Unauthorized, NetworkResponse::Unauthorized(serde_json::to_string(&response).unwrap()))) 
             },
-            Some(key) => match is_valid(key) {
+            Some(key) => match is_valid(key.value()) {
                 Ok(claims) => Outcome::Success(JWT {claims}),
                 Err(err) => match &err.kind() {
                     jsonwebtoken::errors::ErrorKind::ExpiredSignature => {

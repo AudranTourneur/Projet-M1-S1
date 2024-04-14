@@ -2,7 +2,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import type { RequestHandler } from './$types';
 import { error } from '@sveltejs/kit';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, fetch }) => {
     const body = await request.json();
 
     if (!body) {

@@ -1,17 +1,31 @@
-<script>
+<script lang="ts">
+	import { goto } from "$app/navigation";
+
 	let username = "";
 	let password = "";
 
 
 	async function login() {
 		console.log("username: " + username, "password: " + password);
-        await fetch('/login/api', {
+        const res = await fetch('/login/api', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({username, password})
         })
+
+		const serverResponseJson = await res.json() as {
+			success: boolean,
+			message: string | undefined,
+			token: string | undefined
+		}
+
+		console.log(serverResponseJson)
+
+		if (serverResponseJson.success) {
+			goto('/overview')
+		}
 	}
 </script>
 
@@ -19,7 +33,7 @@
 <div class="container flex mx-auto items-center justify-center">
 
 	<div class="text-center bg-gray-700 p-8 rounded-md">
-		<h1 class="h1 mb-8">Go to your page!</h1>
+		<h1 class="text-3xl mb-8">Authentification required</h1>
 
 
 		<div class="form">

@@ -2,8 +2,8 @@ import type { PageServerLoad } from './$types';
 import { PUBLIC_API_URL } from '$env/static/public';
 import type { ImageList } from '$lib/types/ImageList';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ fetch }) => {
 	const serverResponse = await fetch(PUBLIC_API_URL + '/images/');
 	const res = await serverResponse.json() as ImageList;
-	return {...res, metaTitle: 'Images list'};
+	return { ...res, metaTitle: 'Images list' };
 };
