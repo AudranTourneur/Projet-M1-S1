@@ -5,8 +5,7 @@ use std::collections::HashSet;
 use std::str::from_utf8;
 
 use crate::{
-    docker::get_docker_socket,
-    volumes::{common::remove_prefix_from_path, models::VolumeExplorerData},
+    auth::JWT, docker::get_docker_socket, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
 };
 
 use super::common::get_all_volumes;
@@ -16,7 +15,7 @@ use super::{
 };
 
 #[get("/volumes")]
-pub async fn volumes_handler() -> Json<VolumeList> {
+pub async fn volumes_handler(_key: JWT) -> Json<VolumeList> {
     let volumes_data = get_all_volumes().await;
 
     let response = VolumeList {
@@ -27,7 +26,7 @@ pub async fn volumes_handler() -> Json<VolumeList> {
 }
 
 #[get("/volume/<name>")]
-pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
+pub async fn volume_handler(_key: JWT, name: String) -> Option<Json<VolumeData>> {
     let docker = get_docker_socket();
 
     // Recherche du volume par son nom
@@ -44,7 +43,7 @@ pub async fn volume_handler(name: String) -> Option<Json<VolumeData>> {
 }
 
 #[post("/volume/<name>/remove")]
-pub async fn delete_volume(name: &str) -> &'static str {
+pub async fn delete_volume(_key: JWT, name: &str) -> &'static str {
     let docker = get_docker_socket();
 
     let options = Some(RemoveVolumeOptions {
@@ -58,6 +57,7 @@ pub async fn delete_volume(name: &str) -> &'static str {
 
 #[get("/volume/<volume_name>/filesystem/<current_folder>")]
 pub async fn volume_explorer_handler(
+    _key: JWT, 
     volume_name: String,
     current_folder: Option<String>,
 ) -> Json<Option<VolumeExplorerData>> {

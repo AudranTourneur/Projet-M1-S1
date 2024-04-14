@@ -13,6 +13,10 @@
 	function drawerOpen() {
 		drawerStore.open();
 	}
+
+	export let data;
+
+	console.log('data layout', data.test)
 </script>
 
 <svelte:head>

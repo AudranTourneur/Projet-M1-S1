@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use database::init_clickhouse_database;
 use icons::spawn_info_service;
 use sniffer::sniff_packets;
@@ -23,6 +25,8 @@ mod stats;
 mod topology;
 mod volumes;
 mod web;
+
+
 
 // #[macro_use]
 // extern crate debug_stub_derive;

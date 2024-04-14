@@ -5,11 +5,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    containers::{common::get_all_containers, models::ContainerData},
-    images::{common::get_all_images, models::ImageData},
-    ports::{get_used_ports, SimplePortData},
-    sqlitedb::get_sqlite_connection,
-    volumes::{common::get_all_volumes, models::VolumeData},
+    auth::JWT, containers::{common::get_all_containers, models::ContainerData}, images::{common::get_all_images, models::ImageData}, ports::{get_used_ports, SimplePortData}, sqlitedb::get_sqlite_connection, volumes::{common::get_all_volumes, models::VolumeData}
 };
 
 #[derive(Serialize, Deserialize, TS, Clone, Debug)]
@@ -160,7 +156,7 @@ async fn create_topology_volumes() -> Vec<TopologyVolume> {
 }
 
 #[get("/topology")]
-pub async fn topology_handler() -> Json<Topology> {
+pub async fn topology_handler(_key: JWT) -> Json<Topology> {
     let topo = Topology {
         containers: create_topology_containers().await,
         ports: create_topology_ports(),
@@ -193,7 +189,7 @@ pub struct TopologySaveRequest {
 }
 
 #[post("/topology/save", format = "json", data = "<input>")]
-pub async fn topology_save_handler(input: Json<TopologySaveRequest>) -> Json<TopologyResponse> {
+pub async fn topology_save_handler(_key: JWT, input: Json<TopologySaveRequest>) -> Json<TopologyResponse> {
     let mut conn = get_sqlite_connection().await.unwrap();
 
     for container in input.containers.iter() {

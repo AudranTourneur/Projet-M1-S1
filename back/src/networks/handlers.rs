@@ -1,7 +1,7 @@
 use bollard::Docker;
 use rocket::serde::json::Json;
 
-use crate::docker::get_docker_socket;
+use crate::{auth::JWT, docker::get_docker_socket};
 
 use super::{
     common::{get_all_networks, get_containers, get_ipam},
@@ -9,7 +9,7 @@ use super::{
 };
 
 #[get("/networks")]
-pub async fn networks_handler() -> Json<NetworkList> {
+pub async fn networks_handler(_key: JWT) -> Json<NetworkList> {
     let my_networks = get_all_networks().await;
 
     let response = NetworkList {
@@ -20,7 +20,7 @@ pub async fn networks_handler() -> Json<NetworkList> {
 }
 
 #[get("/networks/<id>")]
-pub async fn network_handler(id: &str) -> Json<Option<NetworkData>> {
+pub async fn network_handler(_key: JWT, id: &str) -> Json<Option<NetworkData>> {
     let all_networks: Vec<NetworkData> = get_all_networks().await;
     let network = all_networks.iter().find(|network| network.id == id);
     let network = match network {

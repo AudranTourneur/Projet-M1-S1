@@ -15,8 +15,10 @@ use crate::docker::get_docker_socket;
 use super::common::{check_for_yml, get_all_containers, get_container_by_id, modify_container_yml};
 use super::models::{ContainerData, ContainerList, ContainerStatsResponse};
 
+use crate::auth::JWT;
+
 #[get("/statistics-historical/container/<id>")]
-pub async fn container_stats_handler(id: &str) -> Json<ContainerStatsResponse> {
+pub async fn container_stats_handler(_key: JWT, id: &str) -> Json<ContainerStatsResponse> {
     let db_res = crate::database::get_historical_statistics_for_container(id.to_string()).await;
 
     match db_res {
@@ -37,7 +39,7 @@ pub async fn container_stats_handler(id: &str) -> Json<ContainerStatsResponse> {
 }
 
 #[get("/statistics-realtime/container/<_id>")]
-pub async fn container_stats_stream_hander(_id: &str) -> TextStream![String] {
+pub async fn container_stats_stream_hander(_key: JWT, _id: &str) -> TextStream![String] {
     TextStream! {
         for id in 0..42 {
             // yield with the counter
@@ -49,7 +51,7 @@ pub async fn container_stats_stream_hander(_id: &str) -> TextStream![String] {
 }
 
 #[post("/containers/<id>/remove")]
-pub async fn delete_container(id: &str) -> &'static str {
+pub async fn delete_container(_key: JWT, id: &str) -> &'static str {
     let docker: Docker = get_docker_socket();
     let options = Some(RemoveContainerOptions {
         force: true,
@@ -62,12 +64,12 @@ pub async fn delete_container(id: &str) -> &'static str {
 }
 
 #[get("/containers/<id>/filesystem")]
-pub async fn container_filesystem_handler(id: &str) -> String {
+pub async fn container_filesystem_handler(_key: JWT, id: &str) -> String {
     format!("WIP {}", id)
 }
 
 #[get("/container/<id>")]
-pub async fn container_handler(id: &str) -> Json<Option<ContainerData>> {
+pub async fn container_handler(_key: JWT, id: &str) -> Json<Option<ContainerData>> {
     let container = get_container_by_id(id).await;
 
     match container {
@@ -77,7 +79,7 @@ pub async fn container_handler(id: &str) -> Json<Option<ContainerData>> {
 }
 
 #[post("/container/<id>/start")]
-pub async fn container_start(id: &str) -> &'static str {
+pub async fn container_start(_key: JWT, id: &str) -> &'static str {
     let docker: Docker = get_docker_socket();
 
     let start_options: StartContainerOptions<String> = StartContainerOptions::default();
@@ -89,7 +91,7 @@ pub async fn container_start(id: &str) -> &'static str {
 }
 
 #[post("/container/<id>/stop")]
-pub async fn container_stop(id: &str) -> &'static str {
+pub async fn container_stop(_key: JWT, id: &str) -> &'static str {
     let docker: Docker = get_docker_socket();
 
     let options = Some(StopContainerOptions { t: 30 });
@@ -101,7 +103,7 @@ pub async fn container_stop(id: &str) -> &'static str {
 }
 
 #[get("/containers")]
-pub async fn containers_handler() -> Json<ContainerList> {
+pub async fn containers_handler(_key: JWT) -> Json<ContainerList> {
     let listed_containers = get_all_containers().await;
 
     let res = ContainerList {
@@ -112,7 +114,7 @@ pub async fn containers_handler() -> Json<ContainerList> {
 }
 
 #[post("/containers/<id>/rebind-ports", data = "<input>")]
-pub async fn rebind_ports_handler(input: Json<ContainerPortRebindRequest>, id: &str) -> Json<bool> {
+pub async fn rebind_ports_handler(_key: JWT, input: Json<ContainerPortRebindRequest>, id: &str) -> Json<bool> {
     if check_for_yml(id).await == false {
         let docker: Docker = get_docker_socket();
 

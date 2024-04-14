@@ -2,7 +2,7 @@ use bollard::{image::ListImagesOptions, Docker};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::docker::get_docker_socket;
+use crate::{auth::JWT, docker::get_docker_socket};
 
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
@@ -17,7 +17,7 @@ pub struct OverviewResponse {
 }
 
 #[get("/overview")]
-pub async fn overview_handler() -> Json<OverviewResponse> {
+pub async fn overview_handler(_key: JWT) -> Json<OverviewResponse> {
     let docker: Docker = get_docker_socket();
 
     let version_object = docker.version().await.unwrap();

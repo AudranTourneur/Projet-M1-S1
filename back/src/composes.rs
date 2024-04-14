@@ -5,7 +5,7 @@ use ts_rs::TS;
 
 use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 
-use crate::containers::{common::get_all_containers, models::ContainerData};
+use crate::{auth::JWT, containers::{common::get_all_containers, models::ContainerData}};
 
 #[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -77,14 +77,14 @@ pub async fn get_all_composes() -> ComposeList {
 }
 
 #[get("/composes")]
-pub async fn composes_handler() -> Json<ComposeList> {
+pub async fn composes_handler(_key: JWT) -> Json<ComposeList> {
     let listed_composes = get_all_composes().await;
 
     Json(listed_composes)
 }
 
 #[get("/composes/<id>")]
-pub async fn compose_handler(id: String) -> Json<Option<ComposeData>> {
+pub async fn compose_handler(_key: JWT, id: String) -> Json<Option<ComposeData>> {
     let listed_composes = get_all_composes().await;
 
     let compose = listed_composes
@@ -114,7 +114,7 @@ pub struct ShellOutput {
 }
 
 #[get("/composes/<id>/start")]
-pub async fn compose_start_handler(id: &str) -> Json<ShellOutput> {
+pub async fn compose_start_handler(_key: JWT, id: &str) -> Json<ShellOutput> {
     let id = from_base64_url(id);
     println!("Attemting to Docker Compose UP: {}", id);
     let output = Command::new("docker")
@@ -138,7 +138,7 @@ pub async fn compose_start_handler(id: &str) -> Json<ShellOutput> {
 }
 
 #[get("/composes/<id>/stop")]
-pub async fn compose_stop_handler(id: &str) -> Json<bool> {
+pub async fn compose_stop_handler(_key: JWT, id: &str) -> Json<bool> {
     let id = from_base64_url(id);
     let output = Command::new("docker")
         .arg("compose")

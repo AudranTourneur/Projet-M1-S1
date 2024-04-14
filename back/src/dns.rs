@@ -1,6 +1,8 @@
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use ts_rs::TS;
 
+use crate::auth::JWT;
+
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -17,7 +19,7 @@ pub struct DnsList {
 }
 
 #[get("/dns")]
-pub async fn dns_list_handler() -> Json<DnsList> {
+pub async fn dns_list_handler(_key: JWT) -> Json<DnsList> {
     //let caddyfile_content = std::fs::read_to_string("/etc/caddy/Caddyfile").unwrap();
     let client = reqwest::Client::new();
 

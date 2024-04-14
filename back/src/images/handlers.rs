@@ -1,5 +1,6 @@
 use super::common::get_all_images;
 use super::models::{ImageCreateContainerRequest, ImageList};
+use crate::auth::JWT;
 use crate::docker::get_docker_socket;
 use crate::icons::resolve_icon_url_from_image_name;
 use crate::images::models::{HistoryResponse, ImageData};
@@ -10,7 +11,7 @@ use futures::StreamExt;
 use rocket::serde::json::Json;
 
 #[get("/images")]
-pub async fn images_handler() -> Json<ImageList> {
+pub async fn images_handler(_key: JWT) -> Json<ImageList> {
     let my_images = get_all_images().await;
     let response = ImageList { images: my_images };
 
@@ -18,7 +19,7 @@ pub async fn images_handler() -> Json<ImageList> {
 }
 
 #[get("/image/<id>")]
-pub async fn image_handler(id: &str) -> Json<ImageData> {
+pub async fn image_handler(_key: JWT, id: &str) -> Json<ImageData> {
     let all_images: Vec<ImageData> = get_all_images().await;
     let image = all_images.iter().find(|image| image.id == id).unwrap();
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
@@ -54,7 +55,7 @@ pub async fn image_handler(id: &str) -> Json<ImageData> {
 }
 
 #[post("/images/<id>/pull")]
-pub async fn pull_image_handler(id: &str) -> &'static str {
+pub async fn pull_image_handler(_key: JWT, id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let options = Some(CreateImageOptions {
         from_image: id,
@@ -73,6 +74,7 @@ pub async fn pull_image_handler(id: &str) -> &'static str {
 
 #[post("/images/create-container", data = "<input>")]
 pub async fn create_container_from_image_handler(
+    _key: JWT, 
     input: Json<ImageCreateContainerRequest>,
 ) -> Json<String> {
     let docker: Docker = get_docker_socket();
@@ -108,7 +110,7 @@ pub async fn create_container_from_image_handler(
 }
 
 #[post("/images/<id>/remove")]
-pub async fn delete_image(id: &str) -> &'static str {
+pub async fn delete_image(_key: JWT, id: &str) -> &'static str {
     let docker: Docker = Docker::connect_with_local_defaults().unwrap();
     let options: Option<RemoveImageOptions> = Some(RemoveImageOptions {
         force: true,

@@ -2,6 +2,8 @@ use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+use crate::auth::JWT;
+
 #[derive(Serialize, Deserialize, Clone, TS, Debug)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -66,7 +68,7 @@ pub fn get_used_ports() -> Result<Vec<SimplePortData>, std::io::Error> {
 }
 
 #[get("/ports")]
-pub fn ports_handler() -> Json<PortsResponse> {
+pub fn ports_handler(_key: JWT) -> Json<PortsResponse> {
     let ports = get_used_ports();
     let ports = match ports {
         Ok(ports) => ports,
