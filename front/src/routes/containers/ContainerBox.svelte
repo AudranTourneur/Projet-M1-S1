@@ -18,6 +18,8 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import type { ContainerData } from '$lib/types/ContainerData';
 	import Tooltip from '../../components/Tooltip.svelte';
+	import { getContainerActionsFromStatus } from './getContainerActionsFromStatus';
+	import ContainerStatusIcon from './ContainerStatusIcon.svelte';
 
 	export let container: ContainerData;
 	export let refresh: () => void;
@@ -41,6 +43,8 @@
 		// return the keys of the concatenatedPorts object and sort them to have a consistent order
 		return Object.keys(concatenatedPorts).sort().join(', ');
 	}
+
+	const { statusIcon, canBeStarted, canBeStopped } = getContainerActionsFromStatus(container.status);
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
@@ -87,15 +91,7 @@
 				<Fa icon={faCube} class="text-surface-400-500-token text-xl" />
 			{/if}
 		</div>
-			<Tooltip tooltipText={container.status}>
-				{#if container.status.includes('Paused')}
-					<Fa icon={faGear} class="text-warning-500 animate-pulse text-xl" />
-				{:else if container.status.includes('Up')}
-					<Fa icon={faGear} class="text-success-500 animate-spin text-xl" style="animation-duration: 5s;" />
-				{:else}
-					<Fa icon={faGear} class="text-error-400 text-xl" />
-				{/if}
-			</Tooltip>
+		<ContainerStatusIcon status={statusIcon} statusString={container.status} />
 		<div class="flex flex-col w-36">
 			<div class="font-bold copy-to-clipboard">
 				{#if container.names[0].length < 15}
@@ -172,13 +168,13 @@
 	<div class="flex gap-1">
 		<button
 			class="btn variant-filled-success p-2"
-			disabled={container.status.includes('Up') || isLoadingStart}
+			disabled={!canBeStarted || isLoadingStart}
 			on:click={startContainer}>
 			<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
 		</button>
 		<button
 			class="btn variant-filled-error p-2"
-			disabled={container.status.includes('Exited') || container.status === 'Created' || isLoadingStop}
+			disabled={!canBeStopped || isLoadingStop}
 			on:click={stopContainer}>
 			<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
 		</button>

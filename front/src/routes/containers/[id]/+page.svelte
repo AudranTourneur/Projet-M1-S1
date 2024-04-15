@@ -9,12 +9,16 @@
 	import Fa from 'svelte-fa';
 	import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import type { ContainerData } from '$lib/types/ContainerData';
+	import ContainerStatusIcon from '../ContainerStatusIcon.svelte';
+	import { getContainerActionsFromStatus } from '../getContainerActionsFromStatus';
 
 	export let data;
 
 	const container: ContainerData = data;
 
 	let inputData: null | Array<[number, number]> = null;
+
+	const { statusIcon, canBeStarted, canBeStopped } = getContainerActionsFromStatus(container.status);
 
 	function generateDayWiseTimeSeries(stats: ContainerStatisticsRow[]): Array<[number, number]> {
 		return stats.map((obj) => {
@@ -41,6 +45,7 @@
 		<Fa icon={faArrowLeft} fw class="mr-1" />
 		Back to containers
 	</a>
+	<ContainerStatusIcon status={statusIcon} statusString={container.status} />
 	<button class="btn btn-sm variant-ghost-error" on:click={removeContainer}>
 		<Fa icon={faTrash} fw class="mr-1" />
 		Delete container
