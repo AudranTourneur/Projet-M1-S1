@@ -1,10 +1,10 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { PUBLIC_API_URL } from '$env/static/public';
 
 export const POST: RequestHandler = async ({ params, fetch }) => {
 	const { id } = params;
-	const res = await fetch(`${PUBLIC_API_URL}/container/${id}/start`, {
+	await fetch(`${PUBLIC_API_URL}/container/${id}/start`, {
 		method: 'POST'
 	});
-	return json(await res.json())
+	return new Response('ok');
 };

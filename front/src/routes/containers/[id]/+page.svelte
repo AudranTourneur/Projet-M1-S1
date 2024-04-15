@@ -7,18 +7,33 @@
 	import PortsBox from './PortsBox.svelte';
 	import { goto } from '$app/navigation';
 	import Fa from 'svelte-fa';
-	import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowLeft, faCircleNotch, faPlay, faStop, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import type { ContainerData } from '$lib/types/ContainerData';
 	import ContainerStatusIcon from '../ContainerStatusIcon.svelte';
 	import { getContainerActionsFromStatus } from '../getContainerActionsFromStatus';
 
 	export let data;
 
-	const container: ContainerData = data;
+	let container: ContainerData = data;
 
-	let inputData: null | Array<[number, number]> = null;
+	const refetchContainer = async () => {
+		await fetch("/containers/" + container.id + "/api/fetch")
+			.then(response => response.json())
+			.then(data => {
+				container = data;
+			});
+	}
 
-	const { statusIcon, canBeStarted, canBeStopped } = getContainerActionsFromStatus(container.status);
+	let statData: null | Array<[number, number]> = null;
+
+	let statusIcon: 'running' | 'stopped' | 'paused', canBeStarted: boolean, canBeStopped: boolean;
+  $: {
+    // use the function getContainerActionsFromStatus(container.status);
+		const actions = getContainerActionsFromStatus(container.status);
+		statusIcon = actions.statusIcon;
+		canBeStarted = actions.canBeStarted;
+		canBeStopped = actions.canBeStopped;
+  }
 
 	function generateDayWiseTimeSeries(stats: ContainerStatisticsRow[]): Array<[number, number]> {
 		return stats.map((obj) => {
@@ -29,15 +44,36 @@
 	onMount(async () => {
 		const response = await fetch('/containers/' + $page.params.id + '/api/stats');
 		const statsRes = (await response.json()) as ContainerStatsResponse;
-		inputData = generateDayWiseTimeSeries(statsRes.stats);
+		statData = generateDayWiseTimeSeries(statsRes.stats);
 	});
 
-	async function removeContainer() {
+	let isLoadingStart = false;
+	let isLoadingStop = false;
+
+	const startContainer = async () => {
+		isLoadingStart = true;
+		await fetch(`/containers/${container.id}/api/start`, {
+			method: 'POST'
+		});
+		isLoadingStart = false;
+		refetchContainer();
+	};
+
+	const stopContainer = async () => {
+		isLoadingStop = true;
+		await fetch(`/containers/${container.id}/api/stop`, {
+			method: 'POST'
+		});
+		isLoadingStop = false;
+		refetchContainer();
+	};
+
+	const removeContainer = async () => {
 		await fetch('/containers/' + $page.params.id + '/api/remove', {
 			method: 'POST'
 		});
 		goto('/containers');
-	}
+	};
 </script>
 
 <div class="flex gap-2 items-center mb-5">
@@ -46,6 +82,20 @@
 		Back to containers
 	</a>
 	<ContainerStatusIcon status={statusIcon} statusString={container.status} />
+	<button
+		class="btn btn-sm variant-ghost-success"
+		disabled={!canBeStarted || isLoadingStart}
+		on:click={startContainer}>
+		<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
+		Start
+	</button>
+	<button
+		class="btn btn-sm variant-ghost-error"
+		disabled={!canBeStopped || isLoadingStop}
+		on:click={stopContainer}>
+		<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
+		Stop
+	</button>
 	<button class="btn btn-sm variant-ghost-error" on:click={removeContainer}>
 		<Fa icon={faTrash} fw class="mr-1" />
 		Delete container
@@ -110,8 +160,8 @@
 	<p class="italic">No ports exposed</p>
 {/if}
 
-{#if inputData}
-	<LineChartBytes {inputData} />
+{#if statData}
+	<LineChartBytes inputData={statData} />
 {/if}
 
 <PortsBox {container} />

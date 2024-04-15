@@ -8,7 +8,6 @@
 	onMount(async () => {
 		const response = await fetch('/containers/' + $page.params.id + '/api/stats');
 		const stats = await response.json();
-		console.log(stats);
 
 		const options = {
 			chart: {
