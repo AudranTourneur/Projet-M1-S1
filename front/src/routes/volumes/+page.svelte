@@ -1,44 +1,16 @@
 <script lang="ts">
+    import type { VolumeData } from '$lib/types/VolumeData';
+    import VolumeBox from './VolumeBox.svelte';
+
     export let data;
 
-    const volumes = data.volumes;
+    const volumes : VolumeData[] = data.volumes;
 
-    function downloadVolume(index: number) {
-        // implémenter la fonction adéquate
-        console.log(`Downloading volume with index ${index}`);
-    }
+    console.log(volumes);
 </script>
 
 <div class="w-full">
     {#each volumes as volume, i}
-        <div class="border border-gray-300 rounded p-4 mb-4">
-            <h3 class="text-lg font-semibold mb-2">Volume Information</h3>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">ID:</span>
-                <span>{volume.createdAt}</span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">Name:</span>
-                <span>{volume.name}</span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">Size:</span>
-                <span>{volume.mountpoint}</span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">Size:</span>
-                <span>{volume.size}</span>
-            </div>
-            <div class="flex justify-end items-center">
-                <a href="/volumes/{volume.name}">
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
-                        Info
-                    </button>
-                </a>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={() => downloadVolume(i)}>
-                    Download
-                </button>
-            </div>
-        </div>
+        <VolumeBox volume={volume} />
     {/each}
 </div>
