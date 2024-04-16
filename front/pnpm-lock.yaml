@@ -71,21 +71,12 @@ dependencies:
   js-base64:
     specifier: ^3.7.7
     version: 3.7.7
-  pixi-graphpaper:
-    specifier: ^2.0.1
-    version: 2.0.1
-  pixi-stats:
-    specifier: ^1.3.0
-    version: 1.3.0(pixi.js@8.1.0)
   pixi-viewport:
-    specifier: ^5.1.0
-    version: 5.1.0(@pixi/display@6.5.10)(@pixi/interaction@6.5.10)(@pixi/math@6.5.10)(@pixi/ticker@6.5.10)
+    specifier: ^4.30.0
+    version: 4.38.0(@pixi/display@6.5.10)(@pixi/interaction@6.5.10)(@pixi/math@6.5.10)(@pixi/ticker@6.5.10)
   pixi.js:
-    specifier: ^8.1.0
-    version: 8.1.0
-  pixijs-grid:
-    specifier: ^0.4.1
-    version: 0.4.1
+    specifier: ^6.5.10
+    version: 6.5.10
   postcss-nesting:
     specifier: ^12.1.1
     version: 12.1.1(postcss@8.4.38)
@@ -513,14 +504,6 @@ packages:
       wrap-ansi-cjs: /wrap-ansi@7.0.0
     dev: false
 
-  /@jacekpietal/gstats@0.1.1(pixi.js@8.1.0):
-    resolution: {integrity: sha512-PYyecboB/Pf+Dj0MJG3L91fuAo8MyxcEuyxQiqbGcfbMmSFRiFNtHsbd42bsarQiV6HlYXL2OFDJFaTmgx5xeQ==}
-    peerDependencies:
-      pixi.js: '*'
-    dependencies:
-      pixi.js: 8.1.0
-    dev: false
-
   /@jridgewell/gen-mapping@0.3.3:
     resolution: {integrity: sha512-HLhSWOLRi875zjjMG/r+Nv0oCW8umGb0BgEhyX3dDX3egwZtB8PqLnjz3yedt8R5StBrzcg4aBpnh8UA9D1BoQ==}
     engines: {node: '>=6.0.0'}
@@ -599,10 +582,6 @@ packages:
       '@pixi/display': 6.5.10(@pixi/constants@6.5.10)(@pixi/math@6.5.10)(@pixi/settings@6.5.10)(@pixi/utils@6.5.10)
       '@pixi/math': 6.5.10
       '@pixi/utils': 6.5.10(@pixi/constants@6.5.10)(@pixi/settings@6.5.10)
-    dev: false
-
-  /@pixi/colord@2.9.6:
-    resolution: {integrity: sha512-nezytU2pw587fQstUu1AsJZDVEynjskwOL+kibwcdxsMBFqPsFFNA7xl0ii/gXuDi6M0xj3mfRJj8pBSc2jCfA==}
     dev: false
 
   /@pixi/compressed-textures@6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/loaders@6.5.10)(@pixi/settings@6.5.10)(@pixi/utils@6.5.10):
@@ -1345,10 +1324,6 @@ packages:
   /@types/cookie@0.6.0:
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
 
-  /@types/css-font-loading-module@0.0.12:
-    resolution: {integrity: sha512-x2tZZYkSxXqWvTDgveSynfjq/T2HyiZHXb00j/+gy19yp70PHCizM48XFdjBCWH7eHBD0R5i/pw9yMBP/BH5uA==}
-    dev: false
-
   /@types/earcut@2.1.4:
     resolution: {integrity: sha512-qp3m9PPz4gULB9MhjGID7wpo3gJ4bTGXm7ltNDsmOvsPduTeHp8wSW9YckBj3mljeOh4F0m2z/0JKAALRKbmLQ==}
     dev: false
@@ -1522,15 +1497,6 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
-
-  /@webgpu/types@0.1.40:
-    resolution: {integrity: sha512-/BBkHLS6/eQjyWhY2H7Dx5DHcVrS2ICj9owvSRdgtQT6KcafLZA86tPze0xAOsd4FbsYKCUBUQyNi87q7gV7kw==}
-    dev: false
-
-  /@xmldom/xmldom@0.8.10:
-    resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
-    engines: {node: '>=10.0.0'}
-    dev: false
 
   /@yr/monotone-cubic-spline@1.0.3:
     resolution: {integrity: sha512-FQXkOta0XBSUPHndIKON2Y9JeQz5ZeMqLYZVVK93FliNBFm7LNMIZmY6FrMEB9XPcDbE2bekMbZD6kzDkxwYjA==}
@@ -2099,10 +2065,6 @@ packages:
     resolution: {integrity: sha512-tvtQIeLVHjDkJYnzf2dgVMxfuSGJeM/7UCG17TT4EumTfNtF+0nebF/4zWOIkCreAbtNqhGEboB6BWrwqNaw4Q==}
     dev: false
 
-  /eventemitter3@5.0.1:
-    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
-    dev: false
-
   /events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
@@ -2484,10 +2446,6 @@ packages:
   /isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  /ismobilejs@1.1.1:
-    resolution: {integrity: sha512-VaFW53yt8QO61k2WJui0dHf4SlL8lxBofUuUmwBo0ljPk0Drz2TiuDW4jo3wDcv41qy/SxrJ+VAzJ/qYqsmzRw==}
-    dev: false
-
   /jackspeak@2.3.6:
     resolution: {integrity: sha512-N3yCS/NegsOBokc8GAdM8UcmfsKiSS8cipheD/nivzr700H+nsMOxJjQnvwOcRYVuFkdH0wGUvW2WbXGmrZGbQ==}
     engines: {node: '>=14'}
@@ -2773,10 +2731,6 @@ packages:
       callsites: 3.1.0
     dev: true
 
-  /parse-svg-path@0.1.2:
-    resolution: {integrity: sha512-JyPSBnkTJ0AI8GGJLfMXvKq42cj5c006fnLz6fXy6zfoVjJizi8BNTpu8on8ziI1cKy9d9DGNuY17Ce7wuejpQ==}
-    dev: false
-
   /parse5-htmlparser2-tree-adapter@7.0.0:
     resolution: {integrity: sha512-B77tOZrqqfUfnVcOrUvfdLbz4pu4RopLD/4vmu3HUPswwTA8OH0EMW9BlWR2B0RCoiZRAHEUu7IxeP1Pd1UU+g==}
     dependencies:
@@ -2841,23 +2795,8 @@ packages:
     resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
     engines: {node: '>= 6'}
 
-  /pixi-graphpaper@2.0.1:
-    resolution: {integrity: sha512-jg5cqifwJ5sChbnIQ86+uXFSAnOZJwHZkoeJYvl3Vi88MVe3QhEfW9ZoMNvnwf5BOlfmhBFmUaDnV6IeP+j/vg==}
-    dependencies:
-      pixi.js: 6.5.10
-    dev: false
-
-  /pixi-stats@1.3.0(pixi.js@8.1.0):
-    resolution: {integrity: sha512-bC3LCTustW36RHyUiT6NfpkRU91Fgnkm+orFiF+BUcny+8km8vKzkSm3Gcu8YT8dEvdggxZ1ql1ju6VYf6djpA==}
-    peerDependencies:
-      pixi.js: ^8.1.0
-    dependencies:
-      '@jacekpietal/gstats': 0.1.1(pixi.js@8.1.0)
-      pixi.js: 8.1.0
-    dev: false
-
-  /pixi-viewport@5.1.0(@pixi/display@6.5.10)(@pixi/interaction@6.5.10)(@pixi/math@6.5.10)(@pixi/ticker@6.5.10):
-    resolution: {integrity: sha512-CNvw0H+Z+OfVCIAUkQ5TmwLEe+7W1dcIS6Wjt+AwQXWEjZPL3QpH2xFE/GAaqZ0qRkDxDV07dbRetZULFOvoew==}
+  /pixi-viewport@4.38.0(@pixi/display@6.5.10)(@pixi/interaction@6.5.10)(@pixi/math@6.5.10)(@pixi/ticker@6.5.10):
+    resolution: {integrity: sha512-TGj6Ymk/BU0wZcW4c1eP4e96aETJmB7jhjBflMjQU06/ZHPy7qHw8JyDqZ+C84SEg0ewCHjDNZ2vgR3Kjk74BQ==}
     peerDependencies:
       '@pixi/display': ^6.5.8
       '@pixi/interaction': ^6.5.8
@@ -2909,24 +2848,6 @@ packages:
       '@pixi/text-bitmap': 6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/display@6.5.10)(@pixi/loaders@6.5.10)(@pixi/math@6.5.10)(@pixi/mesh@6.5.10)(@pixi/settings@6.5.10)(@pixi/text@6.5.10)(@pixi/utils@6.5.10)
       '@pixi/ticker': 6.5.10(@pixi/extensions@6.5.10)(@pixi/settings@6.5.10)
       '@pixi/utils': 6.5.10(@pixi/constants@6.5.10)(@pixi/settings@6.5.10)
-    dev: false
-
-  /pixi.js@8.1.0:
-    resolution: {integrity: sha512-qclFipWxKavNZoOE0QjGgEklbxjc1mpHf46adsxYLz7O7RnV44PPkq1J5Ssa6y1JxtYUX0fwbphoE/gz276glA==}
-    dependencies:
-      '@pixi/colord': 2.9.6
-      '@types/css-font-loading-module': 0.0.12
-      '@types/earcut': 2.1.4
-      '@webgpu/types': 0.1.40
-      '@xmldom/xmldom': 0.8.10
-      earcut: 2.2.4
-      eventemitter3: 5.0.1
-      ismobilejs: 1.1.1
-      parse-svg-path: 0.1.2
-    dev: false
-
-  /pixijs-grid@0.4.1:
-    resolution: {integrity: sha512-S7qNrqepU37d8XE1+hFrygfOU1z/VC/XkQMf0q6G7ncsXsoBTvh2M0xFmWmA6iP3C4ZSARSA/FWihr5pmS+k1A==}
     dev: false
 
   /postcss-import@15.1.0(postcss@8.4.38):
