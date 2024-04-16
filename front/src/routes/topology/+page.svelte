@@ -24,5 +24,7 @@
 		<canvas bind:this={canvasElement} id="topology-canvas" />
 	</div>
 
-	<Sidebar {app} />
+	<div class="w-[30vh] h-[72vh]">
+		<Sidebar {app} />
+	</div>
 </div>
