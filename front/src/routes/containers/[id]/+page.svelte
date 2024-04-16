@@ -49,6 +49,7 @@
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
+	let isLoadingRemove = false;
 
 	const startContainer = async () => {
 		isLoadingStart = true;
@@ -69,9 +70,11 @@
 	};
 
 	const removeContainer = async () => {
+		isLoadingRemove = true;
 		await fetch('/containers/' + $page.params.id + '/api/remove', {
 			method: 'POST'
 		});
+		isLoadingRemove = false;
 		goto('/containers');
 	};
 </script>
@@ -86,18 +89,20 @@
 		class="btn btn-sm variant-ghost-success"
 		disabled={!canBeStarted || isLoadingStart}
 		on:click={startContainer}>
-		<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
+		<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} spin={isLoadingStart} fw />
 		Start
 	</button>
 	<button
 		class="btn btn-sm variant-ghost-error"
 		disabled={!canBeStopped || isLoadingStop}
 		on:click={stopContainer}>
-		<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
+		<Fa icon={!isLoadingStop ? faStop : faCircleNotch} spin={isLoadingStop} fw />
 		Stop
 	</button>
-	<button class="btn btn-sm variant-ghost-error" on:click={removeContainer}>
-		<Fa icon={faTrash} fw class="mr-1" />
+	<button class="btn btn-sm variant-ghost-error"
+		disabled={isLoadingRemove}
+					on:click={removeContainer}>
+		<Fa icon={!isLoadingRemove ? faTrash : faCircleNotch} spin={isLoadingRemove} fw />
 		Delete container
 	</button>
 </div>

@@ -3,6 +3,9 @@ use std::error::Error;
 use crate::models::ContainerStats;
 use crate::models::VolumeStats;
 
+use clickhouse::Row;
+
+
 pub async fn insert_container_stats(
     container_statistics: ContainerStats,
 ) -> Result<(), Box<dyn Error>> {
@@ -77,7 +80,6 @@ pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-use clickhouse::Row;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -109,7 +111,53 @@ pub async fn get_historical_statistics_for_container(
     Ok(vector_response)
 }
 
-pub async fn _insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), Box<dyn Error>> {
+#[derive(Row, Deserialize)]
+struct VolumeLastAcquisitionResponseRow {
+    max_timestamp: u64,
+}
+
+pub async fn get_volume_last_acquisition_timestamp(id: String) -> Result<u64, Box<dyn Error>> {
+    let client: clickhouse::Client = get_clickhouse_client();
+
+    let cursor = client
+        .query("SELECT max(timestamp) AS max_timestamp FROM volume_statistics WHERE id = ?")
+        .bind(id.clone())
+        .fetch::<VolumeLastAcquisitionResponseRow>();
+
+    match cursor {
+        Ok(mut cursor) => {
+            println!("Cursor created successfully");
+
+            let mut vector_response: Vec<VolumeLastAcquisitionResponseRow> = vec![];
+
+            while let Some(row) = cursor.next().await? {
+                vector_response.push(row)
+            }
+
+            if vector_response.len() == 0 {
+                return Ok(0);
+            }
+
+            return Ok(vector_response[0].max_timestamp);
+        }
+        Err(e) => {
+            match e {
+                clickhouse::error::Error::NotEnoughData => {
+                    return Ok(0);
+                }
+                _ => {
+                    println!(
+                "Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}",
+                id.clone(), e
+            );
+                    return Err(Box::new(e));
+                }
+            };
+        }
+    };
+}
+
+pub async fn insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), Box<dyn Error>> {
     let clickhouse_client = get_clickhouse_client();
 
     let insert_query = format!(
@@ -137,7 +185,7 @@ pub struct VolumeRow {
     dsk: u64,
 }
 
-pub async fn _get_historical_statistics_for_volume(
+pub async fn get_historical_statistics_for_volume(
     id: String,
 ) -> Result<Vec<VolumeRow>, Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();

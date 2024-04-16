@@ -141,48 +141,77 @@
 
 
 
+<style>
+    .container {
+    font-family: Arial, sans-serif;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    }
+
+    .label {
+    font-weight: bold;
+    }
+
+    .value {
+    margin-left: 10px;
+    }
+</style>
 
 
-<div id="chart" class="max-w-760px mx-auto my-8 opacity-90">
-    <div id="timeline-chart" class="apexcharts-toolbar-opacity-1 apexcharts-toolbar-border-0"></div>
-</div>
+<!--Chart du suivi du volume-->
 
 
-<div>
-    <br/>
-    {data.name}
-    <br/>
-    {data.createdAt}
-    <br/>
-    {data.mountpoint}
-    <br/>
-    {data.size}
-    <br/>
-    <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => handleDeleteVolume(data.name)}>
-        Delete
-    </button>
+<!--Informations sur le volume-->
+<div id="container">
+    <div id="info">
 
-    {#if showModal}
-    <div class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div class="bg-black p-4 rounded shadow-md">
-            <p>Are you sure you want to delete this volume?</p>
-            <div class="flex justify-between mt-4">
-                <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={confirmDelete}>Yes</button>
-                <button class="bg-gray-500 text-white px-4 py-2 rounded" on:click={cancelDelete}>No</button>
+        
+        <div class="container">
+            <div class="label">Nom du volume :</div>
+            <PortsBox {volume}></PortsBox>
+        
+            <div class="label">Date de création :</div>
+            <div class="value">{data.createdAt}</div>
+        
+            <div class="label">Point de montage :</div>
+            <div class="value">{data.mountpoint}</div>
+        
+            <div class="label">Taille :</div>
+            <div class="value">{data.size}</div>
+        </div>
+        
+        <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => handleDeleteVolume(data.name)}>
+            Delete
+        </button>
+
+        {#if showModal}
+        <div class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div class="bg-black p-4 rounded shadow-md">
+                <p>Are you sure you want to delete this volume?</p>
+                <div class="flex justify-between mt-4">
+                    <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={confirmDelete}>Yes</button>
+                    <button class="bg-gray-500 text-white px-4 py-2 rounded" on:click={cancelDelete}>No</button>
+                </div>
             </div>
         </div>
+        {/if}
     </div>
-    {/if}
+
+    <br/>
+
+    <div id="chart" class="max-w-760px mx-auto my-8 opacity-90">
+        <div id="timeline-chart" class="apexcharts-toolbar-opacity-1 apexcharts-toolbar-border-0"></div>
+    </div>
+
 </div>
 
-<br/>
+
+<!--File explorer du volume où est-il monté etc-->
 <div>
     <h2>Filesystem</h2>
     <FileExplorer {id}>
     </FileExplorer>
 </div>
 
-<div>
-	<br>
-	<PortsBox {volume}></PortsBox>
-</div>

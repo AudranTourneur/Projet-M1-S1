@@ -6,19 +6,50 @@
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 
+	import Fa from 'svelte-fa';
+	import { faDoorOpen, faXmark } from '@fortawesome/free-solid-svg-icons';
+	import { graphicsUtils } from 'pixi.js';
+	import { goto } from '$app/navigation';
+
 	initializeStores();
 
 	const drawerStore = getDrawerStore();
+	let disconnectPanelVisible = false;
 
 	function drawerOpen() {
 		drawerStore.open();
+	}
+
+	function togglePanel() {
+		disconnectPanelVisible = !disconnectPanelVisible;
+	}
+
+	async function disconnect() {
+		const res = await fetch('/api', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ action: 'disconnect'})
+		})
+
+		const serverResponseJson = await res.json() as {
+			success : boolean,
+			message : string | undefined
+		}
+
+		console.log(serverResponseJson)
+
+		if (serverResponseJson.success) {
+			goto('/login')
+		}
 	}
 
 	export let data;
 
 	console.log('data layout', data.test);
 
-	const route = $page.route?.id;
+	$: route = $page.route?.id;
 </script>
 
 <svelte:head>
@@ -46,7 +77,7 @@
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<LightSwitch />
-				<Avatar initials="OD" width="w-10" background="bg-primary-500" />
+				<Avatar initials="OD" width="w-10" background="bg-primary-500" on:click={togglePanel} />
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
@@ -55,10 +86,23 @@
 			<LeftNavigation />
 		</div>
 	</svelte:fragment>
+
+	{#if disconnectPanelVisible}
+		<div class="absolute top-0 right-0 mt-16 mr-4 p-4 bg-surface-100-800-token shadow rounded">
+			<br />
+			<button class="btn items-center bg-red-500 text-white" on:click={disconnect}>
+				<Fa icon={faDoorOpen} /><span>Log out</span></button>
+			<br />
+			<button class="btn items-center" on:click={togglePanel}
+				><Fa icon={faXmark} /> <span>Cancel</span></button>
+		</div>
+	{/if}
+
 	<!-- (sidebarRight) -->
 	<!-- (pageHeader) -->
 	<!-- Router Slot -->
 
+	{#key route}
 	{#if route !== '/topology'}
 		<div class="container py-10 px-1 sm:px-3 md:px-6 mx-auto">
 			<slot />
@@ -66,6 +110,7 @@
 	{:else}
 		<slot />
 	{/if}
+	{/key}
 	<!-- ---- / ---- -->
 	<!-- (pageFooter) -->
 	<!-- (footer) -->
