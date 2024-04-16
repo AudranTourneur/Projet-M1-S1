@@ -64,7 +64,7 @@ services:
     volumes:
       - "./front/src:/opt/app/src"
       - "./front/static:/opt/app/static"
-      - "./front/node_modules:/opt/app/node_modules"
+      # - "./front/node_modules:/opt/app/node_modules"
 
   caddy:
     container_name: okidocky-caddy
