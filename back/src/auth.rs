@@ -128,19 +128,37 @@ impl<'r> FromRequest<'r> for JWT {
     type Error = NetworkResponse;
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, NetworkResponse> {
-        // 👇 New!
         fn is_valid(key: &str) -> Result<Claims, Error> {
             Ok(decode_jwt(String::from(key))?)
         }
 
+        let auth_header = req.headers().get_one("Authorization");
         let auth_cookie = req.cookies().get("auth");
 
-        match auth_cookie {
+        let auth_token = match (auth_header, auth_cookie) {
+            (Some(header), None) => {
+                println!("Authorization header: {}", header);
+                Some(header)
+            },
+            (None, Some(cookie)) => {
+                println!("Authorization cookie: {}", cookie.value());
+                Some(cookie.value())
+            },
+            (Some(header), Some(cookie)) => {
+                println!("Authorization header: {}", header);
+                println!("Authorization cookie: {}", cookie.value());
+                println!("Picking authorization header");
+                Some(header)
+            },
+            _ => None,
+        };
+
+        match auth_token {
             None => {
                 let response = Response { body: ResponseBody::Message(String::from("Error validating JWT token - No token provided"))};
                 Outcome::Error((Status::Unauthorized, NetworkResponse::Unauthorized(serde_json::to_string(&response).unwrap()))) 
             },
-            Some(key) => match is_valid(key.value()) {
+            Some(key) => match is_valid(key) {
                 Ok(claims) => Outcome::Success(JWT {claims}),
                 Err(err) => match &err.kind() {
                     jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
