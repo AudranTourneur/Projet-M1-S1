@@ -11,6 +11,7 @@ use rocket::serde::json::Json;
 
 use crate::containers::models::ContainerPortRebindRequest;
 use crate::docker::get_docker_socket;
+use crate::images::common::get_all_images;
 
 use super::common::{check_for_yml, get_all_containers, get_container_by_id, modify_container_yml};
 use super::models::{ContainerData, ContainerList, ContainerStatsResponse};
@@ -70,7 +71,8 @@ pub async fn container_filesystem_handler(_key: JWT, id: &str) -> String {
 
 #[get("/container/<id>")]
 pub async fn container_handler(_key: JWT, id: &str) -> Json<Option<ContainerData>> {
-    let container = get_container_by_id(id).await;
+    let all_images = get_all_images().await;
+    let container = get_container_by_id(id, &all_images).await;
 
     match container {
         Some(container) => Json(Some(container)),
