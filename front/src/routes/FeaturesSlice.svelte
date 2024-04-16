@@ -1,12 +1,6 @@
 <script>
 	import Card from './Card.svelte'
 	import CardsContainer from './CardsContainer.svelte'
-	import configDefaultImage from '$lib/images/features/config_default.webp'
-	import configHoverImage from '$lib/images/features/config_hover.webp'
-	import smoothDefaultImage from '$lib/images/features/smooth_default.webp'
-	import smoothHoverImage from '$lib/images/features/smooth_hover.webp'
-	import tileDefaultImage from '$lib/images/features/tiling_default.webp'
-	import tileHoverImage from '$lib/images/features/tiling_hover.webp'
 </script>
 
 <section class="relative flex flex-col items-center px-3 md:px-8">
@@ -23,14 +17,14 @@
 				<div class="_wrapper absolute inset-0 select-none" aria-hidden="true">
 					<div class="feature-image">
 						<img
-							src={smoothDefaultImage}
+							src=""
 							class="feature-image_inner"
 							alt=""
 							aria-hidden="true"
 							loading="lazy"
 						/>
 						<img
-							src={smoothHoverImage}
+							src=""
 							class="feature-image_inner-hover"
 							alt=""
 							aria-hidden="true"
@@ -50,14 +44,14 @@
 				<div class="_wrapper absolute inset-0 select-none" aria-hidden="true">
 					<div class="feature-image">
 						<img
-							src={configDefaultImage}
+							src=""
 							class="feature-image_inner"
 							alt=""
 							aria-hidden="true"
 							loading="lazy"
 						/>
 						<img
-							src={configHoverImage}
+							src=""
 							class="feature-image_inner-hover"
 							alt=""
 							aria-hidden="true"
@@ -76,14 +70,14 @@
 				<div class="_wrapper absolute inset-0 select-none" aria-hidden="true">
 					<div class="feature-image">
 						<img
-							src={tileDefaultImage}
+							src=""
 							class="feature-image_inner"
 							alt=""
 							aria-hidden="true"
 							loading="lazy"
 						/>
 						<img
-							src={tileHoverImage}
+							src=""
 							class="feature-image_inner-hover"
 							alt=""
 							aria-hidden="true"

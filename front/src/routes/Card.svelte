@@ -189,7 +189,7 @@
 			opacity: 0%;
 			contain: strict;
 
-			background: url('/imgs/grain.webp'),
+			background:
 				radial-gradient(
 					ellipse at calc(var(--x) * 1px) calc(var(--y) * 1px),
 					var(--color1, theme(colors.cyan.500 / 100%)),
