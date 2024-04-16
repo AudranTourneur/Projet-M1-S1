@@ -58,10 +58,8 @@
 </script>
 
 <div>
-    Change name
-
 	{#if currentlyEditingValueName == null}
-    Current volume name: <span class="font-bold">{actualNameValue}</span>
+	<span class="font-bold">{actualNameValue}</span>
 
 		<button class="btn-icon variant-filled" on:click={toggleNameEdition}>
 			<Fa icon={faPenToSquare} />

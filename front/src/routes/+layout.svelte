@@ -8,7 +8,6 @@
 
 	import Fa from 'svelte-fa';
 	import { faDoorOpen, faXmark } from '@fortawesome/free-solid-svg-icons';
-	import { graphicsUtils } from 'pixi.js';
 	import { goto } from '$app/navigation';
 
 	initializeStores();

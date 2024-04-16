@@ -27,16 +27,26 @@ export class TopologyApp {
 	allPorts: Array<TopologyPortPixi> = []
 
 	constructor(canvas: HTMLCanvasElement, parent: HTMLElement, public data: TopologyInitData) {
-		const app = new PIXI.Application({ background: '#2A547E', resizeTo: parent, view: canvas, antialias: true });
+		const app = new PIXI.Application(
+			{
+				// backgroundColor: 0x00478F,
+				backgroundColor: 0x003D7A,
+				resizeTo: parent,
+				view: canvas,
+				antialias: true
+			});
 
 		this.app = app;
+
+		console.log('plugins', app.renderer.plugins)
 
 		const viewport = new Viewport({
 			screenWidth: window.innerWidth,
 			screenHeight: window.innerHeight,
 			worldWidth: 1000,
 			worldHeight: 1000,
-			events: app.renderer.events // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
+			// interaction: app.renderer.interaction,
+			interaction: app.renderer.plugins.interaction,
 		});
 
 		this.viewport = viewport;

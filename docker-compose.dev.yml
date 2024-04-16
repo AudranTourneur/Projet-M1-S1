@@ -5,10 +5,10 @@ services:
     container_name: okidocky-db
     image: clickhouse/clickhouse-server
     environment:
-      - CLICKHOUSE_DB=my_database
-      - CLICKHOUSE_USER=username
+      - CLICKHOUSE_DB=okidocky
+      - CLICKHOUSE_USER=root
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
-      - CLICKHOUSE_PASSWORD=password
+      - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
     networks:
       - main
     volumes:
@@ -19,8 +19,6 @@ services:
       - "9004:9004"
       - "8123:8123"
       - "9005:9005"
-
-    #CLICKHOUSE_DB=my_database -e CLICKHOUSE_USER=username -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 -e CLICKHOUSE_PASSWORD=password -p 5566:9000/tcp -p 8123:8123/tcp -d --name okidocky-clickhouse clickhouse/clickhouse-server
 
   core:
     container_name: okidocky-core
@@ -44,6 +42,11 @@ services:
       - "./back/bindings:/app/bindings"
       - "./sqlite_db:/app/sqlite"
       - "./caddy_etc:/etc/caddy/"
+    environment:
+      - "USERNAME=${USERNAME}"
+      - "PASSWORD=${PASSWORD}"
+      - "JWT_SECRET=${JWT_SECRET}"
+      - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
       #- ./Caddyfile:/etc/caddy/Caddyfile
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro
@@ -53,6 +56,7 @@ services:
     container_name: okidocky-ui
     build:
       context: ./front
+      dockerfile: Dockerfile.dev
     depends_on:
       - core
     restart: always
@@ -64,7 +68,7 @@ services:
     volumes:
       - "./front/src:/opt/app/src"
       - "./front/static:/opt/app/static"
-      - "./front/node_modules:/opt/app/node_modules"
+      # - "./front/node_modules:/opt/app/node_modules"
 
   caddy:
     container_name: okidocky-caddy

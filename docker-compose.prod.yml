@@ -5,10 +5,10 @@ services:
     container_name: okidocky-db
     image: clickhouse/clickhouse-server
     environment:
-      - CLICKHOUSE_DB=my_database
-      - CLICKHOUSE_USER=username
-      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
-      - CLICKHOUSE_PASSWORD=password
+      - "CLICKHOUSE_DB=okidocky"
+      - "CLICKHOUSE_USER=root"
+      - "CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1"
+      - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
     networks:
       - main
     volumes:
@@ -34,7 +34,11 @@ services:
       - "/:/rootfs:ro,rslave"
       - "/run/docker.sock:/run/docker.sock:ro,rslave"
       - "./sqlite_db:/app/sqlite"
-
+    environment:
+      - "USERNAME=${USERNAME}"
+      - "PASSWORD=${PASSWORD}"
+      - "JWT_SECRET=${JWT_SECRET}"
+      - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
 
   ui:
     container_name: okidocky-ui

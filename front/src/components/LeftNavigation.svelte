@@ -25,7 +25,7 @@
 	}
 
 	const menu = [
-		{ icon: faHouse, text: 'Overview', href: '/overview' },
+		{ icon: faHouse, text: 'Overview', href: '/' },
 		{ icon: faImages, text: 'Images', href: '/images' },
 		{ icon: faCubes, text: 'Containers', href: '/containers' },
 		{ icon: faLayerGroup, text: 'Composes', href: '/composes' },

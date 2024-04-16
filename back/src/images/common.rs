@@ -40,8 +40,8 @@ pub async fn get_all_images() -> Vec<ImageData> {
     my_images
 }
 
-pub async fn get_image_by_id(id: &str) -> Option<ImageData> {
-    let all_images: Vec<ImageData> = get_all_images().await;
+// VERY SLOW
+pub async fn get_image_by_id(id: &str, all_images: &Vec<ImageData>) -> Option<ImageData> {
     let img = all_images.iter().find(|image| image.id == id);
     
     img.map(|img| img.clone())

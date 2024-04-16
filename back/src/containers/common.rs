@@ -6,15 +6,17 @@ use std::{
     io::{Read, Write},
 };
 
-use crate::docker::get_docker_socket;
+use crate::{docker::get_docker_socket, images::{common::get_all_images, models::ImageData}};
 
 use super::models::{
-    ContainerData, ContainerPortRebind, ContainerPortRebindRequest, OurPortTypeEnum, PortData,
+    ContainerData, ContainerPortRebindRequest, OurPortTypeEnum, PortData,
 };
 
 use crate::images::common::get_image_by_id;
 
-pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
+pub async fn get_container_by_id(id: &str, all_images: &Vec<ImageData>) -> Option<ContainerData> {
+    let start_time = std::time::Instant::now();
+
     let docker: Docker = get_docker_socket();
     let containers = &docker
         .list_containers::<String>(Some(ListContainersOptions::<String> {
@@ -105,7 +107,7 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
     let networks: Vec<String> = endpoint_settings.keys().cloned().collect();
 
     let image_data = match &container.image_id {
-        Some(id) => get_image_by_id(id).await,
+        Some(id) => get_image_by_id(id, all_images).await,
         None => None,
     };
 
@@ -128,10 +130,15 @@ pub async fn get_container_by_id(id: &str) -> Option<ContainerData> {
         raw_data: Some(raw_data),
     };
 
+    let delta_time = start_time.elapsed();
+
+    println!("get_container_by_id {} took: {:?}", id, delta_time);
+
     Some(container_data)
 }
 
 pub async fn get_all_containers() -> Vec<ContainerData> {
+    let all_images = get_all_images().await;
     let docker: Docker = get_docker_socket();
     let containers = &docker
         .list_containers::<String>(Some(ListContainersOptions::<String> {
@@ -147,7 +154,7 @@ pub async fn get_all_containers() -> Vec<ContainerData> {
             Some(container_id) => container_id,
             None => return None,
         };
-        let result = get_container_by_id(&container_id).await;
+        let result = get_container_by_id(&container_id, &all_images).await;
         result
     });
 
@@ -170,9 +177,10 @@ pub fn yaml_string(yaml_path: String) -> Result<String, Box<dyn std::error::Erro
 }
 
 pub async fn check_for_yml(id: &str) -> bool {
+    let all_images = get_all_images().await;
     println!("Checking for existing yml: {:?}", id);
 
-    let container_data = get_container_by_id(id).await.unwrap();
+    let container_data = get_container_by_id(id, &all_images).await.unwrap();
     let yml_path = container_data.clone().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
 
@@ -187,9 +195,10 @@ pub async fn check_for_yml(id: &str) -> bool {
 }
 
 pub async fn modify_container_yml(id: &str, input: Json<ContainerPortRebindRequest>) {
+    let all_images = get_all_images().await;
     println!("Called modify_container_yml with id: {:?}", id);
 
-    let container_data = get_container_by_id(id).await.unwrap();
+    let container_data = get_container_by_id(id, &all_images).await.unwrap();
     let yml_path = container_data.clone().compose_file;
     let path_string = yml_path.clone().unwrap_or_default();
 

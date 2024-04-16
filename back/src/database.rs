@@ -1,3 +1,5 @@
+use std::env;
+
 use std::error::Error;
 
 use crate::models::ContainerStats;
@@ -45,9 +47,9 @@ pub fn get_clickhouse_client() -> Client {
     Client::default()
         // .with_url("http://okidocky-db:8123")
         .with_url("http://127.0.0.1:8123")
-        .with_user("username")
-        .with_password("password")
-        .with_database("my_database")
+        .with_user("root")
+        .with_password(env::var("CLICKHOUSE_PASSWORD").unwrap())
+        .with_database("okidocky")
 }
 
 pub async fn init_clickhouse_database() -> Result<(), Box<dyn Error>> {
