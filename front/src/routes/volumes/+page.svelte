@@ -19,8 +19,9 @@
 </div>
 <div class="grid grid-cols-2 gap-4">
     {#each visibleVolumes as volume, i}
-        <div class="border border-gray-200 rounded-md p-4 mb-4">
+        <div class="p-4 mb-4">
             <VolumeBox volume={volume} />
         </div>
     {/each}
 </div>
+
