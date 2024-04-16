@@ -16,7 +16,9 @@
 
 	export let data;
 
-	console.log('data layout', data.test)
+	console.log('data layout', data.test);
+
+	const route = $page.route?.id;
 </script>
 
 <svelte:head>
@@ -56,9 +58,14 @@
 	<!-- (sidebarRight) -->
 	<!-- (pageHeader) -->
 	<!-- Router Slot -->
-	<div class="container py-10 px-1 sm:px-3 md:px-6 mx-auto">
+
+	{#if route !== '/topology'}
+		<div class="container py-10 px-1 sm:px-3 md:px-6 mx-auto">
+			<slot />
+		</div>
+	{:else}
 		<slot />
-	</div>
+	{/if}
 	<!-- ---- / ---- -->
 	<!-- (pageFooter) -->
 	<!-- (footer) -->

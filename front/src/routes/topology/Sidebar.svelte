@@ -28,7 +28,7 @@
 	}
 </script>
 
-<div class="w-[400px] h-[72vh] flex flex-col justify-between border border-blue-500">
+<div class="w-[400px] h-full flex flex-col justify-between border border-blue-500">
 	<div>
 		{#key $currentlySelectedEntity}
 			{#if $currentlySelectedEntity?.entity instanceof TopologyContainerPixi}
