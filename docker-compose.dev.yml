@@ -55,6 +55,7 @@ services:
     container_name: okidocky-ui
     build:
       context: ./front
+      dockerfile: Dockerfile.dev
     depends_on:
       - core
     restart: always
