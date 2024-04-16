@@ -7,7 +7,7 @@
     <input type="text" placeholder="Search by ID or Network" class="input" bind:value={search} />
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
     {#each visibleNetworks as network}
         <div class="p-3 rounded-container-token overflow-auto bg-surface-300/30 dark:bg-surface-600/30 shadow border-token border-surface-300-600-token mt-4">
             <div class="font-bold text-lg mb-2">{network.name ? network.name : 'none'}</div>
@@ -38,8 +38,7 @@
                             <b>Labels :</b>
                             <br />
                             {#each Object.entries(network.labels) as [str1, str2]}
-                                {str1} : {str2}
-                                <br />
+                                <div>{str1} : {str2}</div>
                             {/each}
                         </div>
                     </div>
@@ -49,11 +48,11 @@
                         <div>
                             <b>Ipam Config :</b>
                             {#each network.ipamConfig as config}
-                                <p>Subnet: {config.subnet ? config.subnet : 'none'}</p>
-                                <p>IP Range: {config.ipRange ? config.ipRange : 'none'}</p>
-                                <p>Gateway: {config.gateway ? config.gateway : 'none'}</p>
+                                <div>Subnet: {config.subnet ? config.subnet : 'none'}</div>
+                                <div>IP Range: {config.ipRange ? config.ipRange : 'none'}</div>
+                                <div>Gateway: {config.gateway ? config.gateway : 'none'}</div>
                                 {#if config.auxAddresses}
-                                    <p>Aux Addresses:</p>
+                                    <div>Aux Addresses:</div>
                                     <ul>
                                         {#each Object.entries(config.auxAddresses) as [key, value]}
                                             <li>{key}: {value}</li>
@@ -88,6 +87,8 @@
         </div>
     {/each}
 </div>
+
+
 
 <script lang="ts">
     export let data;
