@@ -11,6 +11,8 @@ import { TopologyPortPixi } from './TopologyPortPixi';
 import { currentlySelectedEntity } from './TopologyStore';
 import { simulatePositions } from './GraphSimulation';
 import { get } from 'svelte/store';
+import { Application, Ticker, UPDATE_PRIORITY } from 'pixi.js';
+// import { addStats, Stats } from 'pixi-stats';
 
 
 export class TopologyApp {
@@ -41,6 +43,10 @@ export class TopologyApp {
 		this.viewport = viewport;
 
 		app.stage.addChild(viewport);
+
+		// const app: Application = new Application({});
+// const stats: Stats = addStats(document, app);
+// const ticker: Ticker = Ticker.shared;
 
 		// activate plugins
 		viewport.drag().pinch().wheel().decelerate();

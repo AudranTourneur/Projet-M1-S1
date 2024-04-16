@@ -55,9 +55,11 @@
     "highlight.js": "^11.9.0",
     "js-base64": "^3.7.7",
     "pixi-graphpaper": "^2.0.1",
+    "pixi-stats": "^1.2.2",
     "pixi-viewport": "^5.0.2",
     "pixi.js": "^7.3.2",
     "pixijs-grid": "^0.4.1",
+    "stats.js": "^0.17.0",
     "svelte-fa": "^4.0.2",
     "svelte-floating-ui": "^1.5.8",
     "zod": "^3.22.4"
