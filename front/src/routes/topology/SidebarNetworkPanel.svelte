@@ -11,7 +11,7 @@
 </script>
 
 <div
-	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4">
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3">
 	<div>
 		<span class="font-bold">Name : </span>
 		{data.name}
