@@ -7,6 +7,9 @@
 	import type { TopologyApp } from '$lib/TopologyApp';
 	import SidebarContainerPanel from './SidebarContainerPanel.svelte';
 	import SidebarVolumePanel from './SidebarVolumePanel.svelte';
+	import { TopologyPortPixi } from '$lib/TopologyPortPixi';
+	import SidebarNetworkPanel from './SidebarNetworkPanel.svelte';
+	import SidebarPortPanel from './SidebarPortPanel.svelte';
 
 	export let app: TopologyApp;
 
@@ -28,16 +31,19 @@
 	}
 </script>
 
-<div class="w-[400px] h-[72vh] flex flex-col justify-between border border-blue-500">
+<div class="flex flex-col justify-between border border-blue-500">
 	<div>
 		{#key $currentlySelectedEntity}
 			{#if $currentlySelectedEntity?.entity instanceof TopologyContainerPixi}
 				<SidebarContainerPanel entity={$currentlySelectedEntity?.entity} />
 			{:else if $currentlySelectedEntity?.entity instanceof TopologyNetworkPixi}
+				<SidebarNetworkPanel entity={$currentlySelectedEntity?.entity} />
 				{$currentlySelectedEntity?.entity.name}
-				TODO
 			{:else if $currentlySelectedEntity?.entity instanceof TopologyVolumePixi}
 				<SidebarVolumePanel entity={$currentlySelectedEntity?.entity} />
+			{:else if $currentlySelectedEntity?.entity instanceof TopologyPortPixi}
+				<SidebarPortPanel entity={$currentlySelectedEntity?.entity} />
+				{$currentlySelectedEntity?.entity.data.ip}
 			{:else}
 				Please select something to get more details.
 			{/if}
