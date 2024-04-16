@@ -1,44 +1,38 @@
 <script lang="ts">
+    import type { VolumeData } from '$lib/types/VolumeData';
+    import VolumeBox from './VolumeBox.svelte';
+
     export let data;
 
-    const volumes = data.volumes;
+    const volumes: VolumeData[] = data.volumes;
+    let visibleVolumes = [...volumes];
+    let search = '';
+    let sortBy = '';
 
-    function downloadVolume(index: number) {
-        // implémenter la fonction adéquate
-        console.log(`Downloading volume with index ${index}`);
+    function searchVolumes() {
+        visibleVolumes = volumes.filter(volume => 
+            volume.name.toLowerCase().includes(search.toLowerCase()) &&
+            (sortBy === '' || sortBy === 'date' ? true : false) // Ajoutez d'autres conditions ici pour les autres critères de tri
+        );
+        if (sortBy === 'date') {
+            visibleVolumes.sort((a, b) => new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime());
+        } else if (sortBy === 'alphabetical') {
+            visibleVolumes.sort((a, b) => a.name.localeCompare(b.name));
+        }
     }
 </script>
 
+<h1 class="text-center text-4xl mb-5">Volumes</h1>
+<div class="mx-auto max-w-xs flex items-center mb-4">
+    <input bind:value={search} type="text" placeholder="Search by name" class="input mr-2" on:input={searchVolumes} />
+    <select bind:value={sortBy} class="input" on:change={searchVolumes}>
+        <option value="">Sort by...</option>
+        <option value="date">Date</option>
+        <option value="alphabetical">Alphabetical</option>
+    </select>
+</div>
 <div class="w-full">
-    {#each volumes as volume, i}
-        <div class="border border-gray-300 rounded p-4 mb-4">
-            <h3 class="text-lg font-semibold mb-2">Volume Information</h3>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">ID:</span>
-                <span>{volume.createdAt}</span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">Name:</span>
-                <span>{volume.name}</span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">Size:</span>
-                <span>{volume.mountpoint}</span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold">Size:</span>
-                <span>{volume.size}</span>
-            </div>
-            <div class="flex justify-end items-center">
-                <a href="/volumes/{volume.name}">
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
-                        Info
-                    </button>
-                </a>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={() => downloadVolume(i)}>
-                    Download
-                </button>
-            </div>
-        </div>
+    {#each visibleVolumes as volume, i}
+        <VolumeBox volume={volume} />
     {/each}
 </div>

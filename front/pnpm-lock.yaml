@@ -23,6 +23,9 @@ dependencies:
   '@novacbn/svelte-codejar':
     specifier: ^0.1.2
     version: 0.1.2
+  '@types/stats.js':
+    specifier: ^0.17.3
+    version: 0.17.3
   apexcharts:
     specifier: ^3.44.2
     version: 3.44.2
@@ -38,6 +41,12 @@ dependencies:
   graphology-layout-force:
     specifier: ^0.2.4
     version: 0.2.4(graphology-types@0.24.7)
+  graphology-layout-forceatlas2:
+    specifier: ^0.10.1
+    version: 0.10.1(graphology-types@0.24.7)
+  graphology-layout-noverlap:
+    specifier: ^0.4.2
+    version: 0.4.2(graphology-types@0.24.7)
   highlight.js:
     specifier: ^11.9.0
     version: 11.9.0
@@ -47,6 +56,9 @@ dependencies:
   pixi-graphpaper:
     specifier: ^2.0.1
     version: 2.0.1
+  pixi-stats:
+    specifier: ^1.2.2
+    version: 1.3.0(pixi.js@7.3.2)
   pixi-viewport:
     specifier: ^5.0.2
     version: 5.0.2
@@ -56,6 +68,9 @@ dependencies:
   pixijs-grid:
     specifier: ^0.4.1
     version: 0.4.1
+  stats.js:
+    specifier: ^0.17.0
+    version: 0.17.0
   svelte-fa:
     specifier: ^4.0.2
     version: 4.0.2(svelte@4.2.8)
@@ -487,6 +502,14 @@ packages:
   /@humanwhocodes/object-schema@2.0.1:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
     dev: true
+
+  /@jacekpietal/gstats@0.1.1(pixi.js@7.3.2):
+    resolution: {integrity: sha512-PYyecboB/Pf+Dj0MJG3L91fuAo8MyxcEuyxQiqbGcfbMmSFRiFNtHsbd42bsarQiV6HlYXL2OFDJFaTmgx5xeQ==}
+    peerDependencies:
+      pixi.js: '*'
+    dependencies:
+      pixi.js: 7.3.2(@pixi/utils@7.3.2)
+    dev: false
 
   /@jridgewell/gen-mapping@0.3.3:
     resolution: {integrity: sha512-HLhSWOLRi875zjjMG/r+Nv0oCW8umGb0BgEhyX3dDX3egwZtB8PqLnjz3yedt8R5StBrzcg4aBpnh8UA9D1BoQ==}
@@ -1506,6 +1529,10 @@ packages:
     resolution: {integrity: sha512-dn1l8LaMea/IjDoHNd9J52uBbInB796CDffS6VdIxvqYCPSG0V0DzHp76GpaWnlhg88uYyPbXCDIowa86ybd5A==}
     dev: true
 
+  /@types/stats.js@0.17.3:
+    resolution: {integrity: sha512-pXNfAD3KHOdif9EQXZ9deK82HVNaXP5ZIF5RP2QG6OQFNTaY2YIetfrE9t528vEreGQvEPRDDc8muaoYeK0SxQ==}
+    dev: false
+
   /@typescript-eslint/eslint-plugin@6.13.2(@typescript-eslint/parser@6.13.2)(eslint@8.55.0)(typescript@5.3.2):
     resolution: {integrity: sha512-3+9OGAWHhk4O1LlcwLBONbdXsAhLjyCFogJY/cWy2lxdVJ2JrcTF2pTGMaLl2AE7U1l31n8Py4a8bx5DLf/0dQ==}
     engines: {node: ^16.0.0 || >=18.0.0}
@@ -2370,6 +2397,24 @@ packages:
       graphology-utils: 2.5.2(graphology-types@0.24.7)
     dev: false
 
+  /graphology-layout-forceatlas2@0.10.1(graphology-types@0.24.7):
+    resolution: {integrity: sha512-ogzBeF1FvWzjkikrIFwxhlZXvD2+wlY54lqhsrWprcdPjopM2J9HoMweUmIgwaTvY4bUYVimpSsOdvDv1gPRFQ==}
+    peerDependencies:
+      graphology-types: '>=0.19.0'
+    dependencies:
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
+    dev: false
+
+  /graphology-layout-noverlap@0.4.2(graphology-types@0.24.7):
+    resolution: {integrity: sha512-13WwZSx96zim6l1dfZONcqLh3oqyRcjIBsqz2c2iJ3ohgs3605IDWjldH41Gnhh462xGB1j6VGmuGhZ2FKISXA==}
+    peerDependencies:
+      graphology-types: '>=0.19.0'
+    dependencies:
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
+    dev: false
+
   /graphology-layout@0.6.1(graphology-types@0.24.7):
     resolution: {integrity: sha512-m9aMvbd0uDPffUCFPng5ibRkb2pmfNvdKjQWeZrf71RS1aOoat5874+DcyNfMeCT4aQguKC7Lj9eCbqZj/h8Ag==}
     peerDependencies:
@@ -2842,6 +2887,15 @@ packages:
       pixi.js: 6.5.10
     dev: false
 
+  /pixi-stats@1.3.0(pixi.js@7.3.2):
+    resolution: {integrity: sha512-bC3LCTustW36RHyUiT6NfpkRU91Fgnkm+orFiF+BUcny+8km8vKzkSm3Gcu8YT8dEvdggxZ1ql1ju6VYf6djpA==}
+    peerDependencies:
+      pixi.js: ^8.1.0
+    dependencies:
+      '@jacekpietal/gstats': 0.1.1(pixi.js@7.3.2)
+      pixi.js: 7.3.2(@pixi/utils@7.3.2)
+    dev: false
+
   /pixi-viewport@5.0.2:
     resolution: {integrity: sha512-U77KnCTl81xEgxEQRFEuI7MYVySWwCVkA41EnM8KiOYwgVOwdBUa7318O+u61IOnTwnoYLzaihy/kpoONKU13Q==}
     dev: false
@@ -3253,6 +3307,10 @@ packages:
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
+
+  /stats.js@0.17.0:
+    resolution: {integrity: sha512-hNKz8phvYLPEcRkeG1rsGmV5ChMjKDAWU7/OJJdDErPBNChQXxCo3WZurGpnWc6gZhAzEPFad1aVgyOANH1sMw==}
+    dev: false
 
   /strip-ansi@6.0.1:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}

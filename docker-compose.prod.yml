@@ -1,0 +1,51 @@
+version: "3.3"
+
+services:
+  db:
+    container_name: okidocky-db
+    image: clickhouse/clickhouse-server
+    environment:
+      - CLICKHOUSE_DB=my_database
+      - CLICKHOUSE_USER=username
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_PASSWORD=password
+    networks:
+      - main
+    volumes:
+      - ./clickhouse_db:/var/lib/clickhouse
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9004:9004"
+      - "8123:8123"
+      - "9005:9005"
+
+  core:
+    container_name: okidocky-core
+    privileged: true
+    build:
+      context: ./back
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - db
+    restart: always
+    network_mode: "host"
+    volumes:
+      - "/:/rootfs:ro,rslave"
+      - "/run/docker.sock:/run/docker.sock:ro,rslave"
+      - "./sqlite_db:/app/sqlite"
+
+
+  ui:
+    container_name: okidocky-ui
+    build:
+      context: ./front
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - core
+    restart: always
+    network_mode: "host"
+
+networks:
+  main:
+    driver: bridge

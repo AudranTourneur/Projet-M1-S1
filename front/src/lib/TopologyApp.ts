@@ -11,6 +11,7 @@ import { TopologyPortPixi } from './TopologyPortPixi';
 import { currentlySelectedEntity } from './TopologyStore';
 import { simulatePositions } from './GraphSimulation';
 import { get } from 'svelte/store';
+import Stats from 'stats.js';
 
 
 export class TopologyApp {
@@ -155,6 +156,24 @@ export class TopologyApp {
 		// 	isRunning = !isRunning
 		// 	redSquare.tint = isRunning ? 0Xffffff : 0Xff0000
 		// })
+
+		const stats = new Stats();
+		stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+		document.body.appendChild(stats.dom);
+
+		function animate() {
+
+			stats.begin();
+
+			// monitored code goes here
+
+			stats.end();
+
+			requestAnimationFrame(animate);
+
+		}
+
+		requestAnimationFrame(animate);
 	}
 
 	select(entity: TopologyEntityPixi) {
