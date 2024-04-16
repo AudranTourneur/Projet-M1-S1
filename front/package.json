@@ -58,6 +58,7 @@
     "graphology-layout-noverlap": "^0.4.2",
     "highlight.js": "^11.9.0",
     "js-base64": "^3.7.7",
+    "nanoid": "^5.0.7",
     "pixi-viewport": "^4.30.0",
     "pixi.js": "^6.5.10",
     "postcss-nesting": "^12.1.1",
