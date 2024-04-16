@@ -8,7 +8,7 @@ services:
       - CLICKHOUSE_DB=okidocky
       - CLICKHOUSE_USER=root
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
-      - CLICKHOUSE_PASSWORD=password
+      - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
     networks:
       - main
     volumes:
