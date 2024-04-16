@@ -59,7 +59,7 @@
     "highlight.js": "^11.9.0",
     "js-base64": "^3.7.7",
     "pixi-viewport": "^5.1.0",
-    "pixi.js": "^7.3.0",
+    "pixi.js": "^7.2.0",
     "postcss-nesting": "^12.1.1",
     "rxjs": "^7.8.1",
     "stats.js": "^0.17.0",

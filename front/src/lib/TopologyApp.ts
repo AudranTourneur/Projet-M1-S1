@@ -11,7 +11,7 @@ import { TopologyPortPixi } from './TopologyPortPixi';
 import { currentlySelectedEntity } from './TopologyStore';
 import { simulatePositions } from './GraphSimulation';
 import { get } from 'svelte/store';
-import { Stats } from 'node:fs';
+import Stats from 'stats.js';
 
 
 export class TopologyApp {
