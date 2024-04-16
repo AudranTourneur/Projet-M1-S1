@@ -64,7 +64,7 @@
                     </div>
                 {/if}
             </div>
-            <div class="mt-3 grid grid-cols-5 gap-4">
+            <!--<div class="mt-3 grid grid-cols-5 gap-4">
                 {#if network.containers}
                     {#each Object.entries(network.containers) as [id, c]}
                         <div class="flex items-center gap-4 border border-1 p-2 px-4 rounded-lg">
@@ -78,7 +78,7 @@
                 {:else}
                     <div>none</div>
                 {/if}
-            </div>
+            </div>-->
             <div class="flex justify-end mt-3">
                 <a href="/networks/{network.id}">
                     <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2"> Info </button>
