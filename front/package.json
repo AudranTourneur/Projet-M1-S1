@@ -45,6 +45,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@novacbn/svelte-codejar": "^0.1.2",
+    "@types/stats.js": "^0.17.3",
     "apexcharts": "^3.44.2",
     "copy-to-clipboard": "^3.3.3",
     "graphology": "^0.25.4",

@@ -91,7 +91,6 @@ export async function simulatePositions(entities: TopologyEntityPixi[]) {
         for (const entity of entities) {
             const position = positions[entity.uuid] as { x: number, y: number; };
             if (!position) continue;
-            console.log('POSITION', entity.uuid, position.x, position.y)
             entity.pixiContainer.x = position.x * 10;
             entity.pixiContainer.y = position.y * 10;
         }
