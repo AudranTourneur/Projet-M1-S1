@@ -9,7 +9,7 @@ use rocket::time::OffsetDateTime;
 extern crate fs_extra;
 use fs_extra::dir::get_size;
 
-use crate::database;
+use crate::database::{self, get_volume_last_acquisition_timestamp};
 
 pub async fn start_statistics_listeners() {
     let docker = Docker::connect_with_local_defaults().unwrap();
@@ -25,6 +25,15 @@ pub async fn start_statistics_listeners() {
         // println!("aaaa id = {}", container.id.clone().unwrap());
         rocket::tokio::spawn(get_container_statistics(container.id.clone().unwrap()));
         // rocket::tokio::spawn(get_volumes_size(container.id.clone().unwrap()));
+    }
+
+    let volumes = &docker
+        .list_volumes::<String>(Default::default())
+        .await
+        .unwrap().volumes.unwrap();
+
+    for volume in volumes.iter() {
+        should_get_volume_size(volume.name.clone()).await;
     }
 }
 
@@ -88,7 +97,35 @@ pub async fn get_container_statistics(container_id_to_get: String) {
     }
 }
 
-pub async fn _get_volumes_size(id_to_inspect: String) {
+async fn should_get_volume_size(id_to_inspect: String) -> bool {
+    // True if the last acquisition was more than 24 hours ago
+    let time_threshold: u64 = 60 * 60 * 24;
+
+    let current_timestamp = OffsetDateTime::now_utc().unix_timestamp() as u64;
+
+    let vol_size = get_volume_last_acquisition_timestamp(id_to_inspect.clone()).await;
+
+    let last_timestamp_acquisition = match vol_size {
+        Ok(ts) => {
+            ts
+        }
+        Err(err) => {
+            println!("Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}", id_to_inspect, err);
+            return false;
+        }
+    };
+
+    if (current_timestamp - last_timestamp_acquisition) < time_threshold {
+        println!("Volume {} was already updated in the last 24 hours", id_to_inspect);
+        return false;
+    }
+
+    println!("Volume {} was not updated in the last 24 hours", id_to_inspect);
+
+    true
+}
+
+pub async fn get_volumes_size(id_to_inspect: String) {
     let docker = Docker::connect_with_local_defaults().unwrap();
 
     let inspected = docker
@@ -104,7 +141,7 @@ pub async fn _get_volumes_size(id_to_inspect: String) {
 
     let mut last_timestamp_acquisition = 0;
     let time_threshold = 60 * 60;
-    let mut size = _get_mountpoint_size(mountpoint_source.clone()).await;
+    let mut size = get_mountpoint_size(mountpoint_source.clone()).await;
 
     loop {
         let current_timestamp = OffsetDateTime::now_utc().unix_timestamp();
@@ -122,17 +159,17 @@ pub async fn _get_volumes_size(id_to_inspect: String) {
 
         last_timestamp_acquisition = current_timestamp;
 
-        size = _get_mountpoint_size(mountpoint_source.clone()).await;
+        size = get_mountpoint_size(mountpoint_source.clone()).await;
         let volume_stats = crate::models::VolumeStats {
             volume_id: id_to_inspect.clone(),
             timestamp: current_timestamp as u64,
             disk_usage: size as i32,
         };
 
-        let _ = database::_insert_volume_stats(volume_stats).await;
+        let _ = database::insert_volume_stats(volume_stats).await;
     }
 }
 
-pub async fn _get_mountpoint_size(mountpoint_source: String) -> u64 {
+pub async fn get_mountpoint_size(mountpoint_source: String) -> u64 {
     get_size(mountpoint_source.clone()).unwrap_or(0)
 }
