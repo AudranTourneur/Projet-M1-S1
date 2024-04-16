@@ -46,6 +46,7 @@ services:
       - "USERNAME=${USERNAME}"
       - "PASSWORD=${PASSWORD}"
       - "JWT_SECRET=${JWT_SECRET}"
+      - "CLICKHOUSE_SECRET=${CLICKHOUSE_SECRET}"
       #- ./Caddyfile:/etc/caddy/Caddyfile
       # - back:/opt/app
       # - /run/run/docker.sock:/var/run/docker.sock:ro

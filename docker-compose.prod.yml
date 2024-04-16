@@ -38,6 +38,7 @@ services:
       - "USERNAME=${USERNAME}"
       - "PASSWORD=${PASSWORD}"
       - "JWT_SECRET=${JWT_SECRET}"
+      - "CLICKHOUSE_SECRET=${CLICKHOUSE_SECRET}"
 
   ui:
     container_name: okidocky-ui
