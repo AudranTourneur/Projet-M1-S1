@@ -8,7 +8,6 @@
     let visibleVolumes = [...volumes];
     let search = '';
 
-
     function searchVolumes() {
         visibleVolumes = volumes.filter(volume => volume.name.toLowerCase().includes(search.toLowerCase()));
     }
@@ -18,8 +17,11 @@
 <div class="mx-auto max-w-xs">
     <input bind:value={search} type="text" placeholder="Search by name" class="input mb-4" on:input={searchVolumes} />
 </div>
-<div class="w-full">
+<div class="grid grid-cols-2 gap-4">
     {#each visibleVolumes as volume, i}
-        <VolumeBox volume={volume} />
+        <div class="p-4 mb-4">
+            <VolumeBox volume={volume} />
+        </div>
     {/each}
 </div>
+
