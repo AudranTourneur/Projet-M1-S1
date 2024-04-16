@@ -11,7 +11,7 @@ use crate::{
 use super::common::get_all_volumes;
 use super::{
     common::{_from_base64_url, get_volume_size},
-    models::{FileData, VolumeData, VolumeList},
+    models::{FileData, VolumeData, VolumeList, VolumeStatsResponse},
 };
 
 #[get("/volumes")]
@@ -105,8 +105,6 @@ pub async fn volume_explorer_handler(
         }
     };
 
-    println!("aaaaaaaaaaa");
-
     let dir_folders: Vec<String> = dir_content
         .directories
         .into_iter()
@@ -124,15 +122,11 @@ pub async fn volume_explorer_handler(
     let dir_folders = details_fdir(dir_folders, full_path.clone(), root_folder_without_slash);
     let dir_files = details_fdir(dir_files, full_path, root_folder_without_slash);
 
-    println!("bbbbbbbbbb");
-
     let content = VolumeExplorerData {
         current_folder: decoded.to_string(),
         directories: dir_folders,
         files: dir_files,
     };
-
-    println!("cccccccccc");
 
     Json(Some(content))
 }
@@ -191,4 +185,26 @@ fn details_fdir(
         .collect();
 
     folder_data.into_iter().flatten().collect()
+}
+
+
+#[get ("/statistics-historical/volume/<id>")]
+pub async fn volume_stats_handler(_key: JWT, id: &str) -> Json<VolumeStatsResponse> {
+    let db_res = crate::database::get_historical_statistics_for_volume(id.to_string()).await;
+
+    match db_res {
+        Ok(stats) => {
+            println!("Volume statistics: {:?}", stats);
+            let res = VolumeStatsResponse { stats };
+
+            Json(res)
+        }
+        Err(e) => {
+            println!("Error getting volume statistics: {}", e);
+
+            let res = VolumeStatsResponse { stats: vec![] };
+
+            Json(res)
+        }
+    }
 }

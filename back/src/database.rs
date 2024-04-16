@@ -166,7 +166,6 @@ pub async fn insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), B
         volume_statistics.volume_id, volume_statistics.timestamp, volume_statistics.disk_usage,
     );
 
-    // todo: replace by prepared statement!!!
     let insert = clickhouse_client.query(&insert_query);
 
     let res = insert.execute().await;
@@ -179,7 +178,7 @@ pub async fn insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), B
     Ok(())
 }
 
-#[derive(Row, Deserialize, Serialize, Debug)]
+#[derive(Row, Deserialize, Serialize, Debug, TS)]
 pub struct VolumeRow {
     ts: u32,
     dsk: u64,
@@ -189,7 +188,7 @@ pub async fn get_historical_statistics_for_volume(
     id: String,
 ) -> Result<Vec<VolumeRow>, Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();
-
+    println!("g off globule blan gro sayer la ");
     let mut cursor = client
     .query("SELECT timestamp AS ts, disk_usage AS dsk FROM volume_statistics WHERE id = ? ORDER BY timestamp ASC")
     .bind(id)
@@ -198,6 +197,7 @@ pub async fn get_historical_statistics_for_volume(
     let mut vector_response: Vec<VolumeRow> = vec![];
 
     while let Some(row) = cursor.next().await? {
+        println!("GET VOLUME ROOOOOOOOOOWWWWWW GAHHHHHHHRHHHHHHHHHHHHHHHHHHH TEST: {:?}", row);
         vector_response.push(row)
     }
 

@@ -42,3 +42,10 @@ pub struct FileData {
     pub group : String,
     pub isDirectory : String, */
 }
+
+#[derive(Serialize, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct VolumeStatsResponse {
+    pub stats : Vec<crate::database::VolumeRow>,
+}
