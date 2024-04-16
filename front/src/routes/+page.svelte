@@ -8,8 +8,6 @@
 	let overview = data;
 </script>
 
-<FeaturesSlice />
-
 <div class="w-full">
 	<div class="border border-gray-300 rounded p-4 mb-4">
 		<h3 class="text-lg text-center font-semibold mb-2">Overview</h3>
@@ -41,3 +39,7 @@
 		</div>
 	</div>
 </div>
+
+<div>Page en construction, je travaille dessus. Simon</div>
+
+<FeaturesSlice />
