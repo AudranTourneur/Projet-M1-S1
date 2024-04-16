@@ -31,26 +31,25 @@
 	}
 </script>
 
-<div class="w-[400px] h-full flex flex-col justify-between border border-blue-500">
+<div
+	class="w-[400px] h-full flex flex-col justify-between border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3">
 	<div>
 		{#key $currentlySelectedEntity}
 			{#if $currentlySelectedEntity?.entity instanceof TopologyContainerPixi}
 				<SidebarContainerPanel entity={$currentlySelectedEntity?.entity} />
 			{:else if $currentlySelectedEntity?.entity instanceof TopologyNetworkPixi}
 				<SidebarNetworkPanel entity={$currentlySelectedEntity?.entity} />
-				{$currentlySelectedEntity?.entity.name}
 			{:else if $currentlySelectedEntity?.entity instanceof TopologyVolumePixi}
 				<SidebarVolumePanel entity={$currentlySelectedEntity?.entity} />
 			{:else if $currentlySelectedEntity?.entity instanceof TopologyPortPixi}
 				<SidebarPortPanel entity={$currentlySelectedEntity?.entity} />
-				{$currentlySelectedEntity?.entity.data.ip}
 			{:else}
 				Please select something to get more details.
 			{/if}
 		{/key}
 	</div>
 
-	<div class="border border-red-500 flex justify-center">
+	<div class="flex justify-center p-3">
 		{#if $currentlySelectedEntity === null}
 			<button type="button" class="btn justify-end variant-filled-primary" on:click={save}>Save</button>
 		{:else}

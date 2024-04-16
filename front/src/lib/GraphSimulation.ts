@@ -273,9 +273,7 @@ export async function simulatePositions(entities: TopologyEntityPixi[]) {
                     y: entity.pixiContainer.y + entity.actualCenter.y - (otherEntity.pixiContainer.y + otherEntity.actualCenter.y),
                 }
 
-                if (Math.random() < 0.001) {
-                    console.log('vector', vector, 'distance', distance, 'force', force, 'REPULSION_CONSTANT', REPULSION_CONSTANT, 'distance', distance, 'entity', entity.uuid, 'otherEntity', otherEntity.uuid)
-                }
+            
                 const magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
                 const unitVector = {
                     x: vector.x / magnitude,
