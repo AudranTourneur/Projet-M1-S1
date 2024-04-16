@@ -11,5 +11,7 @@ COPY . /opt/app
 
 RUN npm run build
 
-CMD ["npm", "run", "prod", "--", "--host", "--port", "7777"]
+ENV PORT=7777
+
+CMD ["./build/index.js"]
 
