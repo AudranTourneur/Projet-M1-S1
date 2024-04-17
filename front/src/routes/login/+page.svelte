@@ -24,7 +24,7 @@
 		console.log(serverResponseJson)
 
 		if (serverResponseJson.success) {
-			goto('/overview')
+			goto('/')
 		}
 	}
 </script>
