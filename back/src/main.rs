@@ -4,6 +4,7 @@ use database::init_clickhouse_database;
 use icons::spawn_info_service;
 // use sniffer::sniff_packets;
 use sqlitedb::init_sqlite_database;
+use stats::{start_container_statistics_listeners, start_volume_statistics_listeners};
 
 mod auth;
 mod containers;
@@ -67,10 +68,6 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
     rocket::build().mount("/", all_handlers)
 }
 
-async fn spawn_statistics_subsystem() {
-    stats::start_statistics_listeners().await;
-}
-
 #[rocket::main]
 async fn main() {
     let _ = init_clickhouse_database().await;
@@ -79,7 +76,9 @@ async fn main() {
 
     let app = create_rocket_app();
 
-    rocket::tokio::spawn(spawn_statistics_subsystem());
+    rocket::tokio::spawn(start_container_statistics_listeners());
+    rocket::tokio::spawn(start_volume_statistics_listeners());
+
 
     rocket::tokio::spawn(spawn_info_service());
 

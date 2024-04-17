@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bollard::{
     container::{ListContainersOptions, StatsOptions},
     Docker,
@@ -8,32 +10,54 @@ use rocket::time::OffsetDateTime;
 
 extern crate fs_extra;
 use fs_extra::dir::get_size;
+use tokio::time::sleep;
 
 use crate::database::{self, get_volume_last_acquisition_timestamp};
 
-pub async fn start_statistics_listeners() {
-    let docker = Docker::connect_with_local_defaults().unwrap();
+pub async fn start_container_statistics_listeners() {
+    loop {
+        let docker = Docker::connect_with_local_defaults().unwrap();
 
-    let containers = &docker
-        .list_containers::<String>(Some(ListContainersOptions::<String> {
-            ..Default::default()
-        }))
-        .await
-        .unwrap();
+        let containers = &docker
+            .list_containers::<String>(Some(ListContainersOptions::<String> {
+                ..Default::default()
+            }))
+            .await
+            .unwrap();
 
-    for container in containers.iter() {
-        // println!("aaaa id = {}", container.id.clone().unwrap());
-        rocket::tokio::spawn(get_container_statistics(container.id.clone().unwrap()));
-        rocket::tokio::spawn(get_volumes_size(container.id.clone().unwrap()));
+        for container in containers.iter() {
+            //println!("Container data {:?}", container.unwrap().clone());
+            get_container_statistics(container.id.clone().unwrap()).await;
+        }
+
+        sleep(Duration::from_secs(15));
     }
+}
 
-    let volumes = &docker
-        .list_volumes::<String>(Default::default())
-        .await
-        .unwrap().volumes.unwrap();
+pub async fn start_volume_statistics_listeners() {
+    loop {
+        let docker = Docker::connect_with_local_defaults().unwrap();
 
-    for volume in volumes.iter() {
-        should_get_volume_size(volume.name.clone()).await;
+        let volumes = &docker
+            .list_volumes::<String>(Default::default())
+            .await
+            .unwrap()
+            .volumes
+            .unwrap();
+
+        for volume in volumes.iter() {
+            //println!("{:?}", volume.clone());
+            println!(
+                "VOLUME NAME FOR GETTING SHOULD GET SIZE {}",
+                should_get_volume_size(volume.name.clone()).await
+            );
+            /* if should_get_volume_size(volume.name.clone()).await {
+
+                //get_volumes_size(volume.name.clone()).await;
+            } */
+        }
+
+        sleep(Duration::from_secs(60 * 60));
     }
 }
 
@@ -106,21 +130,28 @@ async fn should_get_volume_size(id_to_inspect: String) -> bool {
     let vol_size = get_volume_last_acquisition_timestamp(id_to_inspect.clone()).await;
 
     let last_timestamp_acquisition = match vol_size {
-        Ok(ts) => {
-            ts
-        }
+        Ok(ts) => ts,
         Err(err) => {
-            println!("Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}", id_to_inspect, err);
+            println!(
+                "Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}",
+                id_to_inspect, err
+            );
             return false;
         }
     };
 
     if (current_timestamp - last_timestamp_acquisition) < time_threshold {
-        println!("Volume {} was already updated in the last 24 hours", id_to_inspect);
+        println!(
+            "Volume {} was already updated in the last 24 hours",
+            id_to_inspect
+        );
         return false;
     }
 
-    println!("Volume {} was not updated in the last 24 hours", id_to_inspect);
+    println!(
+        "Volume {} was not updated in the last 24 hours",
+        id_to_inspect
+    );
 
     true
 }

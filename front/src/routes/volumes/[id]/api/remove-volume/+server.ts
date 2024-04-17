@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { BACKEND_API_URL } from '$lib/GlobalEnv';
 import type { RequestHandler } from '@sveltejs/kit';
 
 
 
 export const POST: RequestHandler = async ({ params, fetch }) => {
   const name = params.id;
-  const response = await fetch(`${PUBLIC_API_URL}/volume/${name}/remove`, {
+  const response = await fetch(`${BACKEND_API_URL}/volume/${name}/remove`, {
       method: 'POST',
     });
   
