@@ -94,6 +94,10 @@ fn parse_memory_usage(original_memory_usage_input: String) -> u64 {
 
     let last_char = memory_usage_input.chars().last().unwrap();
 
+    if last_char.is_numeric() {
+        return memory_usage_input.parse::<u64>().unwrap_or(0);
+    }
+
     let memory_usage_input_str = memory_usage_input.replace(last_char, "");
 
     let memory_usage_input = memory_usage_input_str.parse::<f64>();

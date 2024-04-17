@@ -7,7 +7,6 @@ use crate::models::VolumeStats;
 
 use clickhouse::Row;
 
-
 pub async fn insert_container_stats(
     container_statistics: ContainerStats,
 ) -> Result<(), Box<dyn Error>> {
@@ -92,6 +91,10 @@ pub struct ContainerStatisticsRow {
     ts: u32,
     mem: u64,
     cpu: f32,
+    io_read: f32,
+    io_write: f32,
+    net_up: f32,
+    net_down: f32,
 }
 
 pub async fn get_historical_statistics_for_container(
@@ -100,7 +103,7 @@ pub async fn get_historical_statistics_for_container(
     let client: clickhouse::Client = get_clickhouse_client();
 
     let mut cursor = client
-    .query("SELECT timestamp AS ts, memory_usage AS mem, cpu_usage AS cpu FROM container_statistics WHERE id = ? ORDER BY timestamp ASC")
+    .query("SELECT timestamp AS ts, memory_usage AS mem, cpu_usage AS cpu, io_usage_read AS io_read, io_usage_write AS io_write, network_usage_up AS net_up, network_usage_down AS net_down FROM container_statistics WHERE id = ? ORDER BY timestamp ASC")
     .bind(id)
     .fetch::<ContainerStatisticsRow>()?;
 
@@ -199,7 +202,10 @@ pub async fn get_historical_statistics_for_volume(
     let mut vector_response: Vec<VolumeRow> = vec![];
 
     while let Some(row) = cursor.next().await? {
-        println!("GET VOLUME ROOOOOOOOOOWWWWWW GAHHHHHHHRHHHHHHHHHHHHHHHHHHH TEST: {:?}", row);
+        println!(
+            "GET VOLUME ROOOOOOOOOOWWWWWW GAHHHHHHHRHHHHHHHHHHHHHHHHHHH TEST: {:?}",
+            row
+        );
         vector_response.push(row)
     }
 
