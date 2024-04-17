@@ -63,7 +63,7 @@
 	<svelte:fragment slot="header">
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<button class="md:hidden btn btn-sm mr-4" on:click={drawerOpen}>
+				<button class="md:hidden btn btn-sm mr-2" on:click={drawerOpen}>
 					<span>
 						<svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
 							<rect width="100" height="20" />
@@ -72,7 +72,10 @@
 						</svg>
 					</span>
 				</button>
-				<strong class="text-xl font-bold">OkiDocky</strong>
+				<div class="bg-surface-400 rounded-container-token flex items-center py-1 px-2 gap-2">
+					<img src="/logo.png" alt="OkiDocky logo" class="h-7 md:h-10" />
+					<h1 class="text-xl font-bold text-black">OkiDocky</h1>
+				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<LightSwitch />
