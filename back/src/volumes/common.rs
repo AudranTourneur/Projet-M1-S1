@@ -76,6 +76,22 @@ pub fn _from_base64_url(data: &str) -> Vec<u8> {
 
 pub async fn get_all_volumes() -> Vec<VolumeData> {
     let docker = get_docker_socket();
+
+    // let containers = docker.list_containers::<String>(None).await.unwrap();
+
+    // let new_containers:Vec<String> = containers.iter().map(|c| {
+    //     if let Some(mounts) = c.mounts {
+    //         for mount in mounts.iter() {
+    //             if mount.driver.is_none() {
+    //                 println!("Null driver volume {}", mount.source.unwrap_or("".into()));
+    //             }
+    //             "test".into()
+    //         }
+            
+    //     }
+    // }).collect();
+
+
     let volumes = docker.list_volumes::<String>(None).await.unwrap();
 
     let volumes = volumes.volumes;

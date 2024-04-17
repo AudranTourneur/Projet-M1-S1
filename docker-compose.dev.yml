@@ -15,7 +15,7 @@ services:
       - ./clickhouse_db:/var/lib/clickhouse
     restart: always
     ports:
-      - "${PORT_CLICKHOUSE}:9000"
+      - "${PORT_CLICKHOUSE}:8123"
       - "${PORT_CLICKHOUSE_POSTGRES}:9005"
 
   core:
