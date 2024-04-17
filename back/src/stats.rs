@@ -24,7 +24,7 @@ pub async fn start_statistics_listeners() {
     for container in containers.iter() {
         // println!("aaaa id = {}", container.id.clone().unwrap());
         rocket::tokio::spawn(get_container_statistics(container.id.clone().unwrap()));
-        rocket::tokio::spawn(get_volumes_size(container.id.clone().unwrap()));
+        // rocket::tokio::spawn(get_volumes_size(container.id.clone().unwrap()));
     }
 
     let volumes = &docker
