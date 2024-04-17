@@ -116,44 +116,80 @@ pub async fn get_historical_statistics_for_container(
     Ok(vector_response)
 }
 
-#[derive(Row, Deserialize)]
+#[derive(Row, Deserialize, Clone)]
 struct VolumeLastAcquisitionResponseRow {
     max_timestamp: u64,
 }
 
-pub async fn get_volume_last_acquisition_timestamp(id: String) -> Result<u64, Box<dyn Error>> {
+pub async fn get_volume_last_acquisition_timestamp(path: String) -> Result<u64, Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();
 
     let cursor = client
-        .query("SELECT max(timestamp) AS max_timestamp FROM volume_statistics WHERE id = ?")
-        .bind(id.clone())
+        .query("SELECT max(timestamp) AS max_timestamp FROM volume_statistics WHERE path = ?")
+        .bind(path.clone())
         .fetch::<VolumeLastAcquisitionResponseRow>();
 
     match cursor {
         Ok(mut cursor) => {
             println!("Cursor created successfully");
 
-            let mut vector_response: Vec<VolumeLastAcquisitionResponseRow> = vec![];
+            let next_cursor = cursor.next().await;
 
-            while let Some(row) = cursor.next().await? {
-                vector_response.push(row)
-            }
+            let next_cursor = match next_cursor {
+                Ok(row) => row,
+                Err(e) => {
+                    match e {
+                        clickhouse::error::Error::NotEnoughData => {
+                            println!(
+                                "[database.rs] No data found for volume {}, returning 0",
+                                path.clone()
+                            );
+                            return Ok(0);
+                        }
+                        _ => {}
+                    };
 
-            if vector_response.len() == 0 {
-                return Ok(0);
-            }
+                    println!(
+                        "[database.rs] Error while doing database lookup for volume {}, failed to get next Result<next_cursor>, doing nothing\nERROR: {:?}",
+                        path.clone(),
+                        e
+                    );
+                    return Err(Box::new(e));
+                }
+            };
 
-            return Ok(vector_response[0].max_timestamp);
+            let row = match next_cursor {
+                Some(row) => row,
+                None => {
+                    println!(
+                        "[database.rs] Error while doing database lookup for volume {}, failed to get next Option<next_cursor>, doing nothing\nERROR: {:?}",
+                        path.clone(),
+                        "No data found"
+                    );
+                    return Ok(0);
+                }
+            };
+
+            println!(
+                "GET VOLUME LAST ACQUISITION TIMESTAMP: {:?}",
+                row.max_timestamp
+            );
+
+            return Ok(row.max_timestamp);
         }
         Err(e) => {
             match e {
                 clickhouse::error::Error::NotEnoughData => {
+                    println!(
+                        "[database.rs] No data found for volume {}, returning 0",
+                        path.clone()
+                    );
                     return Ok(0);
                 }
                 _ => {
                     println!(
-                "Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}",
-                id.clone(), e
+                "[database.rs] Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}",
+                path.clone(), e
             );
                     return Err(Box::new(e));
                 }
@@ -165,13 +201,27 @@ pub async fn get_volume_last_acquisition_timestamp(id: String) -> Result<u64, Bo
 pub async fn insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), Box<dyn Error>> {
     let clickhouse_client = get_clickhouse_client();
 
-    let insert_query = format!(
-        "INSERT INTO volume_statistics (id, timestamp, disk_usage)
-        VALUES ('{}', '{}', '{}')",
-        volume_statistics.volume_id, volume_statistics.timestamp, volume_statistics.disk_usage,
-    );
+    // let insert_query = format!(
+    //     "INSERT INTO volume_statistics (path, timestamp, disk_usage)
+    //     VALUES ('{}', '{}', '{}')",
+    //     volume_statistics.path, volume_statistics.timestamp, volume_statistics.disk_usage,
+    // );
 
-    let insert = clickhouse_client.query(&insert_query);
+    // SQL injection safe
+    let insert_query =
+        "INSERT INTO volume_statistics (path, volume_id, timestamp, disk_usage) VALUES (?, ?, ?, ?)";
+
+    let vol_id = match volume_statistics.volume_id {
+        Some(id) => id,
+        None => String::from(""),
+    };
+
+    let insert = clickhouse_client
+        .query(&insert_query)
+        .bind(volume_statistics.path)
+        .bind(vol_id)
+        .bind(volume_statistics.timestamp)
+        .bind(volume_statistics.disk_usage);
 
     let res = insert.execute().await;
 

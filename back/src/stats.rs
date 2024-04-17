@@ -42,18 +42,21 @@ pub async fn start_volume_statistics_listeners() {
             .unwrap();
 
         for volume in volumes.iter() {
-            //println!("{:?}", volume.clone());
+            let should_get_size = should_get_volume_size(volume.mountpoint.clone()).await;
             println!(
                 "VOLUME NAME FOR GETTING SHOULD GET SIZE {}",
-                should_get_volume_size(volume.name.clone()).await
+                &should_get_size
             );
-            /* if should_get_volume_size(volume.name.clone()).await {
 
-                //get_volumes_size(volume.name.clone()).await;
-            } */
+            if !should_get_size {
+                continue;
+            }
+
+            update_mountpoint_size(volume.mountpoint.clone()).await;
         }
 
-        sleep(Duration::from_secs(60 * 60)).await;
+        // sleep(Duration::from_secs(60 * 60)).await;
+        sleep(Duration::from_secs(5)).await;
     }
 }
 
@@ -63,20 +66,20 @@ struct DockerStatsOutput {
     block_io: String,
     #[serde(rename = "CPUPerc")]
     cpu_perc: String,
-    #[serde(rename = "Container")]
-    container: String,
-    #[serde(rename = "ID")]
-    id: String,
-    #[serde(rename = "MemPerc")]
-    mem_perc: String,
+    // #[serde(rename = "Container")]
+    // container: String,
+    // #[serde(rename = "ID")]
+    // id: String,
+    // #[serde(rename = "MemPerc")]
+    // mem_perc: String,
     #[serde(rename = "MemUsage")]
     mem_usage: String,
-    #[serde(rename = "Name")]
-    name: String,
+    // #[serde(rename = "Name")]
+    // name: String,
     #[serde(rename = "NetIO")]
     net_io: String,
-    #[serde(rename = "PIDs")]
-    pids: String,
+    // #[serde(rename = "PIDs")]
+    // pids: String,
 }
 
 fn parse_memory_usage(original_memory_usage_input: String) -> u64 {
@@ -125,7 +128,7 @@ fn parse_memory_usage(original_memory_usage_input: String) -> u64 {
 }
 
 pub async fn get_container_statistics(container_id: String) {
-    println!("Get container stats for {}", &container_id);
+    // println!("Get container stats for {}", &container_id);
     let shell_command = format!(
         "docker container stats {} --format json --no-trunc --no-stream",
         &container_id
@@ -194,7 +197,7 @@ async fn should_get_volume_size(id_to_inspect: String) -> bool {
         Ok(ts) => ts,
         Err(err) => {
             println!(
-                "Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}",
+                "[stats.rs] Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}",
                 id_to_inspect, err
             );
             return false;
@@ -203,65 +206,46 @@ async fn should_get_volume_size(id_to_inspect: String) -> bool {
 
     if (current_timestamp - last_timestamp_acquisition) < time_threshold {
         println!(
-            "Volume {} was already updated in the last 24 hours",
-            id_to_inspect
+            "[stats.rs] - Volume {} was already updated in the last 24 hours, timestamp {}",
+            id_to_inspect,
+            last_timestamp_acquisition
         );
         return false;
     }
 
     println!(
-        "Volume {} was not updated in the last 24 hours",
-        id_to_inspect
+        "[stats.rs] - [OK] --- Volume {} was not updated in the last 24 hours, timestamp {}",
+        id_to_inspect,
+        last_timestamp_acquisition
     );
 
     true
 }
 
-pub async fn get_volumes_size(id_to_inspect: String) {
-    let docker = Docker::connect_with_local_defaults().unwrap();
+pub async fn update_mountpoint_size(mountpoint: String) {
+    let size = get_mountpoint_size(mountpoint.clone()).await;
+    let current_timestamp = OffsetDateTime::now_utc().unix_timestamp();
+    let volume_stats = crate::models::VolumeStats {
+        path: mountpoint.clone(),
+        volume_id: None,
+        timestamp: current_timestamp as u64,
+        disk_usage: size as i32,
+    };
 
-    let inspected = docker
-        .inspect_container(&id_to_inspect, None)
-        .await
-        .unwrap();
+    let res = database::insert_volume_stats(volume_stats).await;
 
-    let mountpoint_info = inspected.mounts.clone().unwrap();
-    let source = mountpoint_info[0].source.clone().unwrap();
-
-    let folder = "/rootfs/".to_string();
-    let mountpoint_source = format!("{folder}{source}", folder = folder, source = source);
-
-    let mut last_timestamp_acquisition = 0;
-    let time_threshold = 60 * 60;
-    let mut size = get_mountpoint_size(mountpoint_source.clone()).await;
-
-    loop {
-        let current_timestamp = OffsetDateTime::now_utc().unix_timestamp();
-
-        let diff = current_timestamp - last_timestamp_acquisition;
-
-        if diff < time_threshold {
-            continue;
-        } else {
-            println!(
-                "Updating volume size... <Name={}, Last Size={}> ",
-                mountpoint_source, size
-            );
-        }
-
-        last_timestamp_acquisition = current_timestamp;
-
-        size = get_mountpoint_size(mountpoint_source.clone()).await;
-        let volume_stats = crate::models::VolumeStats {
-            volume_id: id_to_inspect.clone(),
-            timestamp: current_timestamp as u64,
-            disk_usage: size as i32,
-        };
-
-        let _ = database::insert_volume_stats(volume_stats).await;
-    }
+    match res {
+        Ok(_) => println!(
+            "[stats.rs] - [OK] --- Volume {} updated with size {}",
+            mountpoint, size
+        ),
+        Err(e) => println!(
+            "[stats.rs] - [ERROR] --- Volume {} failed to update with size {} {:?}",
+            mountpoint, size, e
+        ),
+    };
 }
 
 pub async fn get_mountpoint_size(mountpoint_source: String) -> u64 {
-    get_size(mountpoint_source.clone()).unwrap_or(0)
+    get_size(format!("/rootfs/{}", mountpoint_source.clone())).unwrap_or(0)
 }

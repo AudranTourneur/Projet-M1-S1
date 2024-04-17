@@ -15,7 +15,8 @@ pub struct ContainerStats {
 
 #[derive(Serialize, Row)]
 pub struct VolumeStats {
-    pub volume_id: String,
+    pub path: String,
+    pub volume_id: Option<String>,
     pub timestamp: u64,
     pub disk_usage: i32,
 }
