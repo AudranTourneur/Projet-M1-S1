@@ -10,7 +10,7 @@
 				<a class="variant-filled" href="/login">
 					<span>Login</span>
 				</a>
-				<a class="variant-filled" href="/overview">
+				<a class="variant-filled" href="/">
 					<span>Overview</span>
 				</a>
 			</div>

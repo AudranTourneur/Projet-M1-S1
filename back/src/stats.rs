@@ -30,7 +30,7 @@ pub async fn start_container_statistics_listeners() {
             get_container_statistics(container.id.clone().unwrap()).await;
         }
 
-        sleep(Duration::from_secs(15));
+        sleep(Duration::from_secs(15)).await;
     }
 }
 
@@ -57,7 +57,7 @@ pub async fn start_volume_statistics_listeners() {
             } */
         }
 
-        sleep(Duration::from_secs(60 * 60));
+        sleep(Duration::from_secs(60 * 60)).await;
     }
 }
 

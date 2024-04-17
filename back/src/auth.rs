@@ -1,3 +1,5 @@
+use std::env;
+
 use chrono::Utc;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 
@@ -97,8 +99,8 @@ pub struct LoginRequest {
 }
 
 pub fn login_user(user: Json<LoginRequest>) -> Result<String, NetworkResponse> {
-    let correct_username = "admin";
-    let correct_password = "admin";
+    let correct_username = env::var("USERNAME").unwrap();
+    let correct_password = env::var("PASSWORD").unwrap();
 
     if user.username != correct_username || user.password != correct_password {
         return Err(NetworkResponse::Unauthorized(

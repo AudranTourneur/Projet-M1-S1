@@ -3,7 +3,7 @@
 	import copy from 'copy-to-clipboard';
 
 	import Tooltip from '../../components/Tooltip.svelte';
-	import { faCheck, faCopy, faDatabase, faImage } from '@fortawesome/free-solid-svg-icons';
+	import { faCalendarPlus, faCheck, faCopy, faDatabase, faFolderOpen, faFolderPlus, faImage } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
 	export let entity: TopologyVolumePixi;
@@ -16,24 +16,21 @@
 		setTimeout(() => (isNameCopied = false), 1000);
 		copy(data.name.substring(0, data.name.length));
 	};
+
+	let fullName = data.name
+	let shortName = data.name.length < 15 ? data.name.substring(0, data.name.length) : (data.name.substring(0, 12) + '...')
 </script>
 
 <div
-	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token flex items-center p-3 h-[45px]">
-	<div class="w-[35px]">
-		<Fa icon={faDatabase} class="text-3xl" />
-	</div>
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token flex items-center p-3">
+	<Fa icon={faDatabase} class="text-5xl" />
 
-	<div class="flex copy-to-clipboard">
+	<div class="flex copy-to-clipboard p-4 text-4xl">
 		<a href="/volumes/{data.name}" class="btn variant-ghost p-1">
-			{#if data.name.length < 15}
-				{data.name.substring(0, data.name.length)}
-			{:else}
-				<Tooltip tooltipText={data.name.substring(1, data.name.length)}>
-					{data.name.substring(0, 12)}
+				<Tooltip tooltipText={shortName}>
+					<span class="text-xl p-2">{fullName}</span> 
 				</Tooltip>
-				<span>...</span>
-			{/if}
+			
 		</a>
 
 		<button type="button" class="btn variant-soft" on:click={copyToClipboardName}>
@@ -47,24 +44,24 @@
 </div>
 
 <div class="flex items-center p-1 gap-3">
-	<Fa icon={faImage} />
+	<Fa icon={faFolderPlus} />
 	<span class="font-bold">Created at :</span>
 	{new Date(data.createdAt).toLocaleString()}
 </div>
 <div class="flex items-center p-1 gap-3">
-	<Fa icon={faImage} />
+	<Fa icon={faFolderOpen} />
 	<span class="font-bold">Mountpoint :</span>
-	{#if data.mountpoint.length < 15}
+	{#if data.mountpoint.length < 20}
 		{data.mountpoint.substring(0, data.mountpoint.length)}
 	{:else}
 		<Tooltip tooltipText={data.mountpoint.substring(0, data.mountpoint.length)}>
-			{data.mountpoint.substring(0, 12)}
+			{data.mountpoint.substring(0, 17)}
 		</Tooltip>
 		<span>...</span>
 	{/if}
 </div>
 <div class="flex items-center p-1 gap-3">
-	<Fa icon={faImage} />
+	<Fa icon={faDatabase} />
 	<span class="font-bold">Size : </span>
 	{data.size}
 </div>
