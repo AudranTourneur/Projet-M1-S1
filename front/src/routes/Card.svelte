@@ -3,7 +3,7 @@
 	import { getContext, onMount } from 'svelte'
 	import { cardsContext } from './CardsContainer.svelte'
 	import { spring } from 'svelte/motion'
-	import { getIsMobile } from './Helper.mjs'
+	import { getIsMobile } from './getIsMobile.js'
 	const { mouseCoordinates$, isHoverCards } = getContext(cardsContext)
 
 	/** @type HTMLDivElement */

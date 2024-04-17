@@ -7,30 +7,18 @@
 	<CardsContainer
 		class="group grid w-full flex-wrap gap-6 text-lg font-medium text-white/70 lg:grid-cols-2 lg:grid-rows-2 lg:gap-4"
 	>
-		<Card class="row-span-2 min-h-[20rem]" color="purple">
+		<Card class="row-span-2 min-h-[20rem]">
 			<div class="flex h-full flex-col justify-end p-8 sm:p-12">
-				<h2 class="mb-6 text-5xl font-bold text-white lg:text-8xl">Smooth</h2>
+				<h2 class="mb-6 text-4xl font-bold text-white lg:text-6xl">OkiDocky</h2>
 				<p class="max-w-[60ch]">
-					Smooth transitions. Great animations. High performance. Instant input.
+					Okydocky revolutionizes server management with its intuitive web interface, offering seamless control over containers. Say farewell to complex command lines as Okydocky empowers users to effortlessly deploy, monitor, and scale containers with just a few clicks.
 				</p>
-
-				<div class="_wrapper absolute inset-0 select-none" aria-hidden="true">
-					<div class="feature-image">
-						<img
-							src=""
-							class="feature-image_inner"
-							alt=""
-							aria-hidden="true"
-							loading="lazy"
-						/>
-						<img
-							src=""
-							class="feature-image_inner-hover"
-							alt=""
-							aria-hidden="true"
-							loading="lazy"
-						/>
-					</div>
+				<div class="feature-image">
+					<img
+						src="/logo.png"
+						alt="Okydocky logo"
+						loading="lazy"
+					/>
 				</div>
 			</div>
 		</Card>
@@ -91,10 +79,6 @@
 </section>
 
 <style lang="postcss">
-	.icon-feature {
-		@apply flex items-center justify-center gap-3 font-bold text-slate-400;
-	}
-
 	.feature-image {
 		position: absolute;
 		inset: 0 0 0 0;
@@ -137,9 +121,5 @@
 			opacity: 1 !important;
 			filter: saturate(1.3);
 		}
-	}
-
-	p {
-		word-break: pretty;
 	}
 </style>
