@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, createEventDispatcher } from 'svelte';
-	import FileExplorer from '../FileExplorer.svelte';
+	import FileExplorer from '../../../components/FileExplorer.svelte';
 	import { goto } from '$app/navigation';
 	import PortsBox from '../../volumes/[id]/PortsBox.svelte';
 	import type { VolumeStatsResponse } from '$lib/types/VolumeStatsResponse';
