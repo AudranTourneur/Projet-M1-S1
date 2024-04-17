@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS volume_statistics (
-    "id" String,
-    "timestamp" DateTime,
-    "disk_usage" UInt64, -- bytes
-    PRIMARY KEY ("id", "timestamp")
+    "path" String NOT NULL,
+    "volume_id" String NULL,
+    "timestamp" DateTime NOT NULL,
+    "disk_usage" UInt64 NOT NULL, -- bytes
+    PRIMARY KEY ("path", "timestamp")
 )
 ENGINE = MergeTree
 ORDER BY ("id", "timestamp");
