@@ -93,7 +93,8 @@
 				{:else}
 					<Fa icon={faFolder} />
 					<div class="ml-32">
-						<button on:click={() => changePage(base64)}><b>Dir :</b> {text}</button>
+						<button class="hover:text-gray-400" on:click={() => changePage(base64)}
+							><b>Dir :</b> {text}</button>
 					</div>
 				{/if}
 				<div class="ml-auto">
