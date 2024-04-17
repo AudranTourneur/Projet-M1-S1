@@ -7,11 +7,12 @@ use base64::{
     Engine as _,
 };
 use bollard::service::Volume;
+use futures::future::join_all;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
-use crate::docker::get_docker_socket;
+use crate::{database::get_volume_latest_size, docker::get_docker_socket};
 
 use super::models::VolumeData;
 
@@ -83,20 +84,24 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
 
     let volumes = volumes.unwrap_or_default();
 
-    let mut volumes_data: Vec<VolumeData> = volumes
+    let volumes_data: Vec<_> = volumes
         .iter()
-        .map(|volume| VolumeData {
-            name: volume.name.clone(),
-            created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
-            mountpoint: volume.mountpoint.clone(),
-            size: get_volume_size(volume.clone()),
+        .map(|volume| async {
+            VolumeData {
+                name: volume.name.clone(),
+                created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
+                mountpoint: volume.mountpoint.clone(),
+                size: get_volume_latest_size(volume.mountpoint.clone()).await,
+            }
         })
         .collect();
 
+    let mut volumes_data = join_all(volumes_data).await;
+
     let containers = docker.list_containers::<String>(None).await.unwrap();
 
-    containers.iter().for_each(|c| {
-        if let Some(mounts) = &c.mounts {
+    for container in containers.iter() {
+        if let Some(mounts) = &container.mounts {
             for mount in mounts.iter() {
                 if mount.driver.is_none() {
                     println!(
@@ -107,12 +112,12 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
                         name: mount.clone().source.unwrap_or("".into()),
                         created_at: "UNDEFINED".to_string(),
                         mountpoint: mount.clone().destination.unwrap_or("".into()),
-                        size: 0,
+                        size: get_volume_latest_size(mount.clone().destination.unwrap_or("".into())).await,
                     });
                 }
             }
         }
-    });
+    }
 
     volumes_data.sort_by(|a, b| a.name.cmp(&b.name));
 

@@ -126,76 +126,33 @@ pub async fn get_volume_last_acquisition_timestamp(path: String) -> Result<u64, 
 
     let cursor = client
         .query("SELECT max(timestamp) AS max_timestamp FROM volume_statistics WHERE path = ?")
-        .bind(path.clone())
-        .fetch::<VolumeLastAcquisitionResponseRow>();
+        .bind(&path)
+        .fetch_optional::<VolumeLastAcquisitionResponseRow>()
+        .await;
 
-    match cursor {
-        Ok(mut cursor) => {
-            println!("Cursor created successfully");
+    let cursor = match cursor {
+        Ok(cursor) => cursor,
+        Err(e) => match e {
+            clickhouse::error::Error::NotEnoughData => {
+                println!("Not enough data for volume {}", &path);
+                return Ok(0);
+            }
+            _ => {
+                println!("Error getting volume acquisition timestamp: {}", e);
+                return Err(Box::new(e));
+            }
+        },
+    };
 
-            let next_cursor = cursor.next().await;
-
-            let next_cursor = match next_cursor {
-                Ok(row) => row,
-                Err(e) => {
-                    match e {
-                        clickhouse::error::Error::NotEnoughData => {
-                            println!(
-                                "[database.rs] No data found for volume {}, returning 0",
-                                path.clone()
-                            );
-                            return Ok(0);
-                        }
-                        _ => {}
-                    };
-
-                    println!(
-                        "[database.rs] Error while doing database lookup for volume {}, failed to get next Result<next_cursor>, doing nothing\nERROR: {:?}",
-                        path.clone(),
-                        e
-                    );
-                    return Err(Box::new(e));
-                }
-            };
-
-            let row = match next_cursor {
-                Some(row) => row,
-                None => {
-                    println!(
-                        "[database.rs] Error while doing database lookup for volume {}, failed to get next Option<next_cursor>, doing nothing\nERROR: {:?}",
-                        path.clone(),
-                        "No data found"
-                    );
-                    return Ok(0);
-                }
-            };
-
-            println!(
-                "GET VOLUME LAST ACQUISITION TIMESTAMP: {:?}",
-                row.max_timestamp
-            );
-
-            return Ok(row.max_timestamp);
-        }
-        Err(e) => {
-            match e {
-                clickhouse::error::Error::NotEnoughData => {
-                    println!(
-                        "[database.rs] No data found for volume {}, returning 0",
-                        path.clone()
-                    );
-                    return Ok(0);
-                }
-                _ => {
-                    println!(
-                "[database.rs] Error while doing database lookup for volume {}, doing nothing\nERROR: {:?}",
-                path.clone(), e
-            );
-                    return Err(Box::new(e));
-                }
-            };
+    let row = match cursor {
+        Some(row) => row,
+        None => {
+            println!("No row found for volume {}", &path);
+            return Ok(0);
         }
     };
+
+    return Ok(row.max_timestamp);
 }
 
 pub async fn insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), Box<dyn Error>> {
@@ -231,6 +188,88 @@ pub async fn insert_volume_stats(volume_statistics: VolumeStats) -> Result<(), B
     };
 
     Ok(())
+}
+
+#[derive(Row, Deserialize, Serialize, Debug, TS)]
+pub struct VolumeStatsRow {
+    // pub path: String,
+    // pub volume_id: String,
+    // pub timestamp: u64,
+    pub disk_usage: u64,
+}
+
+// pub async fn get_volume_latest_size(path: String) -> Result<u64, Box<dyn Error>> {
+//     println!("Attempting to get volume size for {}", path.clone());
+//     let client: clickhouse::Client = get_clickhouse_client();
+
+//     let cursor = client
+//         .query("SELECT disk_usage FROM volume_statistics WHERE path = ? ORDER BY timestamp DESC LIMIT 1")
+//         .bind(path.clone())
+//         .fetch_optional::<VolumeStatsRow>()
+//         .await;
+
+//     let cursor = match cursor {
+//         Ok(cursor) => cursor,
+//         Err(e) => {
+//             match e {
+//                 clickhouse::error::Error::NotEnoughData => {
+//                     println!("Not enough data for volume {}", path);
+//                     return Ok(0);
+//                 },
+//                 _ => {
+//                     println!("Error getting volume acquisition timestamp: {}", e);
+//                     return Err(Box::new(e));
+//                 }
+//             }
+//         }
+//     };
+
+//     let row = match cursor {
+//         Some(row) => row,
+//         None => {
+//             println!("No row found for volume {}", path);
+//             return Ok(0);
+//         }
+//     };
+
+//     return Ok(row.disk_usage as u64);
+// }
+
+#[derive(Row, Deserialize, Serialize, Debug, TS)]
+pub struct DiskUsageRow {
+    pub disk_usage: u64,
+}
+
+pub async fn get_volume_latest_size(path: String) -> u64 {
+    let client: clickhouse::Client = get_clickhouse_client();
+
+    let cursor = client
+        .query(
+            "SELECT disk_usage FROM volume_statistics WHERE path=? ORDER BY timestamp DESC LIMIT 1",
+        )
+        .bind(&path)
+        .fetch::<DiskUsageRow>();
+
+    let mut cursor = match cursor {
+        Ok(cursor) => cursor,
+        Err(e) => {
+            println!("Error getting volume acquisition timestamp: {}", e);
+            return 0;
+        }
+    };
+
+    let mut vector_response: Vec<DiskUsageRow> = vec![];
+
+    while let Ok(Some(row)) = cursor.next().await {
+        vector_response.push(row)
+    }
+
+    if vector_response.len() == 0 {
+        print!("No data found for volume {}", &path);
+        return 0;
+    }
+
+    return vector_response[0].disk_usage;
 }
 
 #[derive(Row, Deserialize, Serialize, Debug, TS)]

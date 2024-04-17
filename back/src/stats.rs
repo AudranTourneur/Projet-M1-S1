@@ -42,21 +42,21 @@ pub async fn start_volume_statistics_listeners() {
             .unwrap();
 
         for volume in volumes.iter() {
-            let should_get_size = should_get_volume_size(volume.mountpoint.clone()).await;
-            println!(
-                "VOLUME NAME FOR GETTING SHOULD GET SIZE {}",
-                &should_get_size
-            );
+            // let should_get_size = should_get_volume_size(volume.mountpoint.clone()).await;
+            // println!(
+            //     "VOLUME NAME FOR GETTING SHOULD GET SIZE {}",
+            //     &should_get_size
+            // );
 
-            if !should_get_size {
-                continue;
-            }
+            // if !should_get_size {
+            //     continue;
+            // }
 
             update_mountpoint_size(volume.mountpoint.clone()).await;
         }
 
-        // sleep(Duration::from_secs(60 * 60)).await;
-        sleep(Duration::from_secs(5)).await;
+        sleep(Duration::from_secs(60 * 60)).await;
+        // sleep(Duration::from_secs(5)).await;
     }
 }
 

@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use std::str::from_utf8;
 
 use crate::{
-    auth::JWT, docker::get_docker_socket, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
+    auth::JWT, database::get_volume_latest_size, docker::get_docker_socket, stats::get_mountpoint_size, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
 };
 
 use super::common::get_all_volumes;
@@ -36,7 +36,7 @@ pub async fn volume_handler(_key: JWT, name: String) -> Option<Json<VolumeData>>
         name: volume.name.clone(),
         created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
         mountpoint: volume.mountpoint.clone(),
-        size: get_volume_size(volume),
+        size: get_volume_latest_size(volume.mountpoint.clone()).await,
     };
 
     Some(Json(volume_data))
