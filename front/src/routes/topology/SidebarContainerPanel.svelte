@@ -4,13 +4,9 @@
 	import Tooltip from '../../components/Tooltip.svelte';
 	import type { TopologyContainerPixi } from '$lib/TopologyContainerPixi';
 	import copy from 'copy-to-clipboard';
-	import LineChartBytes from '../../components/LineChartBytes.svelte';
-	import type { ContainerStatisticsRow } from '$lib/types/ContainerStatisticsRow';
-	import type { ContainerStatsResponse } from '$lib/types/ContainerStatsResponse';
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import ContainerStatusIcon from '../containers/ContainerStatusIcon.svelte';
 	import { getContainerActionsFromStatus } from '../containers/getContainerActionsFromStatus';
+	import ContainerChart from '../../components/ContainerChart.svelte';
 
 	export let entity: TopologyContainerPixi;
 	const data = entity.data.data;
@@ -31,18 +27,7 @@
 		copy(data.id);
 	};
 
-	let inputData: null | Array<[number, number]> = null;
-
-	function generateDayWiseTimeSeries(stats: ContainerStatisticsRow[]): Array<[number, number]> {
-		return stats.map((obj) => {
-			return [Number(obj.ts) * 1000, Number(obj.mem)];
-		});
-	}
-	onMount(async () => {
-		const response = await fetch('/containers/' + data.id + '/api/stats');
-		const statsRes = (await response.json()) as ContainerStatsResponse;
-		inputData = generateDayWiseTimeSeries(statsRes.stats);
-	});
+	
 </script>
 
 <div
@@ -127,6 +112,5 @@
 		{/if}
 	{/if}
 </div>
-{#if inputData}
-	<LineChartBytes {inputData} />
-{/if}
+
+<ContainerChart containerID={data.id}/>

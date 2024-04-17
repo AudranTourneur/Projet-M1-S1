@@ -11,6 +11,7 @@
 	import type { ContainerData } from '$lib/types/ContainerData';
 	import ContainerStatusIcon from '../ContainerStatusIcon.svelte';
 	import { getContainerActionsFromStatus } from '../getContainerActionsFromStatus';
+	import ContainerChart from '../../../components/ContainerChart.svelte';
 
 	export let data;
 
@@ -46,6 +47,9 @@
 		const statsRes = (await response.json()) as ContainerStatsResponse;
 		statData = generateDayWiseTimeSeries(statsRes.stats);
 	});
+
+	console.log(statData)
+
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
@@ -165,8 +169,7 @@
 	<p class="italic">No ports exposed</p>
 {/if}
 
-{#if statData}
-	<LineChartBytes inputData={statData} />
-{/if}
+
+<ContainerChart containerID={container.id}/>
 
 <PortsBox {container} />
