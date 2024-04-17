@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS volume_statistics (
     PRIMARY KEY ("path", "timestamp")
 )
 ENGINE = MergeTree
-ORDER BY ("id", "timestamp");
+ORDER BY ("path", "timestamp");
