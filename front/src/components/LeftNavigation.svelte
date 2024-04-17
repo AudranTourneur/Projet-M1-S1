@@ -32,8 +32,8 @@
 		{ icon: faCoins, text: 'Volumes', href: '/volumes' },
 		{ icon: faNetworkWired, text: 'Networks', href: '/networks' },
 		{ icon: faCircleNodes, text: 'Topology', href: '/topology' },
-		{ icon: faGlobe, text: 'DNS', href: '/dns' },
-		{ icon: faCog, text: 'Settings', href: '/settings' }
+		// { icon: faGlobe, text: 'DNS', href: '/dns' },
+		// { icon: faCog, text: 'Settings', href: '/settings' }
 	];
 </script>
 
