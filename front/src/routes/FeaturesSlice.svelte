@@ -34,7 +34,7 @@
 				</div>
 			</div>
 		</Card>
-		<Card class="min-h-[20rem]" color="purple">
+		<Card class="min-h-[20rem]" color="purple" gradientOpacity={0.91}>
 			<div class="flex h-full flex-col justify-end p-8 sm:p-12">
 				<h2 class="mb-6 text-5xl font-bold text-white">Easy to configure</h2>
 				<p class="max-w-[60ch]">
@@ -61,7 +61,7 @@
 				</div>
 			</div>
 		</Card>
-		<Card class="min-h-[20rem]" color="purple">
+		<Card class="min-h-[20rem]">
 			<div class="flex h-full flex-col justify-end p-8 sm:p-12">
 				<h2 class="mb-6 text-5xl font-bold text-white">Dynamic tiling</h2>
 				<p class="max-w-[60ch]">

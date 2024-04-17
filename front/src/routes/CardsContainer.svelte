@@ -9,8 +9,6 @@
 	import { onMount, setContext } from 'svelte'
 	import { writable } from 'svelte/store'
 
-	export let enableBorders = true
-
 	const fps = 1000 / 60
 
 	/** @type {HTMLElement}*/
@@ -20,7 +18,6 @@
 	const context = setContext(cardsContext, {
 		mouseCoordinates$: new BehaviorSubject({ x: 0, y: 0 }).pipe(throttleTime(fps)),
 		isHoverCards: writable(false),
-		enableBorders
 	})
 
 	function onMouseEnter() {
