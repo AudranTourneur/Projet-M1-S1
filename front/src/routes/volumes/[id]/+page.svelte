@@ -1,13 +1,15 @@
 <script lang="ts">
-    import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import FileExplorer from '../FileExplorer.svelte';
 	import { goto } from '$app/navigation';
 	import PortsBox from '../../volumes/[id]/PortsBox.svelte';
-    import type {VolumeStatsResponse} from '$lib/types/VolumeStatsResponse';
-    import type { VolumeRow } from '$lib/types/VolumeRow';
+	import type { VolumeStatsResponse } from '$lib/types/VolumeStatsResponse';
+	import type { VolumeRow } from '$lib/types/VolumeRow';
 	import LineChartBytes from '../../../components/LineChartBytes.svelte';
 	import type { VolumeData } from '$lib/types/VolumeData';
 	import { page } from '$app/stores';
+	import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import Fa from 'svelte-fa';
 
 	export let data;
 	const id = data.name;
@@ -39,62 +41,74 @@
 	}
 
 	function generateDayWiseTimeSeries(stats: VolumeRow[]): Array<[number, number]> {
-		console.log("stats", stats);
-        return stats.map((obj) => {
+		console.log('stats', stats);
+		return stats.map((obj) => {
 			return [Number(obj.ts) * 1000, Number(obj.dsk)];
 		});
 	}
 
 	onMount(async () => {
-        console.log("metaTitle idk", data.metaTitle)
-        console.log("size", data.size)
-        const response = await fetch('/volumes/' + $page.params.id + '/api/stats');
-        const statsRes = (await response.json()) as VolumeStatsResponse;
-        statVolume = generateDayWiseTimeSeries(statsRes.stats);
+		console.log('metaTitle idk', data.metaTitle);
+		console.log('size', data.size);
+		const response = await fetch('/volumes/' + $page.params.id + '/api/stats');
+		const statsRes = (await response.json()) as VolumeStatsResponse;
+		statVolume = generateDayWiseTimeSeries(statsRes.stats);
 	});
 </script>
 
+<div class="flex gap-2 items-center mb-5">
+	<a href="/volumes" class="btn btn-sm variant-soft">
+		<Fa icon={faArrowLeft} fw class="mr-1" />
+		Back to volumes
+	</a>
+	<button class="btn btn-sm variant-ghost-error" on:click={() => handleDeleteVolume(data.name)}>
+		<Fa icon={faTrash} fw />
+		Delete volume
+	</button>
+	{#if showModal}
+		<div class="fixed left-0 w-full h-full flex items-center justify-center">
+			<div
+				class="p-4 rounded shadow-md border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow">
+				<p>Are you sure you want to delete this volume?</p>
+				<div class="flex justify-between mt-4">
+					<button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={confirmDelete}>Yes</button>
+					<button class="bg-gray-500 text-white px-4 py-2 rounded" on:click={cancelDelete}>No</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+</div>
 
+<div
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4">
+	<div>
+		<span class="font-bold">Volume name : </span>
+		{data.name}
+	</div>
+	<div>
+		<span class="font-bold">Date of creation : </span>
+		{data.createdAt}
+	</div>
+	<div>
+		<span class="font-bold">Mountpoint location: </span>
+		{data.mountpoint}
+	</div>
+	<div>
+		<span class="font-bold">Volume size : </span>
+		{data.size}
+	</div>
+
+	<!-- <div>
+		<br />
+		<PortsBox {volume}></PortsBox>
+	</div> -->
+</div>
+
+<br />
 {#if statVolume}
 	<LineChartBytes inputData={statVolume} />
 {/if}
 
 <div>
-	<br />
-	{data.name}
-	<br />
-	{data.createdAt}
-	<br />
-	{data.mountpoint}
-	<br />
-	{data.size}
-	<br />
-	<button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={() => handleDeleteVolume(data.name)}>
-		Delete
-	</button>
-
-        {#if showModal}
-        <div class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
-            <div class="bg-black p-4 rounded shadow-md">
-                <p>Are you sure you want to delete this volume?</p>
-                <div class="flex justify-between mt-4">
-                    <button class="bg-red-500 text-white px-4 py-2 rounded mr-2" on:click={confirmDelete}>Yes</button>
-                    <button class="bg-gray-500 text-white px-4 py-2 rounded" on:click={cancelDelete}>No</button>
-                </div>
-            </div>
-        </div>
-        {/if}
-    </div>
-
-    <br/>
-
-<!--File explorer du volume où est-il monté etc-->
-<div>
-	<h2>Filesystem</h2>
 	<FileExplorer {id}></FileExplorer>
-</div>
-
-<div>
-	<br />
-	<PortsBox {volume}></PortsBox>
 </div>
