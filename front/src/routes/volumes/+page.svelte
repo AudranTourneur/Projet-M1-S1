@@ -1,27 +1,29 @@
 <script lang="ts">
-    import type { VolumeData } from '$lib/types/VolumeData';
-    import VolumeBox from './VolumeBox.svelte';
+	import type { VolumeData } from '$lib/types/VolumeData';
+	import VolumeBox from './VolumeBox.svelte';
 
-    export let data;
+	export let data;
 
-    const volumes: VolumeData[] = data.volumes;
-    let visibleVolumes = [...volumes];
-    let search = '';
+	const volumes: VolumeData[] = data.volumes;
+	let visibleVolumes = [...volumes];
+	let search = '';
 
-    function searchVolumes() {
-        visibleVolumes = volumes.filter(volume => volume.name.toLowerCase().includes(search.toLowerCase()));
-    }
+	function searchVolumes() {
+		visibleVolumes = volumes.filter((volume) => volume.name.toLowerCase().includes(search.toLowerCase()));
+	}
 </script>
 
 <h1 class="text-center text-4xl mb-5">Volumes</h1>
-<div class="mx-auto max-w-xs">
-    <input bind:value={search} type="text" placeholder="Search by name" class="input mb-4" on:input={searchVolumes} />
+<div class="mx-auto max-w-xs mb-4">
+	<input
+		bind:value={search}
+		type="text"
+		placeholder="Search by name"
+		class="input"
+		on:input={searchVolumes} />
 </div>
-<div class="grid grid-cols-2 gap-4">
-    {#each visibleVolumes as volume, i}
-        <div class="p-4 mb-4">
-            <VolumeBox volume={volume} />
-        </div>
-    {/each}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+	{#each visibleVolumes as volume}
+		<VolumeBox {volume} />
+	{/each}
 </div>
-

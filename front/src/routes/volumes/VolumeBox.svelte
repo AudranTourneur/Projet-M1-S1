@@ -1,6 +1,14 @@
 <script lang="ts">
 	import type { VolumeData } from '$lib/types/VolumeData';
-	import { faCheck, faCopy, faDownload, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCheck,
+		faCopy,
+		faDatabase,
+		faDownload,
+		faEllipsisVertical,
+		faFolderOpen,
+		faFolderPlus
+	} from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import copy from 'copy-to-clipboard';
 
@@ -21,8 +29,8 @@
 </script>
 
 <div
-	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4">
-	<div class="text-lg copy-to-clipboard flex max-w-full mb-5">
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3">
+	<div class="text-lg copy-to-clipboard flex max-w-full mb-5 whitespace-nowrap">
 		<div class="font-bold mr-1">Name:</div>
 		<div class="overflow-hidden text-ellipsis">{volume.name}</div>
 		<button type="button" class="btn variant-soft" on:click={copyToClipboardName}>
@@ -34,16 +42,19 @@
 		</button>
 	</div>
 	<div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-		<div class="overflow-hidden max-w-full flex flex-col gap-2">
-			<div class="text-ellipsis overflow-hidden">
+		<div class="overflow-hidden max-w-full flex flex-col gap-2 w-full">
+			<div class="text-ellipsis overflow-hidden flex items-center gap-2 whitespace-nowrap">
+				<Fa icon={faFolderPlus} fw />
 				<span class="font-bold">Created at:</span>
 				{new Date(volume.createdAt).toLocaleString()}
 			</div>
-			<div class="text-ellipsis overflow-hidden">
+			<div class="text-ellipsis overflow-hidden flex items-center gap-2 whitespace-nowrap">
+				<Fa icon={faFolderOpen} fw />
 				<span class="font-bold">Mountpoint:</span>
 				{volume.mountpoint}
 			</div>
-			<div class="text-ellipsis overflow-hidden">
+			<div class="text-ellipsis overflow-hidden flex items-center gap-2 whitespace-nowrap">
+				<Fa icon={faDatabase} fw />
 				<span class="font-bold">Size:</span>
 				{volume.size}
 			</div>
