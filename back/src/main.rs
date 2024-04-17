@@ -13,7 +13,6 @@ mod images;
 mod models;
 mod networks;
 mod overview;
-mod schema;
 //mod stats;
 mod composes;
 mod database;
