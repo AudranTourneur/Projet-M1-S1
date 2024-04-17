@@ -46,7 +46,7 @@
 </script>
 
 <div
-	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token flex items-center p-3 gap-2">
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token flex flex-col items-center p-3 gap-2">
 	{#if data.iconUrl}
 		<img src={data.iconUrl} alt={data.image} class="max-w-full max-h-[60px]" />
 	{:else}
@@ -54,28 +54,13 @@
 	{/if}
 
 	<div class="flex flex-col">
+		
 		<div class="copy-to-clipboard">
-			<a href="/containers/{data.id}" class="btn variant-ghost p-1">
-				<Tooltip tooltipText={`Container ID: ${data.id}`}>
-					{data.id.substring(0, 12)}
-				</Tooltip>
-				<span>...</span>
-			</a>
-
-			<button type="button" class="btn variant-soft" on:click={copyToClipboardId}>
-				{#if isNameCopied}
-					<Fa icon={faCheck} class="text-green-500" />
-				{:else}
-					<Fa icon={faCopy} />
-				{/if}
-			</button>
-		</div>
-		<div class="copy-to-clipboard">
-			{#if data.names[0].length < 15}
+			{#if data.names[0].length < 25}
 				{data.names[0].substring(0, data.names[0].length)}
 			{:else}
 				<Tooltip tooltipText={data.names[0].substring(1, data.names[0].length)}>
-					{data.names[0].substring(0, 12)}
+					{data.names[0].substring(0, 22)}
 				</Tooltip>
 				<div class="hide-on-clipboard-hover">...</div>
 			{/if}
@@ -88,16 +73,32 @@
 			</button>
 		</div>
 	</div>
+	<div class="copy-to-clipboard">
+		<a href="/containers/{data.id}" class="btn variant-ghost p-1">
+			<Tooltip tooltipText={`Container ID: ${data.id}`}>
+				{data.id.substring(0, 12)}
+			</Tooltip>
+			<span>...</span>
+		</a>
+
+		<button type="button" class="btn variant-soft" on:click={copyToClipboardId}>
+			{#if isNameCopied}
+				<Fa icon={faCheck} class="text-green-500" />
+			{:else}
+				<Fa icon={faCopy} />
+			{/if}
+		</button>
+	</div>
 </div>
 
 <div class="flex items-center p-1 gap-3">
 	<Fa icon={faImage} />
 	<span class="font-bold">Image ID : </span>
-	{#if data.image.length < 15}
+	{#if data.image.length < 25}
 		{data.image.substring(0, data.image.length)}
 	{:else}
 		<Tooltip tooltipText={data.image.substring(0, data.image.length)}>
-			{data.image.substring(0, 12)}
+			{data.image.substring(0, 22)}
 		</Tooltip>
 		<span>...</span>
 	{/if}
@@ -116,11 +117,11 @@
 	<Fa icon={faDatabase} />
 	<span class="font-bold">Volumes : </span>
 	{#if data.volumes[0]}
-		{#if data.volumes[0].length < 15}
+		{#if data.volumes[0].length < 25}
 			{data.volumes.join(', ')}
 		{:else}
 			<Tooltip tooltipText={data.volumes[0].substring(1, data.volumes[0].length)}>
-				{data.volumes[0].substring(0, 12)}
+				{data.volumes[0].substring(0, 22)}
 			</Tooltip>
 			<span>...</span>
 		{/if}
