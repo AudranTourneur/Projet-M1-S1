@@ -1,11 +1,11 @@
-import { PUBLIC_API_URL } from '$env/static/public';
+import { BACKEND_API_URL } from '$lib/GlobalEnv';
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route, fetch }) => {
     const currentUrl = route.id
 
-    const res = await fetch(PUBLIC_API_URL + '/me')
+    const res = await fetch(BACKEND_API_URL + '/me')
 
     let text = await res.text()
 

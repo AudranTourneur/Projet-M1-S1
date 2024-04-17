@@ -15,10 +15,8 @@ services:
       - ./clickhouse_db:/var/lib/clickhouse
     restart: always
     ports:
-      - "9000:9000"
-      - "9004:9004"
-      - "8123:8123"
-      - "9005:9005"
+      - "${PORT_CLICKHOUSE}:9000"
+      - "${PORT_CLICKHOUSE_POSTGRES}:9005"
 
   core:
     container_name: okidocky-core
@@ -39,6 +37,8 @@ services:
       - "PASSWORD=${PASSWORD}"
       - "JWT_SECRET=${JWT_SECRET}"
       - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
+      - "PORT_CLICKHOUSE=${PORT_CLICKHOUSE}"
+      - "ROCKET_PORT=${PORT_CORE}"
 
   ui:
     container_name: okidocky-ui
@@ -49,6 +49,9 @@ services:
       - core
     restart: always
     network_mode: "host"
+    environment:
+      - "PORT_CORE=${PORT_CORE}"
+      - "PORT=${PORT_UI}"
 
 networks:
   main:

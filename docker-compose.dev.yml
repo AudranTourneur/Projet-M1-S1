@@ -15,10 +15,8 @@ services:
       - ./clickhouse_db:/var/lib/clickhouse
     restart: always
     ports:
-      - "9000:9000"
-      - "9004:9004"
-      - "8123:8123"
-      - "9005:9005"
+      - "${PORT_CLICKHOUSE}:9000"
+      - "${PORT_CLICKHOUSE_POSTGRES}:9005"
 
   core:
     container_name: okidocky-core
@@ -30,10 +28,6 @@ services:
       - db
     restart: always
     network_mode: "host"
-    # networks:
-    #   - main
-    # ports:
-    #   - 8000:8000
     volumes:
       - "/:/rootfs:ro,rslave"
       - "/run/docker.sock:/run/docker.sock:ro,rslave"
@@ -41,16 +35,13 @@ services:
       - "./back/src:/app/src"
       - "./back/bindings:/app/bindings"
       - "./sqlite_db:/app/sqlite"
-      - "./caddy_etc:/etc/caddy/"
     environment:
       - "USERNAME=${USERNAME}"
       - "PASSWORD=${PASSWORD}"
       - "JWT_SECRET=${JWT_SECRET}"
       - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
-      #- ./Caddyfile:/etc/caddy/Caddyfile
-      # - back:/opt/app
-      # - /run/run/docker.sock:/var/run/docker.sock:ro
-
+      - "PORT_CLICKHOUSE=${PORT_CLICKHOUSE}"
+      - "ROCKET_PORT=${PORT_CORE}"
 
   ui:
     container_name: okidocky-ui
@@ -61,14 +52,12 @@ services:
       - core
     restart: always
     network_mode: "host"
-    # networks:
-    #   - main
-    # ports:
-    #   - "7777:5173"
     volumes:
       - "./front/src:/opt/app/src"
       - "./front/static:/opt/app/static"
-      # - "./front/node_modules:/opt/app/node_modules"
+    environment:
+      - "PORT_CORE=${PORT_CORE}"
+      - "PORT=${PORT_UI}"
 
   caddy:
     container_name: okidocky-caddy
@@ -77,17 +66,11 @@ services:
       - core
     restart: always
     network_mode: "host"
-    # networks:
-    #   - main
     volumes:
       - ./caddy_etc:/etc/caddy/
       - ./site:/srv
       - ./caddy_data:/data
       - ./caddy_config:/config
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
-    # - "443:443/udp"
 
 
 networks:

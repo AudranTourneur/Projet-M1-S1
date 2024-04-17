@@ -2,7 +2,7 @@ import { json, text } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 import { z } from 'zod';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { BACKEND_API_URL } from '$lib/GlobalEnv';
 import type { LoginResponse } from '$lib/types/LoginResponse';
 
 const loginRequestSchema = z.object({
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 
 		const loginRequest = loginRequestRes.data;
 
-		const apiRes = await fetch(PUBLIC_API_URL + '/login', {
+		const apiRes = await fetch(BACKEND_API_URL + '/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

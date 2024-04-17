@@ -1,3 +1,0 @@
-example.local {
-	reverse_proxy 7777;
-}

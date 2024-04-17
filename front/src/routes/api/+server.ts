@@ -1,13 +1,13 @@
 import { json, text } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { BACKEND_API_URL } from '$lib/GlobalEnv';
 
 
 export const POST = async ({ request, cookies }) => {
     try {
         const reqJson = await request.json();
 
-        const apiRes = await fetch(PUBLIC_API_URL + '/', {
+        const apiRes = await fetch(BACKEND_API_URL + '/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
