@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { faCheck, faCopy, faCube, faDatabase, faGear, faImage, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCheck,
+		faCopy,
+		faCube,
+		faDatabase,
+		faGear,
+		faImage,
+		faNetworkWired
+	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import Tooltip from '../../components/Tooltip.svelte';
 	import type { TopologyContainerPixi } from '$lib/TopologyContainerPixi';
@@ -11,8 +19,7 @@
 	export let entity: TopologyContainerPixi;
 	const data = entity.data.data;
 
-
-	const { statusIcon} = getContainerActionsFromStatus(data.status);
+	const { statusIcon } = getContainerActionsFromStatus(data.status);
 
 	let isNameCopied = false;
 	let isIdCopied = false;
@@ -27,7 +34,10 @@
 		copy(data.id);
 	};
 
-	
+	let heightDivVolume = 'max-h';
+	if (data.volumes.length > 3) {
+		heightDivVolume = 'h-[75px]';
+	}
 </script>
 
 <div
@@ -39,7 +49,6 @@
 	{/if}
 
 	<div class="flex flex-col">
-		
 		<div class="copy-to-clipboard">
 			{#if data.names[0].length < 25}
 				{data.names[0].substring(0, data.names[0].length)}
@@ -98,19 +107,26 @@
 	<span class="font-bold">Networks : </span>
 	{data.networks.join(', ')}
 </div>
+
+<!-- svelte-ignore a11y-missing-attribute -->
 <div class="flex items-center p-1 gap-3">
 	<Fa icon={faDatabase} />
 	<span class="font-bold">Volumes : </span>
-	{#if data.volumes[0]}
-		{#if data.volumes[0].length < 25}
-			{data.volumes.join(', ')}
-		{:else}
-			<Tooltip tooltipText={data.volumes[0].substring(1, data.volumes[0].length)}>
-				{data.volumes[0].substring(0, 22)}
-			</Tooltip>
-			<span>...</span>
-		{/if}
-	{/if}
-</div>
 
-<ContainerChart containerID={data.id}/>
+		<div class="overflow-y-auto {heightDivVolume} border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
+			{#each data.volumes as volume}
+				<div class="scroll-auto">
+					{#if volume.length < 25}
+						{volume}
+					{:else}
+						<Tooltip tooltipText={volume.substring(0, volume.length)}>
+							{volume.substring(0, 22)}
+						</Tooltip>
+						<span>...</span>
+					{/if}
+					<br />
+				</div>
+			{/each}
+		</div>
+</div>
+<ContainerChart containerID={data.id} />
