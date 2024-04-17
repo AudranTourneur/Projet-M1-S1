@@ -27,8 +27,8 @@
 
 	<div class="flex copy-to-clipboard p-4 text-4xl">
 		<a href="/volumes/{data.name}" class="btn variant-ghost p-1">
-				<Tooltip tooltipText={shortName}>
-					<span class="text-xl p-2">{fullName}</span> 
+				<Tooltip tooltipText={fullName}>
+					<span class="text-xl p-2">{shortName}</span> 
 				</Tooltip>
 			
 		</a>
