@@ -115,7 +115,7 @@
 
 
 
-	async function sumbit() {
+	async function submit() {
 		const newPorts: ContainerPortRebind[] = ports.map(x=>{
 
 			return {host: x.port.privatePort , internal: x.port.publicPort || 0 , ip: x.port.ip || '' , protocol: x.port.type || ''}
