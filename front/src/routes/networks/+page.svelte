@@ -2,6 +2,8 @@
     Network
 </div>
 
+<!--GIT TEST FROM XAVIER'S SERVER-->
+
 <div class="flex items-center gap-4 p-3">
     <div class="flex-grow"></div>
     <input type="text" placeholder="Search by ID or Network" class="input" bind:value={search} />
