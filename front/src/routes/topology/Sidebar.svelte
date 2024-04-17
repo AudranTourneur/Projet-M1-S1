@@ -15,6 +15,10 @@
 
 	function unselect() {
 		console.log($currentlySelectedEntity);
+		const entity = $currentlySelectedEntity?.entity;
+		if (entity) {
+			entity.unselect();
+		}
 		$currentlySelectedEntity = null;
 	}
 
