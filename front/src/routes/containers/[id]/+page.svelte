@@ -170,6 +170,10 @@
 {/if}
 
 
-<ContainerChart containerID={container.id}/>
+<ContainerChart containerID={container.id} typeChart='Mem'/>
+<ContainerChart containerID={container.id} typeChart='Cpu'/>
+<ContainerChart containerID={data.id} typeChart='Io'/>
+<ContainerChart containerID={data.id} typeChart='Net'/>
+
 
 <PortsBox {container} />

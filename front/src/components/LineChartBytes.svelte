@@ -4,10 +4,31 @@
 	import { onMount } from 'svelte';
 
 	export let inputData: Array<[number, number]>;
+	export let secondinputData: null | Array<[number, number]>;
 
 	onMount(async () => {
-		const response = await fetch('/containers/' + $page.params.id + '/api/stats');
-		const stats = await response.json();
+		const stats = inputData;
+		let serie;
+
+		if (secondinputData === null) {
+			serie = [
+				{
+					name: 'Memory used',
+					data: stats
+				}
+			];
+		} else {
+			serie = [
+				{
+					name: 'Memory used',
+					data: stats
+				},
+				{
+					name: '',
+					data: secondinputData
+				}
+			];
+		}
 
 		const options = {
 			chart: {
@@ -32,12 +53,8 @@
 			dataLabels: {
 				enabled: false
 			},
-			series: [
-				{
-					name: 'Memory used',
-					data: generateDayWiseTimeSeries(stats.stats)
-				}
-			],
+			series: serie,
+
 			markers: {
 				size: 0,
 				strokeColor: '#fff',
@@ -85,15 +102,6 @@
 				fillOpacity: 0.7
 			}
 		};
-
-		function generateDayWiseTimeSeries(
-			stats: Array<{ ts: number; mem: number; cpu: number }>
-		): Array<[number, number]> {
-			return stats.map((obj) => {
-				return [obj.ts * 1000, obj.mem];
-			});
-		}
-
 		const ApexCharts = await import('apexcharts');
 		const chart = new ApexCharts.default(document.querySelector('#timeline-chart'), options);
 		await chart.render();

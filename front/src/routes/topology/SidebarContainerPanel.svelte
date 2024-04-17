@@ -113,20 +113,35 @@
 	<Fa icon={faDatabase} />
 	<span class="font-bold">Volumes : </span>
 
-		<div class="overflow-y-auto {heightDivVolume} border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
-			{#each data.volumes as volume}
-				<div class="scroll-auto">
-					{#if volume.length < 25}
-						{volume}
-					{:else}
-						<Tooltip tooltipText={volume.substring(0, volume.length)}>
-							{volume.substring(0, 22)}
-						</Tooltip>
-						<span>...</span>
-					{/if}
-					<br />
-				</div>
-			{/each}
-		</div>
+	<div
+		class="overflow-y-auto {heightDivVolume} border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
+		{#each data.volumes as volume}
+			<div class="scroll-auto">
+				{#if volume.length < 25}
+					{volume}
+				{:else}
+					<Tooltip tooltipText={volume.substring(0, volume.length)}>
+						{volume.substring(0, 22)}
+					</Tooltip>
+					<span>...</span>
+				{/if}
+				<br />
+			</div>
+		{/each}
+	</div>
 </div>
-<ContainerChart containerID={data.id} />
+<div>
+	<div class="overflow-y-auto border border-indigo-600 h-32">
+		<ContainerChart containerID={data.id} typeChart='Mem'/>
+	</div>
+
+	<div class="overflow-y-auto border border-indigo-600">
+		<ContainerChart containerID={data.id} typeChart='Cpu'/>
+	</div>
+
+	<div class="overflow-y-auto border border-indigo-600">
+		<ContainerChart containerID={data.id} typeChart='Io'/>
+	</div>
+
+	<ContainerChart containerID={data.id} typeChart='Net'/>
+</div>

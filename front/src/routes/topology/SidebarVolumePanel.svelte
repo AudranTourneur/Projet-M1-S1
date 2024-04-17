@@ -5,6 +5,7 @@
 	import Tooltip from '../../components/Tooltip.svelte';
 	import { faCalendarPlus, faCheck, faCopy, faDatabase, faFolderOpen, faFolderPlus, faImage } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
+	import FileExplorer from '../../components/FileExplorer.svelte';
 
 	export let entity: TopologyVolumePixi;
 
@@ -64,4 +65,8 @@
 	<Fa icon={faDatabase} />
 	<span class="font-bold">Size : </span>
 	{data.size}
+</div>
+
+<div>
+	<FileExplorer id = {data.name}></FileExplorer>
 </div>
