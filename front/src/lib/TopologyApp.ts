@@ -118,6 +118,7 @@ export class TopologyApp {
 
 		for (const container of data.containers) {
 			for (const port of container.data.ports) {
+				if (!port.ip || !port.publicPort) continue
 				const portPixi = new TopologyPortPixi(this, getRandomCoord(), getRandomCoord(), port)
 				this.allPorts.push(portPixi)
 

@@ -77,7 +77,7 @@ async fn main() {
     let app = create_rocket_app();
 
     rocket::tokio::spawn(start_container_statistics_listeners());
-    // rocket::tokio::spawn(start_volume_statistics_listeners());
+    rocket::tokio::spawn(start_volume_statistics_listeners());
 
 
     rocket::tokio::spawn(spawn_info_service());

@@ -4,9 +4,16 @@
 	import Tooltip from '../../components/Tooltip.svelte';
 	import copy from 'copy-to-clipboard';
 	import type { TopologyNetworkPixi } from '$lib/TopologyNetworkPixi';
+	import type { TopologyContainerPixi } from '$lib/TopologyContainerPixi';
 
 	export let entity: TopologyNetworkPixi;
 	const data = entity;
+
+	function getAllLinkedContainers(): TopologyContainerPixi[] {
+		return entity.app.allContainers.filter((container) => container.data.data.networks.includes(data.name));
+	}
+
+	let containers = getAllLinkedContainers();
 </script>
 
 <div
@@ -17,4 +24,14 @@
 	<div class="p-2">
 		{data.name}
 	</div>
+
+	<br />
+</div>
+
+<div class="ml-2 flex flex-col gap-3 mt-8">
+	{#each containers as container}
+		<div>
+			{container.data.data.names} <br />
+		</div>
+	{/each}
 </div>

@@ -178,9 +178,11 @@ fn details_fdir(
     folder_data.into_iter().flatten().collect()
 }
 
-#[get("/statistics-historical/volume/<id>")]
-pub async fn volume_stats_handler(_key: JWT, id: &str) -> Json<VolumeStatsResponse> {
-    let db_res = crate::database::get_historical_statistics_for_volume(id.to_string()).await;
+#[get("/statistics-historical/volume/<encoded_path>")]
+pub async fn volume_stats_handler(_key: JWT, encoded_path: &str) -> Json<VolumeStatsResponse> {
+    let path = from_base64_url(encoded_path).unwrap();
+
+    let db_res = crate::database::get_historical_statistics_for_volume(path).await;
 
     match db_res {
         Ok(stats) => {
