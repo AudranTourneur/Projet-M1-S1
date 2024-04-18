@@ -17,6 +17,7 @@
 			<p class="max-w-[60ch]">
 				Okydocky revolutionizes server management with its intuitive web interface, offering seamless control over containers. Say farewell to complex command lines as Okydocky empowers users to effortlessly deploy, monitor, and scale containers with just a few clicks.
 			</p>
+			<div class="_wrapper absolute inset-0 select-none">
 			<div class="feature-image">
 				<img
 					src="/logo.png"
@@ -24,29 +25,20 @@
 					loading="lazy"
 				/>
 			</div>
+			</div>
 		</div>
 	</Card>
-	<Card class="min-h-[20rem]" color="purple" gradientOpacity={0.91}>
+	<Card class="min-h-[20rem]">
 		<div class="flex h-full flex-col justify-end p-8 sm:p-12">
-			<h2 class="mb-6 text-5xl font-bold text-white">Easy to configure</h2>
+			<h2 class="text-4xl font-bold text-white">Docker {overview.versionDocker}</h2>
 			<p class="max-w-[60ch]">
-				Live reloading config. Easy plain-text format. Sensible defaults. Great documentation.
+				Installed on the host machine
 			</p>
-
-			<div class="_wrapper absolute inset-0 select-none" aria-hidden="true">
+			<div class="_wrapper absolute inset-0 select-none">
 				<div class="feature-image">
 					<img
-						src=""
-						class="feature-image_inner"
-						alt=""
-						aria-hidden="true"
-						loading="lazy"
-					/>
-					<img
-						src=""
-						class="feature-image_inner-hover"
-						alt=""
-						aria-hidden="true"
+						src="/logo-docker.png"
+						alt="Docker logo"
 						loading="lazy"
 					/>
 				</div>
@@ -55,24 +47,16 @@
 	</Card>
 	<Card class="min-h-[20rem]">
 		<div class="flex h-full flex-col justify-end p-8 sm:p-12">
-			<h2 class="mb-6 text-5xl font-bold text-white">Dynamic tiling</h2>
+			<h2 class="text-3xl font-bold text-white">Linux kernel {overview.versionLinux}</h2>
 			<p class="max-w-[60ch]">
-				Automatic tiling that just works. Supports multiple fine-tuneable layouts.
+				In use by the host machine
 			</p>
-			<div class="_wrapper absolute inset-0 select-none" aria-hidden="true">
+			<div class="_wrapper absolute inset-0 select-none">
 				<div class="feature-image">
 					<img
-						src=""
-						class="feature-image_inner"
-						alt=""
-						aria-hidden="true"
-						loading="lazy"
-					/>
-					<img
-						src=""
-						class="feature-image_inner-hover"
-						alt=""
-						aria-hidden="true"
+						src="/logo-linux.png"
+						class="small"
+						alt="Linux logo"
 						loading="lazy"
 					/>
 				</div>
@@ -85,22 +69,21 @@
     .feature-image {
         position: absolute;
         inset: 0 0 0 0;
-        opacity: 0.5;
+        opacity: .3;
         z-index: -10;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: opacity 180ms ease-in-out;
+        transition: opacity 500ms ease-in-out;
 
         ._wrapper:hover & {
-            opacity: 1;
+            opacity: .6;
         }
 
         & img {
             position: absolute;
             transition: opacity 1500ms ease-in-out;
             pointer-events: none;
-
             width: 400px;
             aspect-ratio: 1;
             right: -80px;
@@ -111,18 +94,11 @@
                 width: 600px;
                 right: -80px;
             }
-        }
-    }
-    .feature-image_inner-hover {
-        opacity: 0;
-    }
-    ._wrapper:hover {
-        & .feature-image_inner {
-            opacity: 0;
-        }
-        & .feature-image_inner-hover {
-            opacity: 1 !important;
-            filter: saturate(1.3);
+
+						&.small {
+							width: 400px;
+							right: -40px;
+            }
         }
     }
 </style>
