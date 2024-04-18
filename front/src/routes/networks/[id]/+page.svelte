@@ -1,93 +1,60 @@
-
 <script lang="ts">
-	import { faCube } from '@fortawesome/free-solid-svg-icons';
+	import { faCube, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
- 
- 
+
 	export let data;
- </script>
- 
- 
- <style>
-	.box-wrapper {
-		padding: 1rem; 
-		margin: 1rem; 
-		border-radius: 8px;
-		border: 1px solid #fff;
-	}
- 
- 
-	.item {
-		padding: 0.5rem;
-	}
- 
- 
-	.grid-cols-1 {
-		display: grid;
-		grid-template-columns: 1fr;
-		grid-gap: 1rem;
-	}
- 
- 
-	.grid-cols-2 {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		grid-gap: 1rem;
-	}
- 
- 
-	.underline {
-		text-decoration: underline;
-	}
- </style>
- 
- 
- <h1 class="text-center text-4xl">{data.name}</h1>
- 
- 
- <div class="space-y-5">
-	<div class="box-wrapper relative overflow-auto">
-		<div class="{Object.keys(data).length > 2 ? 'grid-cols-2' : 'grid-cols-1'}">
-			{#if data.id}
-				<div class="item title">
-					<span class="underline">ID :</span> {data.id}
-				</div>
-			{/if}
-			{#if data.created}
-				<div class="item title">
-					<span class="underline">Created :</span><br>
-					<span>{data.created}</span>
-				</div>
-			{/if}
-			<div class="item title">
-				<span class="underline">Labels :</span>
-				{#each Object.entries(data.labels) as [str1, str2]}
-					<div>{str1} : {str2}</div>
-				{/each}
-			</div>
-			{#if data.ipamConfig && data.ipamConfig.length > 0}
-				<div class="item title">
-					<span class="underline">Ipam Config :</span>
-					{#each data.ipamConfig as config}
-						{#if Object.keys(config).length > 0}
-							<div>
-								{#each Object.entries(config) as [key, value]}
-									{#if value}
-										<p>{key}: {value}</p>
-									{/if}
-								{/each}
-							</div>
+</script>
+
+<div class="flex gap-2 items-center mb-5">
+	<a href="/networks" class="btn btn-sm variant-soft">
+		<Fa icon={faArrowLeft} fw class="mr-1" />
+		Back to networks
+	</a>
+</div>
+
+<div
+	class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4">
+	<h1 class="text-center text-4xl mb-10">"{data.name}"</h1>
+
+	<div>
+		<span class="font-bold">ID : </span>
+		{data.id}
+	</div>
+	<div>
+		<span class="font-bold">Created : </span>
+		{data.created}
+	</div>
+	<div>
+		{#if data.labels && Object.keys(data.labels).length > 0}
+			<span class="font-bold">Labels : </span>
+			{#each Object.entries(data.labels) as [str1, str2]}
+				<div>- {str1} : {str2}</div>
+			{/each}
+		{/if}
+	</div>
+	<div>
+		{#if data.ipamConfig && data.ipamConfig.length > 0}
+			<span class="font-bold">Ipam Config : </span>
+			{#each data.ipamConfig as config}
+				{#if Object.keys(config).length > 0}
+					{#each Object.entries(config) as [key, value]}
+						{#if value}
+							<div>- {key} : {value}</div>
 						{/if}
 					{/each}
-				</div>
-			{/if}
-		</div>
+				{/if}
+			{/each}
+		{/if}
 	</div>
- 
- 
-	<div class="mt-5">
-		Containers :
-		<div class="grid grid-cols-4 gap-4">
+</div>
+
+
+
+<div class="space-y-5">
+	<div class="mt-10">
+		{#if data.containers && Object.keys(data.containers).length >0}
+		<div class="text-xl">Containers linked to this network :</div>
+		<div class="grid grid-cols-4 gap-4 mt-5">
 			{#each Object.entries(data.containers) as [id, c]}
 				<div class="flex items-center gap-4 border border-1 p-2 px-4 rounded-lg">
 					<Fa icon={faCube} size="2.5x"></Fa>
@@ -100,6 +67,8 @@
 				</div>
 			{/each}
 		</div>
+		{:else}
+		<div class="text-xl">No containers linked to this network</div>
+		{/if}
 	</div>
- </div>
- 
+</div>
