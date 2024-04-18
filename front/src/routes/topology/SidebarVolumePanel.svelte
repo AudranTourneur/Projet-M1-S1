@@ -6,6 +6,7 @@
 	import { faCalendarPlus, faCheck, faCopy, faDatabase, faFolderOpen, faFolderPlus, faImage } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import FileExplorer from '../../components/FileExplorer.svelte';
+	import { formatBytes } from '$lib/FormatUtils';
 
 	export let entity: TopologyVolumePixi;
 
@@ -64,7 +65,7 @@
 <div class="flex items-center p-1 gap-3">
 	<Fa icon={faDatabase} />
 	<span class="font-bold">Size : </span>
-	{data.size}
+	{formatBytes(data.size)}
 </div>
 
 <div class="overflow-y-scroll h-[60vh]">
