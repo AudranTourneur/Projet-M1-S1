@@ -53,7 +53,7 @@
 <div>
 	{#each visibleComposes as compose}
 		<div
-			class="flex justify-between items-center gap-2 p-2 rounded-container-token overflow-auto bg-surface-300/30 dark:bg-surface-600/30 shadow border-token border">
+			class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4 flex justify-between items-center gap-2">
 			<div class="flex flex-col justify-center flex-grow">
 				<div class="flex items-center gap-2 w-full">
 					<div class="flex items-center justify-center gap-2 w-full">
