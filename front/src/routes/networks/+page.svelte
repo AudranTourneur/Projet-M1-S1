@@ -2,7 +2,7 @@
     Network
 </div>
 
-
+<!--GIT TEST FROM XAVIER'S SERVER-->
 
 <div class="flex items-center gap-4 p-3">
     <div class="flex-grow"></div>
@@ -93,14 +93,12 @@
 
 
 <script lang="ts">
+    import NetworkBox from './NetworkBox.svelte';
     export let data;
-    console.log('data=', data);
-
     let networks = data.networks;
     let search = '';
 
     let visibleNetworks = [...networks];
-    const images = data.images;
 
     function startNetwork(index: number) {
         // todo
@@ -114,9 +112,26 @@
         // todo
     }
 
-    // Fonction pour filtrer les rÃ©seaux en fonction de la recherche
     $: visibleNetworks = networks.filter(network => {
         const searchString = search.toLowerCase();
         return network.name.toLowerCase().includes(searchString) || network.id.includes(searchString);
     });
+
 </script>
+
+<h1 class="text-center text-4xl mb-5">
+    Networks
+</h1>
+
+<div class="mx-auto max-w-xs mb-5">
+    <input bind:value={search} type="text" placeholder="Search by ID or Network" class="input"/>
+</div>
+
+<div class="flex flex-col gap-4">
+    {#each visibleNetworks as network}
+        <NetworkBox {network}/>
+    {/each}
+</div>
+
+
+

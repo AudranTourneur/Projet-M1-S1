@@ -14,7 +14,7 @@
 	}
 </script>
 
-<h1 class="text-center text-4xl mb-5">Volumes</h1>
+<h1 class="text-center text-4xl mb-5">Volumes & Mountpoints</h1>
 <div class="mx-auto max-w-xs mb-4">
 	<input
 		bind:value={search}

@@ -2,20 +2,13 @@ use bollard::volume::RemoveVolumeOptions;
 use fs_extra::dir::{get_details_entry, get_dir_content2, DirEntryAttr, DirEntryValue, DirOptions};
 use rocket::serde::json::Json;
 use std::collections::HashSet;
-use std::str::from_utf8;
 
 use crate::{
-    auth::JWT,
-    database::get_volume_latest_size,
-    docker::get_docker_socket,
-    volumes::{common::remove_prefix_from_path, models::VolumeExplorerData},
+    auth::JWT, database::get_volume_latest_size, docker::get_docker_socket, utils::{self, from_base64_url}, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
 };
 
 use super::common::get_all_volumes;
-use super::{
-    common::from_base64_url,
-    models::{FileData, VolumeData, VolumeList, VolumeStatsResponse},
-};
+use super::models::{FileData, VolumeData, VolumeList, VolumeStatsResponse};
 
 #[get("/volumes")]
 pub async fn volumes_handler(_key: JWT) -> Json<VolumeList> {
@@ -28,21 +21,21 @@ pub async fn volumes_handler(_key: JWT) -> Json<VolumeList> {
     Json(response)
 }
 
-#[get("/volume/<name>")]
-pub async fn volume_handler(_key: JWT, name: String) -> Option<Json<VolumeData>> {
+#[get("/volume/<encoded_path>")]
+pub async fn volume_handler(_key: JWT, encoded_path: String) -> Option<Json<VolumeData>> {
+    let decoded = utils::from_base64_url(&encoded_path);
+    println!("decode {} => {}", encoded_path, decoded);
+
     let docker = get_docker_socket();
 
-    // Recherche du volume par son nom
-    let volume = docker.inspect_volume(&name).await.ok()?;
+    let all_volumes = get_all_volumes().await;
 
-    let volume_data = VolumeData {
-        name: volume.name.clone(),
-        created_at: volume.created_at.clone().unwrap_or("UNDEFINED".to_string()),
-        mountpoint: volume.mountpoint.clone(),
-        size: get_volume_latest_size(volume.mountpoint.clone()).await,
-    };
+    let volume = all_volumes.iter().find(|x| x.mountpoint == decoded);
 
-    Some(Json(volume_data))
+    match volume {
+        Some(volume) => Some(Json(volume.clone())),
+        None => None,
+    }
 }
 
 #[post("/volume/<name>/remove")]
@@ -83,8 +76,7 @@ pub async fn volume_explorer_handler(
         current_folder.clone().unwrap_or("".to_string())
     );
 
-    let decoded_u8 = from_base64_url(&current_folder.clone().unwrap_or("".to_string()));
-    let decoded = from_utf8(&decoded_u8).unwrap();
+    let decoded = from_base64_url(&current_folder.clone().unwrap_or("".to_string()));
     println!("Decoded: {:?}", decoded);
 
     let full_path = format!("{}{}", initial_folder, decoded);

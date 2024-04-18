@@ -21,7 +21,7 @@
 
 	export let entity: TopologyContainerPixi;
 
-	const data = entity.data.data;
+	let data = entity.data.data;
 
 	const { statusIcon, canBeStarted, canBeStopped } = getContainerActionsFromStatus(data.status);
 
@@ -43,13 +43,6 @@
 		heightDivVolume = 'h-[75px]';
 	}
 
-	const refresh = async () => {
-		await fetch('/containers/api/list')
-			.then((response) => response.json())
-			.then((data) => {
-				data = entity.data.data;
-			});
-	};
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
@@ -60,7 +53,6 @@
 			method: 'POST'
 		});
 		isLoadingStart = false;
-		refresh();
 	};
 
 	const stopContainer = async () => {
@@ -69,7 +61,6 @@
 			method: 'POST'
 		});
 		isLoadingStop = false;
-		refresh();
 	};
 </script>
 

@@ -59,7 +59,7 @@
 		const statsRes = (await response.json()) as ContainerStatsResponse;
 		if (typeChart === 'Mem') {
 			statData = generateTimeMem(statsRes.stats);
-			name1 = "Mémoire";
+			name1 = "Memory";
 		} else if (typeChart === 'Cpu') {
 			statData = generateTimeCpu(statsRes.stats);
 			name1 = "Cpu";

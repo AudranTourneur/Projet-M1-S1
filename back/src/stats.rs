@@ -224,7 +224,7 @@ pub async fn update_mountpoint_size(mountpoint: String) {
         path: mountpoint.clone(),
         volume_id: None,
         timestamp: current_timestamp as u64,
-        disk_usage: size as i32,
+        disk_usage: size,
     };
 
     let res = database::insert_volume_stats(volume_stats).await;
@@ -246,5 +246,7 @@ pub async fn get_mountpoint_size(mountpoint_source: String) -> u64 {
     let size = get_size(input);
     println!("size of {} is {:?}", mountpoint_source, size);
 
-    size.unwrap_or(0)
+    let size = size.unwrap_or(0);
+
+    size
 }

@@ -9,7 +9,8 @@ pub struct VolumeData {
     pub created_at: String,
     pub mountpoint: String,
     pub size: u64,
-    // pub is_mountpoint: bool,
+    pub is_mountpoint: bool,
+    pub base64_name: String,
 }
 
 #[derive(Serialize, Deserialize, TS, Clone)]
