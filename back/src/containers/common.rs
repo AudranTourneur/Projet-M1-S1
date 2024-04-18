@@ -132,7 +132,7 @@ pub async fn get_container_by_id(id: &str, all_images: &Vec<ImageData>) -> Optio
 
     let delta_time = start_time.elapsed();
 
-    println!("get_container_by_id {} took: {:?}", id, delta_time);
+    // println!("get_container_by_id {} took: {:?}", id, delta_time);
 
     Some(container_data)
 }

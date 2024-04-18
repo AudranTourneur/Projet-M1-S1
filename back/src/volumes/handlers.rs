@@ -22,7 +22,7 @@ pub async fn volumes_handler(_key: JWT) -> Json<VolumeList> {
 
 #[get("/volume/<encoded_path>")]
 pub async fn volume_handler(_key: JWT, encoded_path: String) -> Option<Json<VolumeData>> {
-    let decoded = utils::from_base64_url(&encoded_path);
+    let decoded = utils::from_base64_url(&encoded_path).unwrap();
     println!("decode {} => {}", encoded_path, decoded);
 
     let all_volumes = get_all_volumes().await;
@@ -37,28 +37,24 @@ pub async fn volume_handler(_key: JWT, encoded_path: String) -> Option<Json<Volu
 
 #[get("/volume/<encoded_volume_path>/filesystem/<encoded_current_folder>")]
 pub async fn volume_explorer_handler(
-    // _key: JWT,
+    _key: JWT,
     encoded_volume_path: String,
     encoded_current_folder: Option<String>,
 ) -> Json<Option<VolumeExplorerData>> {
 
     let volume_path = from_base64_url(&encoded_volume_path);
 
-    let volume = get_all_volumes().await.into_iter().find(|x| x.mountpoint == volume_path);
-
-    let volume: VolumeData = match volume {
-        Some(volume) => volume,
+    let volume_path = match volume_path {
+        Some(volume_path) => volume_path,
         None => {
-            println!("Volume not found");
+            println!(" ===============Error decoding volume path: {}", encoded_volume_path.clone());
             return Json(None);
         }
     };
 
-    println!("Volume: {:?}", volume);
+    let mountpoint = volume_path;
 
-    let mountpoint = volume.mountpoint.clone();
-
-    let root_folder_without_slash = mountpoint.clone();
+    let root_folder_without_slash = format!("/rootfs{}", mountpoint.clone());
 
     let initial_folder = format!("{}/", &mountpoint);
 
@@ -70,9 +66,18 @@ pub async fn volume_explorer_handler(
     );
 
     let decoded = from_base64_url(&encoded_current_folder.clone().unwrap_or("".to_string()));
+
+    let decoded = match decoded {
+        Some(decoded) => decoded,
+        None => {
+            println!(" =========== Error decoding current folder {}", encoded_current_folder.clone().unwrap_or("".to_string()));
+            return Json(None);
+        }
+    };
+
     println!("Decoded: {:?}", decoded);
 
-    let full_path = format!("{}{}", initial_folder, decoded);
+    let full_path = format!("{}{}", root_folder_without_slash, decoded);
 
     println!("Full path: {}", full_path);
 
@@ -82,7 +87,7 @@ pub async fn volume_explorer_handler(
     let dir_content = match dir_content {
         Ok(content) => content,
         Err(_) => {
-            println!("Error reading directory content");
+            println!("Error reading directory content: {}", full_path);
             return Json(Some(VolumeExplorerData {
                 current_folder: "".to_string(),
                 directories: vec![],

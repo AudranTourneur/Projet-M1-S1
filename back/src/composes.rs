@@ -110,7 +110,7 @@ pub struct ShellOutput {
 
 #[get("/composes/<id>/start")]
 pub async fn compose_start_handler(_key: JWT, id: &str) -> Json<ShellOutput> {
-    let id = from_base64_url(id);
+    let id = from_base64_url(id).unwrap();
     println!("Attemting to Docker Compose UP: {}", id);
     let output = Command::new("docker")
         .arg("compose")
@@ -134,7 +134,7 @@ pub async fn compose_start_handler(_key: JWT, id: &str) -> Json<ShellOutput> {
 
 #[get("/composes/<id>/stop")]
 pub async fn compose_stop_handler(_key: JWT, id: &str) -> Json<bool> {
-    let id = from_base64_url(id);
+    let id = from_base64_url(id).unwrap();
     let output = Command::new("docker")
         .arg("compose")
         .arg("down")
