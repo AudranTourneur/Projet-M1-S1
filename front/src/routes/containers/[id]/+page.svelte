@@ -11,30 +11,30 @@
 	import type { ContainerData } from '$lib/types/ContainerData';
 	import ContainerStatusIcon from '../ContainerStatusIcon.svelte';
 	import { getContainerActionsFromStatus } from '../getContainerActionsFromStatus';
-	import ContainerChart from '../../../components/ContainerChart.svelte';
+	import ContainerChart from '../../../components/Chart.svelte';
 
 	export let data;
 
 	let container: ContainerData = data;
 
 	const refetchContainer = async () => {
-		await fetch("/containers/" + container.id + "/api/fetch")
-			.then(response => response.json())
-			.then(data => {
+		await fetch('/containers/' + container.id + '/api/fetch')
+			.then((response) => response.json())
+			.then((data) => {
 				container = data;
 			});
-	}
+	};
 
 	let statData: null | Array<[number, number]> = null;
 
 	let statusIcon: 'running' | 'stopped' | 'paused', canBeStarted: boolean, canBeStopped: boolean;
-  $: {
-    // use the function getContainerActionsFromStatus(container.status);
+	$: {
+		// use the function getContainerActionsFromStatus(container.status);
 		const actions = getContainerActionsFromStatus(container.status);
 		statusIcon = actions.statusIcon;
 		canBeStarted = actions.canBeStarted;
 		canBeStopped = actions.canBeStopped;
-  }
+	}
 
 	function generateDayWiseTimeSeries(stats: ContainerStatisticsRow[]): Array<[number, number]> {
 		return stats.map((obj) => {
@@ -48,8 +48,7 @@
 		statData = generateDayWiseTimeSeries(statsRes.stats);
 	});
 
-	console.log(statData)
-
+	console.log(statData);
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
@@ -103,9 +102,7 @@
 		<Fa icon={!isLoadingStop ? faStop : faCircleNotch} spin={isLoadingStop} fw />
 		Stop
 	</button>
-	<button class="btn btn-sm variant-ghost-error"
-		disabled={isLoadingRemove}
-					on:click={removeContainer}>
+	<button class="btn btn-sm variant-ghost-error" disabled={isLoadingRemove} on:click={removeContainer}>
 		<Fa icon={!isLoadingRemove ? faTrash : faCircleNotch} spin={isLoadingRemove} fw />
 		Delete container
 	</button>
@@ -169,11 +166,9 @@
 	<p class="italic">No ports exposed</p>
 {/if}
 
-
-<ContainerChart containerID={container.id} typeChart='Mem'/>
-<ContainerChart containerID={container.id} typeChart='Cpu'/>
-<ContainerChart containerID={data.id} typeChart='Io'/>
-<ContainerChart containerID={data.id} typeChart='Net'/>
-
+<ContainerChart containerID={container.id} typeChart="Mem" />
+<ContainerChart containerID={container.id} typeChart="Cpu" />
+<ContainerChart containerID={data.id} typeChart="Io" />
+<ContainerChart containerID={data.id} typeChart="Net" />
 
 <PortsBox {container} />

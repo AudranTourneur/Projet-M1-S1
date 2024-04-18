@@ -1,12 +1,15 @@
 <script lang="ts">
 	import {
 		faCheck,
+		faCircleNotch,
 		faCopy,
 		faCube,
 		faDatabase,
 		faGear,
 		faImage,
-		faNetworkWired
+		faNetworkWired,
+		faPlay,
+		faStop
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import Tooltip from '../../components/Tooltip.svelte';
@@ -14,12 +17,13 @@
 	import copy from 'copy-to-clipboard';
 	import ContainerStatusIcon from '../containers/ContainerStatusIcon.svelte';
 	import { getContainerActionsFromStatus } from '../containers/getContainerActionsFromStatus';
-	import ContainerChart from '../../components/ContainerChart.svelte';
+	import ContainerChart from '../../components/Chart.svelte';
 
 	export let entity: TopologyContainerPixi;
+
 	const data = entity.data.data;
 
-	const { statusIcon } = getContainerActionsFromStatus(data.status);
+	const { statusIcon, canBeStarted, canBeStopped } = getContainerActionsFromStatus(data.status);
 
 	let isNameCopied = false;
 	let isIdCopied = false;
@@ -38,6 +42,35 @@
 	if (data.volumes.length > 3) {
 		heightDivVolume = 'h-[75px]';
 	}
+
+	const refresh = async () => {
+		await fetch('/containers/api/list')
+			.then((response) => response.json())
+			.then((data) => {
+				data = entity.data.data;
+			});
+	};
+
+	let isLoadingStart = false;
+	let isLoadingStop = false;
+
+	const startContainer = async () => {
+		isLoadingStart = true;
+		await fetch(`/containers/${data.id}/api/start`, {
+			method: 'POST'
+		});
+		isLoadingStart = false;
+		refresh();
+	};
+
+	const stopContainer = async () => {
+		isLoadingStop = true;
+		await fetch(`/containers/${data.id}/api/stop`, {
+			method: 'POST'
+		});
+		isLoadingStop = false;
+		refresh();
+	};
 </script>
 
 <div
@@ -130,18 +163,32 @@
 		{/each}
 	</div>
 </div>
-<div>
-	<div class="overflow-y-auto border border-indigo-600 h-32">
-		<ContainerChart containerID={data.id} typeChart='Mem'/>
+<div class="flex overflow-y-auto h-[400px]">
+	<div>
+		<ContainerChart containerID={data.id} typeChart="Mem" />
 	</div>
 
-	<div class="overflow-y-auto border border-indigo-600">
-		<ContainerChart containerID={data.id} typeChart='Cpu'/>
+	<div>
+		<ContainerChart containerID={data.id} typeChart="Cpu" />
 	</div>
 
-	<div class="overflow-y-auto border border-indigo-600">
-		<ContainerChart containerID={data.id} typeChart='Io'/>
+	<div>
+		<ContainerChart containerID={data.id} typeChart="Io" />
 	</div>
-
-	<ContainerChart containerID={data.id} typeChart='Net'/>
+	<div>
+		<ContainerChart containerID={data.id} typeChart="Net" />
+	</div>
 </div>
+
+<button
+	class="btn variant-filled-success p-2"
+	disabled={!canBeStarted || isLoadingStart}
+	on:click={startContainer}>
+	<Fa icon={!isLoadingStart ? faPlay : faCircleNotch} class={isLoadingStart ? 'animate-spin' : ''} fw />
+</button>
+<button
+	class="btn variant-filled-error p-2"
+	disabled={!canBeStopped || isLoadingStop}
+	on:click={stopContainer}>
+	<Fa icon={!isLoadingStop ? faStop : faCircleNotch} class={isLoadingStop ? 'animate-spin' : ''} fw />
+</button>
