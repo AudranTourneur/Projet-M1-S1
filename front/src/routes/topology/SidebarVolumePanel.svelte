@@ -27,7 +27,7 @@
 	<Fa icon={faDatabase} class="text-5xl" />
 
 	<div class="flex copy-to-clipboard p-4 text-4xl">
-		<a href="/volumes/{data.name}" class="btn variant-ghost p-1">
+		<a href="/volumes/{data.base64Name}" class="btn variant-ghost p-1">
 				<Tooltip tooltipText={fullName}>
 					<span class="text-xl p-2">{shortName}</span> 
 				</Tooltip>
@@ -67,6 +67,6 @@
 	{data.size}
 </div>
 
-<div>
-	<FileExplorer id = {data.name}></FileExplorer>
+<div class="overflow-y-scroll h-[60vh]">
+	<FileExplorer base64Name={data.base64Name}></FileExplorer>
 </div>

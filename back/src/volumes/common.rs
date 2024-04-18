@@ -36,7 +36,7 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
 
     let mut volumes_data = join_all(volumes_data).await;
 
-    // let containers = docker.list_containers::<String>(None).await.unwrap();
+    let containers = docker.list_containers::<String>(None).await.unwrap();
 
     // for container in containers.iter() {
     //     if let Some(mounts) = &container.mounts {
@@ -63,8 +63,39 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
     //     }
     // }
 
-    volumes_data.sort_by(|a, b| a.size.cmp(&b.size));
-    volumes_data.reverse();
+    let mountpoints_data: Vec<VolumeData> = join_all(containers.iter().map(|container| async {
+        if let Some(mounts) = &container.mounts {
+            for mount in mounts.iter() {
+                if mount.driver.is_none() {
+                    if mount.clone().destination.is_some() {
+                        let mountpoint = mount.clone().source.unwrap_or("".into());
+                        return VolumeData {
+                            name: mountpoint.clone(),
+                            created_at: "UNDEFINED".to_string(),
+                            mountpoint: mountpoint.clone(),
+                            size: get_volume_latest_size(mountpoint.clone()).await,
+                            is_mountpoint: true,
+                            base64_name: utils::to_base64_url(&mountpoint),
+                        };
+                    }
+                }
+            }
+        }
+        VolumeData {
+            name: "".into(),
+            created_at: "".into(),
+            mountpoint: "".into(),
+            size: 0,
+            is_mountpoint: false,
+            base64_name: "".into(),
+        }
+    }))
+    .await;
 
-    volumes_data
+    let mut final_data = volumes_data.into_iter().chain(mountpoints_data.into_iter()).collect::<Vec<_>>();
+
+    final_data.sort_by(|a, b| a.size.cmp(&b.size));
+    final_data.reverse();
+
+    final_data
 }

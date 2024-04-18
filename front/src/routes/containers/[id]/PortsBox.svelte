@@ -132,6 +132,7 @@
 	}
 </script>
 
+<!--
 <table class="table">
     <thead>
         <tr>
@@ -255,5 +256,5 @@
 </table>
 <button class="btn variant-glass-primary" on:click={() => addPort()}>Add port</button>
 <button class="btn variant-glass-primary" on:click={() => submit()}>Submit</button>
-
+-->
 

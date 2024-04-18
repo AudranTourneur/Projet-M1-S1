@@ -3,39 +3,65 @@
 	import { Base64 } from 'js-base64';
 	import Fa from 'svelte-fa';
 	import { faFolder, faFolderOpen, faFile, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+	import { formatBytes } from '$lib/FormatUtils';
 
 	export let base64Name: string;
-	console.log('base 64 name', base64Name)
+	console.log('base 64 name', base64Name);
 	let current_directory = false;
+
 	let path = '/';
 	let currentFolder = '/';
+
 	let files: any[] = [];
 	let directories: any[] = [];
-	let explorer_dir: any[] = [];
-	let explorer_file: any[] = [];
-	let res;
+
+	type File = {
+		name: string;
+		size: string;
+	};
+
+	type Dir = File;
+
+	let explorer_dir: Dir[] = [];
+	let explorer_file: File[] = [];
+
+	type BackendResponse = {
+		currentFolder: string;
+		directories: Dir[];
+		files: File[];
+	};
+
+	let res: BackendResponse | null = null;
 
 	onMount(async () => {
-		const url = `/volumes/${base64Name}/filesystem/${Base64.encodeURI(path)}/api`
-		console.log(url)
+		const url = `/volumes/${base64Name}/filesystem/${Base64.encodeURI(path)}/api`;
+		console.log(url);
 		let response = await fetch(url);
-		res = await response.json();
+		res = (await response.json()) as BackendResponse;
 		update(res);
 	});
 
-	async function changePage(path: string) {
-		// if (path == Base64.encodeURI('/' + id)) {
-		// 	path = '/';
-		// }
+	async function changePage(fileName: string) {
+		if (fileName === '..') {
+			path = path.substring(0, path.lastIndexOf('/'));
+		} else {
+			path = path + fileName + '/';
+		}
 
-		const urlApi = `/volumes/${base64Name}/filesystem/${path}/api`;
-		console.log('making call to', urlApi);
+		if (path == '') {
+			path = '/';
+		}
+
+		const base64path = Base64.encodeURL(path);
+
+		const urlApi = `/volumes/${base64Name}/filesystem/${base64path}/api`;
+		console.log('making call to', urlApi, 'with path', path);
 		let response = await fetch(urlApi);
-		res = await response.json();
+		res = await response.json() as BackendResponse;
 		update(res);
 	}
 
-	function update(res) {
+	function update(res: BackendResponse) {
 		files = res.files;
 		directories = res.directories;
 		currentFolder = res.currentFolder;
@@ -46,15 +72,14 @@
 		// Push directories to explorer array with their respective href
 		for (const directory of directories) {
 			explorer_dir.push({
-				text: directory.name,
-				size: directory.size,
-				base64: Base64.encodeURI('/' + directory.name)
+				name: directory.name,
+				size: directory.size
 			});
 		}
 
 		for (const file of files) {
 			explorer_file.push({
-				text: file.name,
+				name: file.name,
 				size: file.size
 			});
 		}
@@ -74,46 +99,46 @@
 	<div
 		class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-3 mb-4">
 		<div class="flex items-center mb-2">
-			<h2>Volume's filesystem</h2>
+			<h2>Volume's filesystem ({path})</h2>
 		</div>
 
 		{#if current_directory}
 			<div>
-				<button class="flex items-center" on:click={() => changePage('Lw')}
+				<button class="flex items-center" on:click={() => changePage('..')}
 					><Fa icon={faArrowLeft} /> &nbsp; Back</button>
 			</div>
 			<br />
 		{/if}
 
-		{#each explorer_dir as { text, base64, size }}
+		{#each explorer_dir as { name, size }}
 			<div class="flex justify-start ml-4 mb-2">
-				{#if text == currentFolder.replace('/', '')}
+				{#if name == currentFolder.replace('/', '')}
 					<Fa icon={faFolderOpen} />
 					<div class="ml-32">
 						<b> > Current Dir :</b>
-						{text}
+						{name}
 					</div>
 				{:else}
 					<Fa icon={faFolder} />
-					<div class="ml-32">
-						<button class="hover:text-gray-400" on:click={() => changePage(base64)}
-							><b>Dir :</b> {text}</button>
+					<div class="ml-8">
+						<button class="hover:text-gray-400" on:click={() => changePage(name)}
+							><b>Dir:</b>&nbsp{name}</button>
 					</div>
 				{/if}
-				<div class="ml-auto">
-					Size : {size}
+				<div class="ml-auto italic">
+					{formatBytes(size)}
 				</div>
 			</div>
 		{/each}
-		{#each explorer_file as { text, size }}
+		{#each explorer_file as { name, size }}
 			<div class="flex ml-4 mb-2">
 				<Fa icon={faFile} />
-				<div class="ml-32">
-					<b>File</b> : {text}
+				<div class="ml-8">
+					<b>File:</b>&nbsp{name}
 				</div>
 
-				<div class="ml-auto">
-					Size : {size}
+				<div class="ml-auto italic">
+					{formatBytes(size)}
 				</div>
 			</div>
 		{/each}

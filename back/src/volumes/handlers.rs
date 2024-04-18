@@ -113,6 +113,9 @@ pub async fn volume_explorer_handler(
     let dir_folders = details_fdir(dir_folders, full_path.clone(), &root_folder_without_slash);
     let dir_files = details_fdir(dir_files, full_path, &root_folder_without_slash);
 
+    // remove the first folder
+    let dir_folders = dir_folders.into_iter().skip(1).collect();
+
     let content = VolumeExplorerData {
         current_folder: decoded.to_string(),
         directories: dir_folders,

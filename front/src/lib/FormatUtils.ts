@@ -1,4 +1,4 @@
-export function formatBytes(bytes: number | bigint, decimals: number = 2): string {
+export function formatBytes(bytes: number | bigint | string, decimals: number = 2): string {
 	bytes = Number(bytes);
 	if (!+bytes) return '0 Bytes';
 
