@@ -20,6 +20,8 @@
 			token: string | undefined
 		}
 
+		console.log(serverResponseJson)
+
 		if (serverResponseJson.success) {
 			goto('/')
 		}

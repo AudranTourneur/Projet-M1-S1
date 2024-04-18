@@ -99,8 +99,13 @@ pub struct LoginRequest {
 }
 
 pub fn login_user(user: Json<LoginRequest>) -> Result<String, NetworkResponse> {
-    let correct_username = env::var("USERNAME").unwrap();
-    let correct_password = env::var("PASSWORD").unwrap();
+    let correct_username = env::var("ADMIN_USERNAME").unwrap();
+    let correct_password = env::var("ADMIN_PASSWORD").unwrap();
+
+    println!("Received username: {}", user.username);
+    println!("Received password: {}", user.password);
+    println!("Correct username: {}", correct_username);
+    println!("Correct password: {}", correct_password);
 
     if user.username != correct_username || user.password != correct_password {
         return Err(NetworkResponse::Unauthorized(

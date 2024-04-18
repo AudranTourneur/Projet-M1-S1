@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 		if (apiRes.status !== 200) {
 			return json({
 				success: false,
-				message: 'Failed to login'
+				message: 'Failed to login (status code: ' + apiRes.status + ')\n' + await apiRes.text()
 			})
 		}
 
@@ -61,6 +61,6 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 	// failed to auth
 	return json({
 		success: false,
-		message: 'Failed to login'
+		message: 'Failed to login (error)',
 	})
 };
