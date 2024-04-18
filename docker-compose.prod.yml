@@ -33,8 +33,8 @@ services:
       - "/run/docker.sock:/run/docker.sock:ro,rslave"
       - "./sqlite_db:/app/sqlite"
     environment:
-      - "USERNAME=${USERNAME}"
-      - "PASSWORD=${PASSWORD}"
+      - "ADMIN_USERNAME=${ADMIN_USERNAME}"
+      - "ADMIN_PASSWORD=${ADMIN_PASSWORD}"
       - "JWT_SECRET=${JWT_SECRET}"
       - "CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}"
       - "PORT_CLICKHOUSE=${PORT_CLICKHOUSE}"
