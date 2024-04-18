@@ -1,17 +1,17 @@
 <script lang="ts">
 	import Card from './Card.svelte'
 	import CardsContainer from './CardsContainer.svelte'
+	import Fa from 'svelte-fa';
+	import { faCoins, faCubes, faImages, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 	export let data;
-
-	console.log(data);
 
 	let overview = data;
 </script>
 <CardsContainer
-	class="group grid w-full flex-wrap gap-6 text-lg font-medium text-white/70 lg:grid-cols-2 lg:grid-rows-2 lg:gap-4"
+	class="group grid w-full gap-4 text-lg font-medium text-white/70 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-3"
 >
-	<Card class="row-span-2 min-h-[20rem]">
+	<Card class="row-span-2 col-span-2 min-h-[20rem]">
 		<div class="flex h-full flex-col justify-end p-8 sm:p-12">
 			<h2 class="mb-6 text-4xl font-bold text-white lg:text-6xl">OkiDocky</h2>
 			<p class="max-w-[60ch]">
@@ -28,7 +28,7 @@
 			</div>
 		</div>
 	</Card>
-	<Card class="min-h-[20rem]">
+	<Card class="min-h-[20rem] col-span-2">
 		<div class="flex h-full flex-col justify-end p-8 sm:p-12">
 			<h2 class="text-4xl font-bold text-white">Docker {overview.versionDocker}</h2>
 			<p class="max-w-[60ch]">
@@ -45,7 +45,7 @@
 			</div>
 		</div>
 	</Card>
-	<Card class="min-h-[20rem]">
+	<Card class="min-h-[20rem] col-span-2">
 		<div class="flex h-full flex-col justify-end p-8 sm:p-12">
 			<h2 class="text-3xl font-bold text-white">Linux kernel {overview.versionLinux}</h2>
 			<p class="max-w-[60ch]">
@@ -63,6 +63,29 @@
 			</div>
 		</div>
 	</Card>
+	{#each [
+		{ title: 'Images', value: overview.images, icon: faImages },
+		{ title: 'Containers', value: overview.containers, icon: faCubes },
+		{ title: 'Volumes', value: overview.volumes, icon: faCoins },
+		{ title: 'Networks', value: overview.networks, icon: faNetworkWired },
+	] as { title, value, icon }}
+		<Card class="min-h-[20rem] max-sm:col-span-2">
+			<div class="flex h-full flex-col justify-end p-8 sm:p-12">
+				<h2 class="text-6xl font-bold text-white md:text-8xl">{value}</h2>
+				<p class="text-xl">
+					{title}
+				</p>
+				<div class="_wrapper absolute inset-0 select-none">
+					<div class="feature-image">
+						<Fa
+							{icon}
+							size="6x"
+						/>
+					</div>
+				</div>
+			</div>
+		</Card>
+	{/each}
 </CardsContainer>
 
 <style lang="postcss">
