@@ -43,10 +43,21 @@
 	});
 
 	async function changePage(fileName: string) {
+		console.log('File name', fileName, 'path', path);
+
 		if (fileName === '..') {
 			path = path.substring(0, path.lastIndexOf('/'));
+			if (path == '') {
+				path = '/';
+			}
 		} else {
-			path = path + fileName + '/';
+			// remove last slash
+			path = path.replace(/\/$/, '');
+			path = path + '/' + fileName;
+		}
+
+		if (path.length > 1 && path.endsWith('/')) {
+			path = path.substring(0, path.length - 1);
 		}
 
 		if (path == '') {
@@ -58,7 +69,7 @@
 		const urlApi = `/volumes/${base64Name}/filesystem/${base64path}/api`;
 		console.log('making call to', urlApi, 'with path', path);
 		let response = await fetch(urlApi);
-		res = await response.json() as BackendResponse;
+		res = (await response.json()) as BackendResponse;
 		update(res);
 	}
 
