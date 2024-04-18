@@ -13,8 +13,6 @@
 		const stats = inputData;
 		let serie;
 
-			
-
 		if (secondinputData === null) {
 			serie = [
 				{
@@ -83,11 +81,11 @@
 			yaxis: {
 				labels: {
 					offsetX: -20,
-					formatter: function(val, index){
-						if (isCpu === false){
+					formatter: function (val, index) {
+						if (isCpu === false) {
 							return formatBytes(val);
-						}else{
-							return val + '%'
+						} else {
+							return val + '%';
 						}
 					}
 				}
@@ -97,8 +95,10 @@
 			},
 			grid: {
 				padding: {
-					left: -5,
-					right: 5
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0
 				}
 			},
 			legend: {
