@@ -64,27 +64,29 @@
 		</div>
 	</Card>
 	{#each [
-		{ title: 'Images', value: overview.images, icon: faImages },
-		{ title: 'Containers', value: overview.containers, icon: faCubes },
-		{ title: 'Volumes', value: overview.volumes, icon: faCoins },
-		{ title: 'Networks', value: overview.networks, icon: faNetworkWired },
-	] as { title, value, icon }}
-		<Card class="min-h-[20rem] max-sm:col-span-2">
-			<div class="flex h-full flex-col justify-end p-8 sm:p-12">
-				<h2 class="text-6xl font-bold text-white md:text-8xl">{value}</h2>
-				<p class="text-xl">
-					{title}
-				</p>
-				<div class="_wrapper absolute inset-0 select-none">
-					<div class="feature-image">
-						<Fa
-							{icon}
-							size="6x"
-						/>
+		{ title: 'Images', value: overview.images, icon: faImages, link: '/images' },
+		{ title: 'Containers', value: overview.containers, icon: faCubes, link: '/containers' },
+		{ title: 'Volumes', value: overview.volumes, icon: faCoins, link: '/volumes' },
+		{ title: 'Networks', value: overview.networks, icon: faNetworkWired, link: '/networks' },
+	] as { title, value, icon, link }}
+		<a href={link}>
+			<Card class="min-h-[20rem] max-sm:col-span-2">
+				<div class="flex h-full flex-col justify-end p-8 sm:p-12">
+					<h2 class="text-6xl font-bold text-white md:text-8xl">{value}</h2>
+					<p class="text-xl">
+						{title}
+					</p>
+					<div class="_wrapper absolute inset-0 select-none">
+						<div class="feature-image">
+							<Fa
+								{icon}
+								size="6x"
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
-		</Card>
+			</Card>
+		</a>
 	{/each}
 </CardsContainer>
 
@@ -125,37 +127,3 @@
         }
     }
 </style>
-
-
-<div class="w-full mt-10">
-	<div class="border border-gray-300 rounded p-4 mb-4">
-		<h3 class="text-lg text-center font-semibold mb-2">Overview</h3>
-		<div class="flex justify-between items-center mb-2">
-			<span class="font-bold">versionDocker:</span>
-			<span>{overview.versionDocker}</span>
-		</div>
-		<div class="flex justify-between items-center mb-2">
-			<span class="font-bold">versionLinux:</span>
-			<span>{overview.versionLinux}</span>
-		</div>
-		<div class="flex justify-between items-center mb-2">
-			<span class="font-bold">images:</span>
-			<span>{overview.images}</span>
-		</div>
-		<div class="flex justify-between items-center mb-2">
-			<span class="font-bold">containers:</span>
-			<span>{overview.containers}</span>
-		</div>
-
-		<div class="flex justify-between items-center mb-2">
-			<span class="font-bold">volumes:</span>
-			<span>{overview.volumes}</span>
-		</div>
-
-		<div class="flex justify-between items-center mb-2">
-			<span class="font-bold">networks:</span>
-			<span>{overview.networks}</span>
-		</div>
-	</div>
-</div>
-
