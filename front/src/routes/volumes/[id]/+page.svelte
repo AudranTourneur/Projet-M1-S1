@@ -68,7 +68,7 @@
 
 <br />
 {#if statVolume}
-	<VolumeChart volumeName={base64Name} />
+	<VolumeChart volumeNameBase64={base64Name} />
 {/if}
 
 <div>

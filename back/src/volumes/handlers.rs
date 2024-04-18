@@ -179,10 +179,8 @@ fn details_fdir(
 
 #[get("/statistics-historical/volume/<encoded_path>")]
 pub async fn volume_stats_handler(_key: JWT, encoded_path: &str) -> Json<VolumeStatsResponse> {
-    println!("################################ Encoded path for statistics historical volume encoded path etc etc etc: {}", encoded_path.clone());
-    let path = from_base64_url(encoded_path).unwrap_or("".to_string());
-    println!("################################ Decoded path {}", path.clone());
-    let db_res = crate::database::get_historical_statistics_for_volume(path).await;
+   let path = from_base64_url(encoded_path).unwrap_or("".to_string());
+   let db_res = crate::database::get_historical_statistics_for_volume(path).await;
 
     match db_res {
         Ok(stats) => {
