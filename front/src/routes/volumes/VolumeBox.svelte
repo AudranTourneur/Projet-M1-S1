@@ -4,7 +4,6 @@
 		faCheck,
 		faCopy,
 		faDatabase,
-		faDownload,
 		faEllipsisVertical,
 		faFolderOpen,
 		faFolderPlus
@@ -35,7 +34,6 @@
 	}
 
 	let isValidDateVar = isValidDate(date);
-
 </script>
 
 <div

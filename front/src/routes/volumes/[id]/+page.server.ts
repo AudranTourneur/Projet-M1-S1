@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { BACKEND_API_URL } from '$lib/GlobalEnv';
-import { VolumeData } from '$lib/types/VolumeData';
+import type { VolumeData } from '$lib/types/VolumeData';
 
 export const load: PageServerLoad = async ({ params, fetch }) => {
 	const { id } = params;
@@ -8,5 +8,3 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 	const res = (await serverResponse.json()) as VolumeData;
 	return { ...res, metaTitle: 'Volume ' + res.name };
 };
-
-

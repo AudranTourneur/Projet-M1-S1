@@ -24,8 +24,6 @@ export async function simulatePositions(entities: TopologyEntityPixi[]) {
         }
     }
 
-    console.log('graph', graph)
-
     // With settings:
     // const positions = forceLayout(graph, {
     //     maxIterations: 50,
@@ -126,7 +124,6 @@ export async function simulatePositions(entities: TopologyEntityPixi[]) {
                     Math.pow(entity.pixiContainer.y + entity.actualCenter.y - (otherEntity.pixiContainer.y + otherEntity.actualCenter.y), 2)
                 );
                 if (distance < COLLISION_DISTANCE) {
-                    console.log('collision', entity.uuid, otherEntity.uuid, distance)
                     const vector = {
                         x: entity.pixiContainer.x + entity.actualCenter.x - (otherEntity.pixiContainer.x + otherEntity.actualCenter.x),
                         y: entity.pixiContainer.y + entity.actualCenter.y - (otherEntity.pixiContainer.y + otherEntity.actualCenter.y),

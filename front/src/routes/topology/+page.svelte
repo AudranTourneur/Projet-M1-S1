@@ -13,8 +13,6 @@
 	onMount(async () => {
 		const { initApp } = await import('$lib/topology');
 		app = initApp(canvasElement, parentElement, data);
-
-		console.log('Topology data', data);
 	});
 </script>
 

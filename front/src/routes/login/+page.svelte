@@ -6,7 +6,6 @@
 
 
 	async function login() {
-		console.log("username: " + username, "password: " + password);
         const res = await fetch('/login/api', {
             method: 'POST',
             headers: {
@@ -20,8 +19,6 @@
 			message: string | undefined,
 			token: string | undefined
 		}
-
-		console.log(serverResponseJson)
 
 		if (serverResponseJson.success) {
 			goto('/')

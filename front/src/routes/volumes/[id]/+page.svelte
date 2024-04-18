@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import FileExplorer from '../../../components/FileExplorer.svelte';
 	import type { VolumeStatsResponse } from '$lib/types/VolumeStatsResponse';
 	import type { VolumeRow } from '$lib/types/VolumeRow';
-	import LineChartBytes from '../../../components/LineChartBytes.svelte';
 	import { page } from '$app/stores';
-	import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { formatBytes } from '$lib/FormatUtils';
 	import Chart from '../../../components/Chart.svelte';
@@ -13,22 +12,17 @@
 	export let data;
 	const id = data.name;
 	const base64Name = data.base64Name;
-	console.log(data);
 
 	let statVolume: null | Array<[number, number]> = null;
 
 	function formatStats(stats: VolumeRow[]): Array<[number, number]> {
-		console.log('stats', stats);
 		return stats.map((obj) => {
 			return [Number(obj.ts) * 1000, Number(obj.dsk)];
 		});
 	}
 
 	onMount(async () => {
-		console.log('metaTitle idk', data.metaTitle);
-		console.log('size', data.size);
 		const statsUrl = '/volumes/' + $page.params.id + '/api/stats'
-		console.log('stats', statsUrl)
 		const response = await fetch(statsUrl);
 		const statsRes = (await response.json()) as VolumeStatsResponse;
 		statVolume = formatStats(statsRes.stats);

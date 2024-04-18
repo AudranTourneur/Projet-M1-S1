@@ -6,7 +6,10 @@
 	import { formatBytes } from '$lib/FormatUtils';
 
 	export let base64Name: string;
+<<<<<<< HEAD
 	console.log('base 64 name', base64Name);
+=======
+>>>>>>> 8514810a005c7e83644578349236d8ae5810a057
 	let current_directory = false;
 
 	let path = '/';
@@ -34,8 +37,12 @@
 	let res: BackendResponse | null = null;
 
 	onMount(async () => {
+<<<<<<< HEAD
 		const url = `/volumes/${base64Name}/filesystem/${Base64.encodeURI(path)}/api`;
 		console.log(url);
+=======
+		const url = `/volumes/${base64Name}/filesystem/${Base64.encodeURI(path)}/api`
+>>>>>>> 8514810a005c7e83644578349236d8ae5810a057
 		let response = await fetch(url);
 		res = (await response.json()) as BackendResponse;
 		update(res);
@@ -48,6 +55,7 @@
 			path = path + fileName + '/';
 		}
 
+<<<<<<< HEAD
 		if (path == '') {
 			path = '/';
 		}
@@ -56,6 +64,9 @@
 
 		const urlApi = `/volumes/${base64Name}/filesystem/${base64path}/api`;
 		console.log('making call to', urlApi, 'with path', path);
+=======
+		const urlApi = `/volumes/${base64Name}/filesystem/${path}/api`;
+>>>>>>> 8514810a005c7e83644578349236d8ae5810a057
 		let response = await fetch(urlApi);
 		res = await response.json() as BackendResponse;
 		update(res);
@@ -65,7 +76,6 @@
 		files = res.files;
 		directories = res.directories;
 		currentFolder = res.currentFolder;
-		console.log(res);
 		explorer_dir = [];
 		explorer_file = [];
 
@@ -89,9 +99,6 @@
 		} else {
 			current_directory = true;
 		}
-
-		console.log('explorer_dir', explorer_dir);
-		console.log('explorer_file', explorer_file);
 	}
 </script>
 

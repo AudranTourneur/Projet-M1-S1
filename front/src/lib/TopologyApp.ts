@@ -38,8 +38,6 @@ export class TopologyApp {
 
 		this.app = app;
 
-		console.log('plugins', app.renderer.plugins)
-
 		const viewport = new Viewport({
 			screenWidth: window.innerWidth,
 			screenHeight: window.innerHeight,
@@ -66,8 +64,6 @@ export class TopologyApp {
 
 		for (let i = 0; i < data.containers.length; i++) {
 			const container = data.containers[i];
-			console.log('set', container)
-
 			const x = container.position?.x ?? getRandomCoord();
 			const y = container.position?.y ?? getRandomCoord();
 			this.allContainers.push(new TopologyContainerPixi(this, x, y, container));
@@ -90,7 +86,6 @@ export class TopologyApp {
 		for (const container of this.allContainers) {
 			const volumeIds = container.data.data.volumes || []
 			const volumes = this.allVolumes.filter(volume => volumeIds.includes(volume.data.data.name))
-			console.log('vol', volumeIds, volumes)
 			for (const volume of volumes) {
 				TopologyLinkPixi.createLinkIfNeeded(this, container, volume)
 			}
@@ -107,11 +102,7 @@ export class TopologyApp {
 
 		const networksArray = [...networksSet]
 
-		console.log('all nets', networksArray)
-
 		for (const networkName of networksArray) {
-			console.log('name', networkName)
-
 			const x = getRandomCoord();
 			const y = getRandomCoord();
 			this.allNetworks.push(new TopologyNetworkPixi(this, x, y, networkName))

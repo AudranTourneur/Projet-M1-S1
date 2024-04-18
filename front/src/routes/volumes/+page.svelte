@@ -5,7 +5,6 @@
 	export let data;
 
 	const volumes: VolumeData[] = data.volumes;
-	console.log('aaaaaaa', volumes)
 	let visibleVolumes = [...volumes];
 	let search = '';
 
