@@ -4,7 +4,7 @@ export function formatBytes(bytes: number | bigint | string, decimals: number = 
 
 	const k = 1024;
 	const dm = decimals < 0 ? 0 : decimals;
-	const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+	const sizes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 
 	let i = Math.floor(Math.log(bytes) / Math.log(k));
 	if (i < 0) {
