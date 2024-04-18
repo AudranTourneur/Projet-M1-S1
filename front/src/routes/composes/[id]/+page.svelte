@@ -43,8 +43,12 @@
 	<div class="flex">
 		{#each compose.containers as c}
 			<div class="flex flex-col p-8">
-				<Fa size="2x" icon={faCube}></Fa>
-				<span class="text-md">{c.names[0]}</span>
+				<a href="/containers/{c.id}">
+					<div class="flex flex-col items-center bg-surface-400/40 dark:bg-surface-800/40 border rounded-lg shadow p-4 hover:bg-surface-200/20 dark:hover:bg-surface-600/30">
+						<Fa size="2x" icon={faCube}></Fa>
+						<span class="text-md hover:text-gray-500">{c.names[0]}</span>
+					</div>
+				</a>
 			</div>
 		{/each}
 	</div>

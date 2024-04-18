@@ -14,6 +14,8 @@
 	let name1: string;
 	let name2: null | string;
 
+	let Cpu:boolean = false;
+
 	
 	function generateTimeMem(stats: ContainerStatisticsRow[]): Array<[number, number]> {
 		return stats.map((obj) => {
@@ -63,6 +65,7 @@
 		} else if (typeChart === 'Cpu') {
 			statData = generateTimeCpu(statsRes.stats);
 			name1 = "Cpu";
+			Cpu = true;
 		} else if (typeChart === 'Io') {
 			statData = generateTimeIoRead(statsRes.stats);
 			secondstatData = generateTimeIoWrite(statsRes.stats);
@@ -78,5 +81,5 @@
 </script>
 
 {#if statData}
-	<LineChartBytes inputData={statData} secondinputData={secondstatData} name1={name1} name2={name2}/>
+	<LineChartBytes inputData={statData} secondinputData={secondstatData} name1={name1} name2={name2} isCpu={Cpu}/>
 {/if}
