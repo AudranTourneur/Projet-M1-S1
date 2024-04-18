@@ -21,7 +21,7 @@
 	import { getContainerActionsFromStatus } from './getContainerActionsFromStatus';
 	import ContainerStatusIcon from './ContainerStatusIcon.svelte';
 
-	export let container: ContainerData;
+	export let container: ContainerData;	
 	export let refresh: () => void;
 
 	const dockerComposeName = container.composeFile?.split('/').slice(-2, -1)[0]?.toLowerCase();
