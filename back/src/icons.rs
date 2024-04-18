@@ -37,7 +37,7 @@ pub async fn spawn_info_service() {
             DockerHubUrlResponse::OrgUrl(x) => x,
         };
 
-        println!("Fetching image info for: {}", image_name);
+        // println!("Fetching image info for: {}", image_name);
 
         let query = sqlx::query("SELECT * FROM web_cache WHERE request_url = ?")
             .bind(image_name)
@@ -54,7 +54,7 @@ pub async fn spawn_info_service() {
 
         match response {
             Ok(_) => {
-                println!("Successfully fetched image info for: {}", image_name);
+                // println!("Successfully fetched image info for: {}", image_name);
             }
             Err(e) => {
                 println!("Failed to fetch image info for: {}: {}", image_name, e);
