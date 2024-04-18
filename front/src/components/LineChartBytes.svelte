@@ -8,11 +8,9 @@
 	export let name1: string;
 	export let name2: null | string;
 
-
 	onMount(async () => {
 		const stats = inputData;
 		let serie;
-
 
 		if (secondinputData === null) {
 			serie = [
@@ -20,6 +18,7 @@
 					name: name1,
 					data: stats
 				},
+				{ name: '', data: [0,0] }
 			];
 		} else {
 			serie = [
