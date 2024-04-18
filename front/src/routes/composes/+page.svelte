@@ -3,13 +3,10 @@
 	import type { ComposeData } from '$lib/types/ComposeData';
 	import type { ComposeList } from '$lib/types/ComposeList';
 	import {
-		faBox,
-		faBoxes,
 		faCheck,
 		faCopy,
 		faCube,
 		faEllipsisVertical,
-		faPlay
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import Tooltip from '../../components/Tooltip.svelte';
@@ -20,10 +17,6 @@
 	let visibleComposes = [...composes];
 
 	console.log(composes);
-
-	async function startCompose(c: ComposeData) {
-		await fetch(`/composes/${c.id}/api/start`, { method: 'POST' });
-	}
 
 	$: visibleComposes = composes.filter((compose) => {
 		const searchString = search.toLowerCase();
@@ -50,10 +43,10 @@
 	<input bind:value={search} type="text" placeholder="Search by Path" class="input" />
 </div>
 
-<div>
+<div class="flex flex-col gap-8">
 	{#each visibleComposes as compose}
 		<div
-			class="flex justify-between items-center gap-2 p-2 rounded-container-token overflow-auto bg-surface-300/30 dark:bg-surface-600/30 shadow border-token border">
+			class="flex justify-between items-center gap-2 p-2 rounded-container-token overflow-auto bg-surface-300/30 dark:bg-surface-600/30 shadow border mb-4">
 			<div class="flex flex-col justify-center flex-grow">
 				<div class="flex items-center gap-2 w-full">
 					<div class="flex items-center justify-center gap-2 w-full">
@@ -91,7 +84,7 @@
 								<span class="font-bold">Number of containers :</span>
 								{compose.containers.length} containers
 							</div>
-							<div class="flex justify-center items-center flex-1 w-full gap-12">
+							<div class="flex justify-center items-center flex-wrap flex-1 w-full gap-12">
 								{#each compose.containers as c}
 									<a href="/containers/{c.id}">
 										<div
