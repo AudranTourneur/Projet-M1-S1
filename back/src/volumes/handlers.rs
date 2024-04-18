@@ -1,17 +1,18 @@
 use fs_extra::dir::{get_details_entry, get_dir_content2, DirEntryAttr, DirEntryValue, DirOptions};
 use rocket::serde::json::Json;
-use std::collections::HashSet;
+use std::{collections::HashSet, ops::Deref, sync::{Arc, Mutex}};
 
 use crate::{
-    auth::JWT, utils::{self, from_base64_url}, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
+    auth::JWT, state::AllVolumesCacheState, utils::{self, from_base64_url}, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
 };
 
 use super::common::get_all_volumes;
 use super::models::{FileData, VolumeData, VolumeList, VolumeStatsResponse};
 
 #[get("/volumes")]
-pub async fn volumes_handler(_key: JWT) -> Json<VolumeList> {
-    let volumes_data = get_all_volumes().await;
+pub async fn volumes_handler(_key: JWT, volume_state: &rocket::State<Arc<Mutex<AllVolumesCacheState>>>) -> Json<VolumeList> {
+    let state = volume_state.lock().unwrap();
+    let volumes_data = state.deref().volumes.clone();
 
     let response = VolumeList {
         volumes: volumes_data,

@@ -1,11 +1,20 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
-    auth::JWT, containers::{common::get_all_containers, models::ContainerData}, images::{common::get_all_images, models::ImageData}, ports::{get_used_ports, SimplePortData}, sqlitedb::get_sqlite_connection, volumes::{common::get_all_volumes, models::VolumeData}
+    auth::JWT,
+    containers::{common::get_all_containers, models::ContainerData},
+    images::{common::get_all_images, models::ImageData},
+    ports::{get_used_ports, SimplePortData},
+    sqlitedb::get_sqlite_connection,
+    state::AllVolumesCacheState,
+    volumes::models::VolumeData,
 };
 
 #[derive(Serialize, Deserialize, TS, Clone, Debug)]
@@ -138,17 +147,13 @@ fn create_topology_ports() -> Vec<TopologyPort> {
     final_ports
 }
 
-async fn create_topology_volumes() -> Vec<TopologyVolume> {
-    let volumes: Vec<VolumeData> = get_all_volumes().await;
-
+fn create_topology_volumes(volumes: Vec<VolumeData>) -> Vec<TopologyVolume> {
     let topology_volumes: Vec<TopologyVolume> = volumes
         .iter()
-        .map(|data| {
-            TopologyVolume {
-                data: data.clone(),
-                connected_to: vec![],
-                position: None,
-            }
+        .map(|data| TopologyVolume {
+            data: data.clone(),
+            connected_to: vec![],
+            position: None,
         })
         .collect();
 
@@ -156,11 +161,19 @@ async fn create_topology_volumes() -> Vec<TopologyVolume> {
 }
 
 #[get("/topology")]
-pub async fn topology_handler(_key: JWT) -> Json<Topology> {
+pub async fn topology_handler(
+    _key: JWT,
+    volume_state: &rocket::State<Arc<Mutex<AllVolumesCacheState>>>,
+) -> Json<Topology> {
+    let volumes_data = {
+        let state = volume_state.lock().unwrap();
+        state.volumes.clone()
+    };
+
     let topo = Topology {
         containers: create_topology_containers().await,
         ports: create_topology_ports(),
-        volumes: create_topology_volumes().await,
+        volumes: create_topology_volumes(volumes_data),
         images: get_all_images().await,
         clusters: create_topology_clusters().await,
     };
@@ -189,7 +202,10 @@ pub struct TopologySaveRequest {
 }
 
 #[post("/topology/save", format = "json", data = "<input>")]
-pub async fn topology_save_handler(_key: JWT, input: Json<TopologySaveRequest>) -> Json<TopologyResponse> {
+pub async fn topology_save_handler(
+    _key: JWT,
+    input: Json<TopologySaveRequest>,
+) -> Json<TopologyResponse> {
     let mut conn = get_sqlite_connection().await.unwrap();
 
     for container in input.containers.iter() {

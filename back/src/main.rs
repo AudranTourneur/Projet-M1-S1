@@ -1,10 +1,15 @@
 #![allow(non_snake_case)]
 
+use std::sync::{atomic::AtomicUsize, Arc, Mutex};
+
 use database::init_clickhouse_database;
 use icons::spawn_info_service;
 // use sniffer::sniff_packets;
 use sqlitedb::init_sqlite_database;
 use stats::{start_container_statistics_listeners, start_volume_statistics_listeners};
+use tokio::time::{sleep, Duration};
+
+use crate::volumes::common::get_all_volumes;
 
 mod auth;
 mod containers;
@@ -21,13 +26,12 @@ mod icons;
 mod ports;
 // mod sniffer;
 mod sqlitedb;
+mod state;
 mod stats;
 mod topology;
+mod utils;
 mod volumes;
 mod web;
-mod utils;
-
-
 
 // #[macro_use]
 // extern crate debug_stub_derive;
@@ -48,6 +52,7 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
         composes::compose_start_handler,
         composes::compose_stop_handler,
         dns::dns_list_handler,
+        state::count_handler,
         // dns::dns_upsert_handler,
     ];
 
@@ -65,7 +70,43 @@ fn create_rocket_app() -> rocket::Rocket<rocket::Build> {
         .cloned()
         .collect::<Vec<_>>();
 
-    rocket::build().mount("/", all_handlers)
+    let volume_state = Arc::new(Mutex::new(state::AllVolumesCacheState {
+        last_update: 0,
+        volumes: vec![],
+    }));
+
+    let external = volume_state.clone();
+    std::thread::spawn(move || {
+        tokio::runtime::Runtime::new().unwrap().block_on(async {
+            loop {
+                let mut use_state = external.lock().unwrap();
+                // let _ = update_volumes_state(&use_state);
+                // println!("Use state: {:?}", use_state);
+
+                let current_timestamp = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs();
+
+                use_state.last_update = current_timestamp.into();
+
+                use_state.volumes = get_all_volumes().await.into();
+                
+                // unlock
+                drop(use_state);
+
+
+                sleep(Duration::from_secs(15)).await;
+            }
+        });
+    });
+
+    rocket::build()
+        .manage(state::HitCount {
+            count: AtomicUsize::new(0),
+        })
+        .manage(volume_state)
+        .mount("/", all_handlers)
 }
 
 #[rocket::main]
@@ -78,7 +119,6 @@ async fn main() {
 
     rocket::tokio::spawn(start_container_statistics_listeners());
     rocket::tokio::spawn(start_volume_statistics_listeners());
-
 
     rocket::tokio::spawn(spawn_info_service());
 
