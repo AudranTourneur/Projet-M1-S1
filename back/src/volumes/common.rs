@@ -11,6 +11,7 @@ pub fn remove_prefix_from_path(path: String, prefix: &str) -> String {
     path.to_string()
 }
 
+// pub async fn get_all_volumes_from_docker() -> Vec<VolumeData> {
 pub async fn get_all_volumes() -> Vec<VolumeData> {
     let docker = get_docker_socket();
 
@@ -37,31 +38,6 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
     let volumes_data = join_all(volumes_data).await;
 
     let containers = docker.list_containers::<String>(None).await.unwrap();
-
-    // for container in containers.iter() {
-    //     if let Some(mounts) = &container.mounts {
-    //         for mount in mounts.iter() {
-    //             if mount.driver.is_none() {
-    //                 println!(
-    //                     "Null driver volume {}",
-    //                     &mount.clone().source.unwrap_or("".into())
-    //                 );
-    //                 if mount.clone().destination.is_some() {
-    //                     let mountpoint = mount.clone().source.unwrap_or("".into());
-    //                     volumes_data.push(VolumeData {
-    //                         name: mountpoint.clone(),
-    //                         created_at: "UNDEFINED".to_string(),
-    //                         mountpoint: mountpoint.clone(),
-    //                         size: get_volume_latest_size(mountpoint.clone())
-    //                         .await,
-    //                         is_mountpoint: true,
-    //                         base64_name: utils::to_base64_url(&mountpoint),
-    //                     });
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     let mountpoints_data: Vec<VolumeData> = join_all(containers.iter().map(|container| async {
         if let Some(mounts) = &container.mounts {
