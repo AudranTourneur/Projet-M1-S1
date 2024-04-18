@@ -11,6 +11,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import copy from 'copy-to-clipboard';
+	import { formatBytes } from '$lib/FormatUtils';
 
 	export let volume: VolumeData;
 
@@ -35,17 +36,6 @@
 
 	let isValidDateVar = isValidDate(date);
 
-	function formatBytes(bytes: number, decimals = 2) {
-		if (!+bytes) return '0 Bytes';
-
-		const k = 1024;
-		const dm = decimals < 0 ? 0 : decimals;
-		const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-	}
 </script>
 
 <div

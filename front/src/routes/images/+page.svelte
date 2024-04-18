@@ -13,6 +13,13 @@
 				img.id.toLowerCase().includes(search.toLowerCase()) ||
 				img.tags.some((tag) => tag.toLowerCase().includes(search.toLowerCase()))
 		);
+
+		// sort the images which have a icon first
+		visibleImages.sort((a, b) => {
+			if (a.iconUrl && !b.iconUrl) return -1;
+			if (!a.iconUrl && b.iconUrl) return 1;
+			return 0;
+		});
 	}
 
 	const refetchImages = async () => {

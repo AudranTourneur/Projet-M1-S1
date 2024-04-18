@@ -280,13 +280,13 @@ pub struct VolumeRow {
 }
 
 pub async fn get_historical_statistics_for_volume(
-    id: String,
+    path: String,
 ) -> Result<Vec<VolumeRow>, Box<dyn Error>> {
     let client: clickhouse::Client = get_clickhouse_client();
     println!("g off globule blan gro sayer la ");
     let mut cursor = client
-    .query("SELECT timestamp AS ts, disk_usage AS dsk FROM volume_statistics WHERE id = ? ORDER BY timestamp ASC")
-    .bind(id)
+    .query("SELECT timestamp AS ts, disk_usage AS dsk FROM volume_statistics WHERE path = ? ORDER BY timestamp ASC")
+    .bind(path)
     .fetch::<VolumeRow>()?;
 
     let mut vector_response: Vec<VolumeRow> = vec![];

@@ -1,10 +1,9 @@
-use bollard::volume::RemoveVolumeOptions;
 use fs_extra::dir::{get_details_entry, get_dir_content2, DirEntryAttr, DirEntryValue, DirOptions};
 use rocket::serde::json::Json;
 use std::collections::HashSet;
 
 use crate::{
-    auth::JWT, database::get_volume_latest_size, docker::get_docker_socket, utils::{self, from_base64_url}, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
+    auth::JWT, utils::{self, from_base64_url}, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
 };
 
 use super::common::get_all_volumes;
@@ -26,8 +25,6 @@ pub async fn volume_handler(_key: JWT, encoded_path: String) -> Option<Json<Volu
     let decoded = utils::from_base64_url(&encoded_path);
     println!("decode {} => {}", encoded_path, decoded);
 
-    let docker = get_docker_socket();
-
     let all_volumes = get_all_volumes().await;
 
     let volume = all_volumes.iter().find(|x| x.mountpoint == decoded);
@@ -38,45 +35,41 @@ pub async fn volume_handler(_key: JWT, encoded_path: String) -> Option<Json<Volu
     }
 }
 
-#[post("/volume/<name>/remove")]
-pub async fn delete_volume(_key: JWT, name: &str) -> &'static str {
-    let docker = get_docker_socket();
-
-    let options = Some(RemoveVolumeOptions { force: true });
-
-    let _ = docker.remove_volume(name, options).await;
-
-    "Volume deleted."
-}
-
-#[get("/volume/<volume_name>/filesystem/<current_folder>")]
+#[get("/volume/<encoded_volume_path>/filesystem/<encoded_current_folder>")]
 pub async fn volume_explorer_handler(
-    _key: JWT,
-    volume_name: String,
-    current_folder: Option<String>,
+    // _key: JWT,
+    encoded_volume_path: String,
+    encoded_current_folder: Option<String>,
 ) -> Json<Option<VolumeExplorerData>> {
-    let docker = get_docker_socket();
-    let volume = docker.inspect_volume(&volume_name).await;
-    let volume = match volume {
-        Ok(volume) => volume,
-        Err(_) => {
-            println!("Error reading volume");
+
+    let volume_path = from_base64_url(&encoded_volume_path);
+
+    let volume = get_all_volumes().await.into_iter().find(|x| x.mountpoint == volume_path);
+
+    let volume: VolumeData = match volume {
+        Some(volume) => volume,
+        None => {
+            println!("Volume not found");
             return Json(None);
         }
     };
+
     println!("Volume: {:?}", volume);
 
-    let root_folder_without_slash = "/rootfs/var/lib/docker/volumes";
-    let root_folder = format!("{}/", root_folder_without_slash);
-    let initial_folder = format!("{}{}", root_folder, volume_name);
+    let mountpoint = volume.mountpoint.clone();
+
+    let root_folder_without_slash = mountpoint.clone();
+
+    let initial_folder = format!("{}/", &mountpoint);
+
     println!("Initial folder: {}", initial_folder);
 
     println!(
-        "Current folder: {:?}",
-        current_folder.clone().unwrap_or("".to_string())
+        "Encoded current folder: {:?}",
+        encoded_current_folder.clone().unwrap_or("".to_string())
     );
 
-    let decoded = from_base64_url(&current_folder.clone().unwrap_or("".to_string()));
+    let decoded = from_base64_url(&encoded_current_folder.clone().unwrap_or("".to_string()));
     println!("Decoded: {:?}", decoded);
 
     let full_path = format!("{}{}", initial_folder, decoded);
@@ -101,19 +94,19 @@ pub async fn volume_explorer_handler(
     let dir_folders: Vec<String> = dir_content
         .directories
         .into_iter()
-        .map(|x| remove_prefix_from_path(x, root_folder_without_slash))
+        .map(|x| remove_prefix_from_path(x, &root_folder_without_slash))
         .collect();
     let dir_files: Vec<String> = dir_content
         .files
         .into_iter()
-        .map(|x| remove_prefix_from_path(x, root_folder_without_slash))
+        .map(|x| remove_prefix_from_path(x, &root_folder_without_slash))
         .collect();
 
     println!("Folders: {:?}", dir_folders.clone());
     println!("Files: {:?}", dir_files.clone());
 
-    let dir_folders = details_fdir(dir_folders, full_path.clone(), root_folder_without_slash);
-    let dir_files = details_fdir(dir_files, full_path, root_folder_without_slash);
+    let dir_folders = details_fdir(dir_folders, full_path.clone(), &root_folder_without_slash);
+    let dir_files = details_fdir(dir_files, full_path, &root_folder_without_slash);
 
     let content = VolumeExplorerData {
         current_folder: decoded.to_string(),

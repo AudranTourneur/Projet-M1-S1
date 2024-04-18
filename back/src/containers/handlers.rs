@@ -64,11 +64,6 @@ pub async fn delete_container(_key: JWT, id: &str) -> &'static str {
     "Success."
 }
 
-#[get("/containers/<id>/filesystem")]
-pub async fn container_filesystem_handler(_key: JWT, id: &str) -> String {
-    format!("WIP {}", id)
-}
-
 #[get("/container/<id>")]
 pub async fn container_handler(_key: JWT, id: &str) -> Json<Option<ContainerData>> {
     let all_images = get_all_images().await;
