@@ -37,16 +37,12 @@
 			message : string | undefined
 		}
 
-		console.log(serverResponseJson)
-
 		if (serverResponseJson.success) {
 			goto('/login')
 		}
 	}
 
 	export let data;
-
-	console.log('data layout', data.test);
 
 	$: route = $page.route?.id;
 </script>

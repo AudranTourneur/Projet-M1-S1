@@ -102,7 +102,6 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 		}
 
 			const img = PIXI.Sprite.from(data.data.iconUrl ? data.data.iconUrl : '/static/container.svg');
-			console.log('IMG', img)
 			// const img = PIXI.Sprite.from('https://cdn-icons-png.flaticon.com/512/888/888879.png')
 			const maxWidthOrHeight = BackgroundGrid.GRID_SIZE * 1;
 

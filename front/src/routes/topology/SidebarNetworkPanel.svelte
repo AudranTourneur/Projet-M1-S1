@@ -7,8 +7,6 @@
 
 	export let entity: TopologyNetworkPixi;
 	const data = entity;
-
-	console.log(data);
 </script>
 
 <div

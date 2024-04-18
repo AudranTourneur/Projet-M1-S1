@@ -5,7 +5,6 @@
 	import { faFolder, faFolderOpen, faFile, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 	export let base64Name: string;
-	console.log('base 64 name', base64Name)
 	let current_directory = false;
 	let path = '/';
 	let currentFolder = '/';
@@ -17,7 +16,6 @@
 
 	onMount(async () => {
 		const url = `/volumes/${base64Name}/filesystem/${Base64.encodeURI(path)}/api`
-		console.log(url)
 		let response = await fetch(url);
 		res = await response.json();
 		update(res);
@@ -29,7 +27,6 @@
 		// }
 
 		const urlApi = `/volumes/${base64Name}/filesystem/${path}/api`;
-		console.log('making call to', urlApi);
 		let response = await fetch(urlApi);
 		res = await response.json();
 		update(res);
@@ -39,7 +36,6 @@
 		files = res.files;
 		directories = res.directories;
 		currentFolder = res.currentFolder;
-		console.log(res);
 		explorer_dir = [];
 		explorer_file = [];
 
@@ -64,9 +60,6 @@
 		} else {
 			current_directory = true;
 		}
-
-		console.log('explorer_dir', explorer_dir);
-		console.log('explorer_file', explorer_file);
 	}
 </script>
 

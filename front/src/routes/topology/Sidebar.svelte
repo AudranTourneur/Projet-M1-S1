@@ -14,7 +14,6 @@
 	export let app: TopologyApp;
 
 	function unselect() {
-		console.log($currentlySelectedEntity);
 		const entity = $currentlySelectedEntity?.entity;
 		if (entity) {
 			entity.unselect();
@@ -23,7 +22,6 @@
 	}
 
 	async function save() {
-		console.log('save');
 		const res = await fetch('/topology/api/save', {
 			method: 'POST',
 			headers: {
@@ -31,7 +29,6 @@
 			},
 			body: JSON.stringify(app.getSaveData())
 		});
-		console.log('RES', await res.text());
 	}
 </script>
 

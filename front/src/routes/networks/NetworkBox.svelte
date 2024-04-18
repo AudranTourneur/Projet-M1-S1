@@ -4,7 +4,6 @@
 	import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 	import Tooltip from '../../components/Tooltip.svelte';
 	export let network: NetworkData;
-	console.log(network.labels);
 </script>
 
 <div

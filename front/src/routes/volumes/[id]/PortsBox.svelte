@@ -15,8 +15,6 @@
     let actualNameValue = volume.name;
 	const id = actualNameValue;
 
-	console.log("Volume ici:",actualNameValue);
-
 	let currentlyEditingValueName: string | null = null;
 	// let currentlyEditingValueHostMountpoint: string | null = null;
 
@@ -50,8 +48,7 @@
 			body: JSON.stringify({ name: actualNameValue})
 		});
 
-		const responseData = await response.json();
-		console.log(responseData);
+		await response.json();
 
 		dispatch('Name changed on server with', {actualNameValue} );
     }

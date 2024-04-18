@@ -12,7 +12,6 @@ export class TopologyLinkPixi {
     constructor(public source: TopologyEntityPixi, public target: TopologyEntityPixi, public link: PIXI.Graphics) {}
 
     static createLinkIfNeeded(app: TopologyApp, source: TopologyEntityPixi, target: TopologyEntityPixi) {
-        console.log('Creating link')
         const link = new PIXI.Graphics();
         link.zIndex = -1;
 

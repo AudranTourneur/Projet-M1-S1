@@ -58,7 +58,6 @@
 			currentlyEditingValueTypePort: 'EMPTY'
 		});
 		ports = ports;
-		console.log(ports);
 	}
 
 	function togglePublicPortEditition(p: ExtendedPortData, change: boolean) {
@@ -81,7 +80,6 @@
 		p.currentlyEditingValueIPPort = p.port.ip || '';
 
 		ports = ports;
-		console.log(ports);
 	}
 
 	function togglePrivetPortEdition(p: ExtendedPortData, change: boolean) {
@@ -93,7 +91,6 @@
 		p.currentlyEditingValuePrivatePort = p.port.privatePort;
 
 		ports = ports;
-		console.log(ports);
 	}
 
 	function toggleTypePortEdition(p: ExtendedPortData, change: boolean) {
@@ -105,7 +102,6 @@
 		p.currentlyEditingValueTypePort = p.port.type!;
 
 		ports = ports;
-		console.log(ports);
 	}
 
 	let response = [{ text: `EMPTY` }, { text: `TCP` }, { text: `UDP` }, { text: `SCTP` }];
@@ -128,7 +124,6 @@
 			},
 			body: JSON.stringify(portFinal)
 		});
-		console.log(portFinal);
 	}
 </script>
 

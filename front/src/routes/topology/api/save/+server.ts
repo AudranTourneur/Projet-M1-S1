@@ -20,7 +20,6 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 
         return serverResponse;
     } catch (e) {
-        console.log(e)
         error(500, 'Failed to save topology');
         return new Response(JSON.stringify({ success: false }));
     }
