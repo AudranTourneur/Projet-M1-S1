@@ -5,26 +5,30 @@
 
 	export let inputData: Array<[number, number]>;
 	export let secondinputData: null | Array<[number, number]>;
+	export let name1: string;
+	export let name2: null | string;
+
 
 	onMount(async () => {
 		const stats = inputData;
 		let serie;
 
+
 		if (secondinputData === null) {
 			serie = [
 				{
-					name: 'Memory used',
+					name: name1,
 					data: stats
-				}
+				},
 			];
 		} else {
 			serie = [
 				{
-					name: 'Memory used',
+					name: name1,
 					data: stats
 				},
 				{
-					name: '',
+					name: name2,
 					data: secondinputData
 				}
 			];

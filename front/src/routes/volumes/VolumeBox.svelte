@@ -60,10 +60,10 @@
 			</div>
 		</div>
 		<div class="flex items-center gap-4">
-			<button class="btn variant-filled-primary" on:click={downloadVolume}>
+			<!-- <button class="btn variant-filled-primary" on:click={downloadVolume}>
 				<Fa icon={faDownload} fw />
 				Download
-			</button>
+			</button> -->
 			<a href="/volumes/{volume.name}" class="btn variant-ghost p-2">
 				<Fa icon={faEllipsisVertical} fw />
 			</a>

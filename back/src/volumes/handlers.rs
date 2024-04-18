@@ -5,12 +5,15 @@ use std::collections::HashSet;
 use std::str::from_utf8;
 
 use crate::{
-    auth::JWT, database::get_volume_latest_size, docker::get_docker_socket, stats::get_mountpoint_size, volumes::{common::remove_prefix_from_path, models::VolumeExplorerData}
+    auth::JWT,
+    database::get_volume_latest_size,
+    docker::get_docker_socket,
+    volumes::{common::remove_prefix_from_path, models::VolumeExplorerData},
 };
 
 use super::common::get_all_volumes;
 use super::{
-    common::{_from_base64_url, get_volume_size},
+    common::from_base64_url,
     models::{FileData, VolumeData, VolumeList, VolumeStatsResponse},
 };
 
@@ -46,9 +49,7 @@ pub async fn volume_handler(_key: JWT, name: String) -> Option<Json<VolumeData>>
 pub async fn delete_volume(_key: JWT, name: &str) -> &'static str {
     let docker = get_docker_socket();
 
-    let options = Some(RemoveVolumeOptions {
-        force: true,
-    });
+    let options = Some(RemoveVolumeOptions { force: true });
 
     let _ = docker.remove_volume(name, options).await;
 
@@ -57,7 +58,7 @@ pub async fn delete_volume(_key: JWT, name: &str) -> &'static str {
 
 #[get("/volume/<volume_name>/filesystem/<current_folder>")]
 pub async fn volume_explorer_handler(
-    _key: JWT, 
+    _key: JWT,
     volume_name: String,
     current_folder: Option<String>,
 ) -> Json<Option<VolumeExplorerData>> {
@@ -82,7 +83,7 @@ pub async fn volume_explorer_handler(
         current_folder.clone().unwrap_or("".to_string())
     );
 
-    let decoded_u8 = _from_base64_url(&current_folder.clone().unwrap_or("".to_string()));
+    let decoded_u8 = from_base64_url(&current_folder.clone().unwrap_or("".to_string()));
     let decoded = from_utf8(&decoded_u8).unwrap();
     println!("Decoded: {:?}", decoded);
 
@@ -175,10 +176,7 @@ fn details_fdir(
             let size = extract_value(size);
             println!("SIZE = {}", size);
 
-            let file_data = FileData {
-                name,
-                size,
-            };
+            let file_data = FileData { name, size };
 
             Some(file_data)
         })
@@ -187,8 +185,7 @@ fn details_fdir(
     folder_data.into_iter().flatten().collect()
 }
 
-
-#[get ("/statistics-historical/volume/<id>")]
+#[get("/statistics-historical/volume/<id>")]
 pub async fn volume_stats_handler(_key: JWT, id: &str) -> Json<VolumeStatsResponse> {
     let db_res = crate::database::get_historical_statistics_for_volume(id.to_string()).await;
 

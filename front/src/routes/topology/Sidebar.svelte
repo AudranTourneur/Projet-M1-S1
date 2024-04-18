@@ -40,7 +40,7 @@
 	<div>
 		{#key $currentlySelectedEntity}
 			{#if $currentlySelectedEntity?.entity instanceof TopologyContainerPixi}
-				<SidebarContainerPanel entity={$currentlySelectedEntity?.entity} />
+				<SidebarContainerPanel entity={$currentlySelectedEntity?.entity}/>
 			{:else if $currentlySelectedEntity?.entity instanceof TopologyNetworkPixi}
 				<SidebarNetworkPanel entity={$currentlySelectedEntity?.entity} />
 			{:else if $currentlySelectedEntity?.entity instanceof TopologyVolumePixi}

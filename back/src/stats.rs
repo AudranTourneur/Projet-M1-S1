@@ -8,7 +8,10 @@ use fs_extra::dir::get_size;
 use rocket::time::OffsetDateTime;
 use tokio::time::sleep;
 
-use crate::database::{self, get_volume_last_acquisition_timestamp};
+use crate::{
+    database::{self, get_volume_last_acquisition_timestamp},
+    volumes::common::get_all_volumes,
+};
 
 pub async fn start_container_statistics_listeners() {
     loop {
@@ -32,14 +35,7 @@ pub async fn start_container_statistics_listeners() {
 
 pub async fn start_volume_statistics_listeners() {
     loop {
-        let docker = Docker::connect_with_local_defaults().unwrap();
-
-        let volumes = &docker
-            .list_volumes::<String>(Default::default())
-            .await
-            .unwrap()
-            .volumes
-            .unwrap();
+        let volumes = get_all_volumes().await;
 
         for volume in volumes.iter() {
             // let should_get_size = should_get_volume_size(volume.mountpoint.clone()).await;
@@ -144,7 +140,7 @@ pub async fn get_container_statistics(container_id: String) {
 
     let stats_response: DockerStatsOutput = serde_json::from_str(&output_string).unwrap();
 
-    println!("Stats response {:?}", stats_response);
+    // println!("Stats response {:?}", stats_response);
 
     let cpu_usage = stats_response
         .cpu_perc
@@ -207,22 +203,21 @@ async fn should_get_volume_size(id_to_inspect: String) -> bool {
     if (current_timestamp - last_timestamp_acquisition) < time_threshold {
         println!(
             "[stats.rs] - Volume {} was already updated in the last 24 hours, timestamp {}",
-            id_to_inspect,
-            last_timestamp_acquisition
+            id_to_inspect, last_timestamp_acquisition
         );
         return false;
     }
 
     println!(
         "[stats.rs] - [OK] --- Volume {} was not updated in the last 24 hours, timestamp {}",
-        id_to_inspect,
-        last_timestamp_acquisition
+        id_to_inspect, last_timestamp_acquisition
     );
 
     true
 }
 
 pub async fn update_mountpoint_size(mountpoint: String) {
+    println!("update_mountpoint_size for {}", mountpoint.clone());
     let size = get_mountpoint_size(mountpoint.clone()).await;
     let current_timestamp = OffsetDateTime::now_utc().unix_timestamp();
     let volume_stats = crate::models::VolumeStats {
@@ -247,5 +242,9 @@ pub async fn update_mountpoint_size(mountpoint: String) {
 }
 
 pub async fn get_mountpoint_size(mountpoint_source: String) -> u64 {
-    get_size(format!("/rootfs/{}", mountpoint_source.clone())).unwrap_or(0)
+    let input = format!("/rootfs/{}", mountpoint_source.clone());
+    let size = get_size(input);
+    println!("size of {} is {:?}", mountpoint_source, size);
+
+    size.unwrap_or(0)
 }

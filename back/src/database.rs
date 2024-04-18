@@ -253,7 +253,8 @@ pub async fn get_volume_latest_size(path: String) -> u64 {
     let mut cursor = match cursor {
         Ok(cursor) => cursor,
         Err(e) => {
-            println!("Error getting volume acquisition timestamp: {}", e);
+            println!("Error getting volume acquisition disk_usage: {}", e);
+            println!("get_volume_latest_size for path: {} --- 0 (error) {:?}", path.clone(), e);
             return 0;
         }
     };
@@ -265,7 +266,7 @@ pub async fn get_volume_latest_size(path: String) -> u64 {
     }
 
     if vector_response.len() == 0 {
-        print!("No data found for volume {}", &path);
+        println!("No data found for volume {}", &path);
         return 0;
     }
 
