@@ -10,7 +10,7 @@
 
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
-	import { faCube } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowLeft, faCube } from '@fortawesome/free-solid-svg-icons';
 
 	onMount(async () => {
 		hljs.registerLanguage('yaml', yaml);
@@ -32,6 +32,11 @@
 	let value = compose.fileContent;
 </script>
 
+<a href="/composes" class="btn btn-sm variant-soft mb-4">
+	<Fa icon={faArrowLeft} fw class="mr-1" />
+	Back to composes
+</a>
+
 <div
 	class="flex flex-col items-center justify-center w-full border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
 	<div class="flex justify-center items-center w-full">
@@ -43,22 +48,25 @@
 	<div class="flex">
 		{#each compose.containers as c}
 			<div class="flex flex-col p-8">
-				<Fa size="2x" icon={faCube}></Fa>
-				<span class="text-md">{c.names[0]}</span>
+				<a href="/containers/{c.id}">
+					<div class="flex flex-col items-center bg-surface-400/40 dark:bg-surface-800/40 border rounded-lg shadow p-4 hover:bg-surface-200/20 dark:hover:bg-surface-600/30">
+						<Fa size="2x" icon={faCube}></Fa>
+						<span class="text-md hover:text-gray-500">{c.names[0]}</span>
+					</div>
+				</a>
 			</div>
 		{/each}
 	</div>
 </div>
 
-{#if CodeJar && highlight}
-	<CodeJar
-		class="hljs border rounded-3 p-3"
-		syntax="yaml"
-		addClosing={true}
-		spellcheck={false}
-		tab={'\t'}
-		{highlight}
-		bind:value />
-{:else}
-	Loading...
-{/if}
+<br>
+
+<div class="flex flex-col items-center justify-center w-full border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
+<div class="mx-auto w-full ml-8 mt-4">
+	<code>
+		{#each lines as line}
+			{line} <br />
+		{/each}
+	</code>
+</div>
+</div>

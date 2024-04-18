@@ -7,10 +7,13 @@
 	export let secondinputData: null | Array<[number, number]>;
 	export let name1: string;
 	export let name2: null | string;
+	export let isCpu: boolean;
 
 	onMount(async () => {
 		const stats = inputData;
 		let serie;
+
+			
 
 		if (secondinputData === null) {
 			serie = [
@@ -80,8 +83,12 @@
 			yaxis: {
 				labels: {
 					offsetX: -20,
-					formatter: function (val: number | bigint, index: number) {
-						return formatBytes(val);
+					formatter: function(val, index){
+						if (isCpu === false){
+							return formatBytes(val);
+						}else{
+							return val + '%'
+						}
 					}
 				}
 			},

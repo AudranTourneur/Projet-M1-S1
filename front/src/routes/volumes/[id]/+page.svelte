@@ -26,6 +26,7 @@
 		const response = await fetch(statsUrl);
 		const statsRes = (await response.json()) as VolumeStatsResponse;
 		statVolume = formatStats(statsRes.stats);
+		console.log(statVolume)
 	});
 </script>
 
