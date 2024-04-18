@@ -1,7 +1,16 @@
 <script lang="ts">
+	import copy from 'copy-to-clipboard';
 	import type { ComposeData } from '$lib/types/ComposeData';
 	import type { ComposeList } from '$lib/types/ComposeList';
-	import { faBox, faBoxes, faCube, faEllipsisVertical, faPlay } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faBox,
+		faBoxes,
+		faCheck,
+		faCopy,
+		faCube,
+		faEllipsisVertical,
+		faPlay
+	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import Tooltip from '../../components/Tooltip.svelte';
 	export let data: ComposeList;
@@ -20,6 +29,19 @@
 		const searchString = search.toLowerCase();
 		return compose.filePath.toLowerCase().includes(searchString);
 	});
+
+	let isIdCopied = false;
+	let isPathCopied = false;
+	const copyToClipboardId = (c) => {
+		isIdCopied = true;
+		setTimeout(() => (isIdCopied = false), 1000);
+		copy(c.id);
+	};
+	const copyToClipboardPath = (c) => {
+		isPathCopied = true;
+		setTimeout(() => (isPathCopied = false), 1000);
+		copy(c.filePath);
+	};
 </script>
 
 <h1 class="text-center text-4xl mb-5">Docker Composes</h1>
@@ -35,26 +57,45 @@
 			<div class="flex flex-col justify-center flex-grow">
 				<div class="flex items-center gap-2 w-full">
 					<div class="flex items-center justify-center gap-2 w-full">
-						<div class="flex flex-col gap-3 w-full" >
+						<div class="flex flex-col gap-3 w-full">
 							<div>
-								<span class="font-bold">Path : </span>
-								<a class="text hover:text-gray-500" href="/composes/{compose.id}">{compose.filePath}</a>
-								<br />
-								<span class="font-bold">ID : </span>
-								<Tooltip tooltipText={`ID : ${compose.id}`}>
-									{compose.id.substring(0, 19)}...
-								</Tooltip>
+								<div class="copy-to-clipboard">
+									<span class="font-bold">Path : </span>
+									<a class="text hover:text-gray-500" href="/composes/{compose.id}">{compose.filePath}</a>
+									<button
+										type="button"
+										class="btn variant-soft"
+										on:click={() => copyToClipboardPath(compose)}>
+										{#if isPathCopied}
+											<Fa icon={faCheck} class="text-green-500" />
+										{:else}
+											<Fa icon={faCopy} />
+										{/if}
+									</button>
+								</div>
+								<div class="copy-to-clipboard">
+									<span class="font-bold">ID : </span>
+									<Tooltip tooltipText={`ID : ${compose.id}`}>
+										{compose.id.substring(0, 19)}...
+									</Tooltip>
+									<button type="button" class="btn variant-soft" on:click={() => copyToClipboardId(compose)}>
+										{#if isIdCopied}
+											<Fa icon={faCheck} class="text-green-500" />
+										{:else}
+											<Fa icon={faCopy} />
+										{/if}
+									</button>
+								</div>
 							</div>
 							<div>
 								<span class="font-bold">Number of containers :</span>
 								{compose.containers.length} containers
 							</div>
-							<div
-								class="flex justify-center items-center flex-1 w-full gap-12"
-								>
+							<div class="flex justify-center items-center flex-1 w-full gap-12">
 								{#each compose.containers as c}
 									<a href="/containers/{c.id}">
-										<div class="flex flex-col items-center bg-surface-400/40 dark:bg-surface-800/40 border rounded-lg shadow p-4 hover:bg-surface-200/20 dark:hover:bg-surface-600/30">
+										<div
+											class="flex flex-col items-center bg-surface-400/40 dark:bg-surface-800/40 border rounded-lg shadow p-4 hover:bg-surface-200/20 dark:hover:bg-surface-600/30">
 											<Fa size="2x" icon={faCube}></Fa>
 											<span class="text-md hover:text-gray-500">{c.names[0]}</span>
 										</div>
