@@ -34,7 +34,7 @@ pub async fn get_all_volumes() -> Vec<VolumeData> {
         })
         .collect();
 
-    let mut volumes_data = join_all(volumes_data).await;
+    let volumes_data = join_all(volumes_data).await;
 
     let containers = docker.list_containers::<String>(None).await.unwrap();
 
