@@ -7,7 +7,8 @@
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { formatBytes } from '$lib/FormatUtils';
-	import Chart from '../../../components/Chart.svelte';
+	import VolumeChart from '../../../components/VolumeChart.svelte';
+	import { base } from '$app/paths';
 
 	export let data;
 	const id = data.name;
@@ -22,10 +23,14 @@
 	}
 
 	onMount(async () => {
-		const statsUrl = '/volumes/' + $page.params.id + '/api/stats'
+		console.log(base64Name)
+		const statsUrl = '/volumes/' + {base64Name} + '/api/stats'
 		const response = await fetch(statsUrl);
 		const statsRes = (await response.json()) as VolumeStatsResponse;
+		console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA  Res stats");
+		console.log(statsRes.stats);
 		statVolume = formatStats(statsRes.stats);
+		console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA  statVolume")
 		console.log(statVolume)
 	});
 </script>
@@ -63,7 +68,7 @@
 
 <br />
 {#if statVolume}
-	<Chart containerID={data.name} typeChart=""/>
+	<VolumeChart volumeName={base64Name} />
 {/if}
 
 <div>

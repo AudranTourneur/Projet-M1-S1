@@ -163,11 +163,9 @@ fn details_fdir(
 
             let name = res.get(&DirEntryAttr::Name).unwrap();
             let name = extract_value(name);
-            println!("NAME = {}", name);
 
             let size = res.get(&DirEntryAttr::Size).unwrap();
             let size = extract_value(size);
-            println!("SIZE = {}", size);
 
             let file_data = FileData { name, size };
 
@@ -180,8 +178,8 @@ fn details_fdir(
 
 #[get("/statistics-historical/volume/<encoded_path>")]
 pub async fn volume_stats_handler(_key: JWT, encoded_path: &str) -> Json<VolumeStatsResponse> {
-    let path = from_base64_url(encoded_path).unwrap();
-
+    let path = from_base64_url(encoded_path).unwrap_or("".to_string());
+    println!("################################ Decoded path for statistics historical volume encoded path etc etc etc: {}", path.clone());
     let db_res = crate::database::get_historical_statistics_for_volume(path).await;
 
     match db_res {
