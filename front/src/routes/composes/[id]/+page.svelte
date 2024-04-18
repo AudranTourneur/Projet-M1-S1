@@ -32,10 +32,22 @@
 	let value = compose.fileContent;
 </script>
 
-<div class="flex justify-center items-center w-full">
-	<h1 class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-2">
-		{compose.filePath}
-	</h1>
+<div
+	class="flex flex-col items-center justify-center w-full border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
+	<div class="flex justify-center items-center w-full">
+		<h1
+			class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-2">
+			{compose.filePath}
+		</h1>
+	</div>
+	<div class="flex">
+		{#each compose.containers as c}
+			<div class="flex flex-col p-8">
+				<Fa size="2x" icon={faCube}></Fa>
+				<span class="text-md">{c.names[0]}</span>
+			</div>
+		{/each}
+	</div>
 </div>
 
 {#if CodeJar && highlight}
@@ -50,13 +62,3 @@
 {:else}
 	Loading...
 {/if}
-
-<div
-	class="flex items-center justify-center w-full border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
-	{#each compose.containers as c}
-		<div class="flex flex-col p-8">
-			<Fa size="2x" icon={faCube}></Fa>
-			<span class="text-md">{c.names[0]}</span>
-		</div>
-	{/each}
-</div>
