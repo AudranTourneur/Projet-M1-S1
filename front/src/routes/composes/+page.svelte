@@ -64,7 +64,7 @@
 						</div>
 					</div>
 					<div class="ml-auto">
-						<a href="/compose/{compose.id}" class="btn variant-ghost p-2 mb-2">
+						<a href="/composes/{compose.id}" class="btn variant-ghost p-2 mb-2">
 							<Fa icon={faEllipsisVertical} fw />
 						</a>
 						<!-- Button to start a compose, don't know if the function is added yet or not-->
