@@ -53,7 +53,7 @@ export class TopologyContainerPixi extends TopologyEntityPixi {
 		container.addChild(idText);
 
 
-		const isOnline = true;
+		const isOnline = data.data.status.includes('Up');
 
 		if (isOnline) {
 			const onlineGreenCircle = new PIXI.Graphics();

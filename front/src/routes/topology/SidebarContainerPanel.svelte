@@ -53,6 +53,7 @@
 			method: 'POST'
 		});
 		isLoadingStart = false;
+		location.reload();
 	};
 
 	const stopContainer = async () => {
@@ -61,6 +62,7 @@
 			method: 'POST'
 		});
 		isLoadingStop = false;
+		location.reload();
 	};
 </script>
 

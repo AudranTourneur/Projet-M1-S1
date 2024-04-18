@@ -18,7 +18,7 @@
 					name: name1,
 					data: stats
 				},
-				{ name: '', data: [0,0] }
+				{ name: '', data: [0, 0] }
 			];
 		} else {
 			serie = [
@@ -80,15 +80,13 @@
 			yaxis: {
 				labels: {
 					offsetX: -20,
-					formatter: function (val, index) {
+					formatter: function (val: number | bigint, index: number) {
 						return formatBytes(val);
 					}
-					// formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
-					// }
-				},
-				tooltip: {
-					enabled: true
 				}
+			},
+			tooltip: {
+				enabled: false
 			},
 			grid: {
 				padding: {
