@@ -5,7 +5,7 @@ use ts_rs::TS;
 
 use base64::{engine::general_purpose::URL_SAFE, Engine as _};
 
-use crate::{auth::JWT, containers::{common::get_all_containers, models::ContainerData}};
+use crate::{auth::JWT, containers::{common::get_all_containers, models::ContainerData}, utils::from_base64_url};
 
 #[derive(Serialize, Deserialize, TS, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -97,11 +97,6 @@ pub async fn compose_handler(_key: JWT, id: String) -> Json<Option<ComposeData>>
     };
 
     Json(Some(compose.clone()))
-}
-
-fn from_base64_url(data: &str) -> String {
-    let vec: Vec<u8> = URL_SAFE.decode(data).unwrap();
-    String::from_utf8(vec).unwrap()
 }
 
 #[derive(Serialize, Deserialize, TS, Clone, Debug)]

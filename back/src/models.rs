@@ -18,5 +18,5 @@ pub struct VolumeStats {
     pub path: String,
     pub volume_id: Option<String>,
     pub timestamp: u64,
-    pub disk_usage: i32,
+    pub disk_usage: u64,
 }

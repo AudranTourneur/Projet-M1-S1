@@ -26,6 +26,26 @@
 		setTimeout(() => (isNameCopied = false), 1000);
 		copy(volume.name);
 	};
+
+	let date = new Date(volume.createdAt);
+
+	function isValidDate(d: Date) {
+		return d instanceof Date && !isNaN(d);
+	}
+
+	let isValidDateVar = isValidDate(date);
+
+	function formatBytes(bytes: number, decimals = 2) {
+		if (!+bytes) return '0 Bytes';
+
+		const k = 1024;
+		const dm = decimals < 0 ? 0 : decimals;
+		const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+	}
 </script>
 
 <div
@@ -46,7 +66,9 @@
 			<div class="text-ellipsis overflow-hidden flex items-center gap-2 whitespace-nowrap">
 				<Fa icon={faFolderPlus} fw />
 				<span class="font-bold">Created at:</span>
-				{new Date(volume.createdAt).toLocaleString()}
+				{#if isValidDateVar}
+					{date.toLocaleString()}
+				{/if}
 			</div>
 			<div class="text-ellipsis overflow-hidden flex items-center gap-2 whitespace-nowrap">
 				<Fa icon={faFolderOpen} fw />
@@ -56,7 +78,7 @@
 			<div class="text-ellipsis overflow-hidden flex items-center gap-2 whitespace-nowrap">
 				<Fa icon={faDatabase} fw />
 				<span class="font-bold">Size:</span>
-				{volume.size}
+				{formatBytes(volume.size)}
 			</div>
 		</div>
 		<div class="flex items-center gap-4">
@@ -64,7 +86,7 @@
 				<Fa icon={faDownload} fw />
 				Download
 			</button> -->
-			<a href="/volumes/{volume.name}" class="btn variant-ghost p-2">
+			<a href="/volumes/{volume.base64Name}" class="btn variant-ghost p-2">
 				<Fa icon={faEllipsisVertical} fw />
 			</a>
 		</div>
