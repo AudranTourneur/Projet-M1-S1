@@ -10,6 +10,7 @@
 	import { page } from '$app/stores';
 	import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
+	import Chart from '../../../components/Chart.svelte';
 
 	export let data;
 	const id = data.name;
@@ -106,7 +107,7 @@
 
 <br />
 {#if statVolume}
-	<LineChartBytes inputData={statVolume} />
+	<Chart containerID={data.name} typeChart=""/>
 {/if}
 
 <div>

@@ -12,6 +12,7 @@
 	import ContainerStatusIcon from '../ContainerStatusIcon.svelte';
 	import { getContainerActionsFromStatus } from '../getContainerActionsFromStatus';
 	import ContainerChart from '../../../components/Chart.svelte';
+	import Chart from '../../../components/Chart.svelte';
 
 	export let data;
 
@@ -48,7 +49,6 @@
 		statData = generateDayWiseTimeSeries(statsRes.stats);
 	});
 
-	console.log(statData);
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
@@ -166,9 +166,9 @@
 	<p class="italic">No ports exposed</p>
 {/if}
 
-<ContainerChart containerID={container.id} typeChart="Mem" />
-<ContainerChart containerID={container.id} typeChart="Cpu" />
-<ContainerChart containerID={data.id} typeChart="Io" />
-<ContainerChart containerID={data.id} typeChart="Net" />
+<Chart containerID={container.id} typeChart="Mem" />
+<Chart containerID={container.id} typeChart="Cpu" />
+<Chart containerID={data.id} typeChart="Io" />
+<Chart containerID={data.id} typeChart="Net" />
 
 <PortsBox {container} />

@@ -18,6 +18,7 @@
 	import ContainerStatusIcon from '../containers/ContainerStatusIcon.svelte';
 	import { getContainerActionsFromStatus } from '../containers/getContainerActionsFromStatus';
 	import ContainerChart from '../../components/Chart.svelte';
+	import Chart from '../../components/Chart.svelte';
 
 	export let entity: TopologyContainerPixi;
 
@@ -42,7 +43,6 @@
 	if (data.volumes.length > 3) {
 		heightDivVolume = 'h-[75px]';
 	}
-
 
 	let isLoadingStart = false;
 	let isLoadingStop = false;
@@ -155,20 +155,10 @@
 	</div>
 </div>
 <div class="flex overflow-y-auto h-[400px]">
-	<div>
-		<ContainerChart containerID={data.id} typeChart="Mem" />
-	</div>
-
-	<div>
-		<ContainerChart containerID={data.id} typeChart="Cpu" />
-	</div>
-
-	<div>
-		<ContainerChart containerID={data.id} typeChart="Io" />
-	</div>
-	<div>
-		<ContainerChart containerID={data.id} typeChart="Net" />
-	</div>
+	<Chart containerID={data.id} typeChart="Mem" />
+	<Chart containerID={data.id} typeChart="Cpu" />
+	<Chart containerID={data.id} typeChart="Io" />
+	<Chart containerID={data.id} typeChart="Net" />
 </div>
 
 <button

@@ -38,7 +38,6 @@
 			currentlyEditingValuePrivatePort: portData.privatePort,
 			currentlyEditingValueTypePort: portData.type || 'EMPTY'
 		}));
-	console.log(ports);
 
 	function addPort(): any {
 		let newPort: PortData = {
@@ -71,7 +70,6 @@
 		p.currentlyEditingValuePublicPort = p.port.publicPort || 0;
 
 		ports = ports;
-		console.log(ports);
 	}
 
 	function toggleIPPortEditition(p: ExtendedPortData, change: boolean) {
