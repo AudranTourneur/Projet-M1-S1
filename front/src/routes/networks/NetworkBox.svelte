@@ -11,13 +11,19 @@
 	class="flex justify-between items-center gap-2 p-2 rounded-container-token overflow-auto bg-surface-300/30 dark:bg-surface-600/30 shadow border-token border-surface-300-600-token"
     >
 	<div class="flex items-center gap-2">
-			<div class="flex flex-col">
+        <div class="flex flex-col">
+            <div> 
+                <span class = "font-bold"> Name : </span> {network.name}
+            </div>
+        </div>
+		</div>
+		<div class="flex flex-col">
+            <div>
+                <span class = "font-bold"> ID : </span>
 				<Tooltip tooltipText={`ID : ${network.id}`}>
 					{network.id.substring(0, 19)}...
 				</Tooltip>
 			</div>
-		</div>
-		<div class="flex flex-col">
 			<div>
 				<span class="font-bold">Created :</span>
 				{new Date(network.created).toLocaleString()}
@@ -26,7 +32,7 @@
 				{#if Object.keys(network.labels).length > 0}
 					<span class="font-bold">Labels :</span>
 					{#each Object.entries(network.labels) as [str1, str2]}
-						<div>{str1} : {str2}</div>
+						<div> - {str1} : {str2}</div>
 					{/each}
 				{/if}
 			</div>
@@ -35,9 +41,9 @@
 				{#if Object.keys(network.ipamConfig).length > 0}
 					<span class="font-bold">Ipam Config :</span>
 					{#each network.ipamConfig as config}
-						<div>Subnet: {config.subnet ? config.subnet : 'none'}</div>
-						<div>IP Range: {config.ipRange ? config.ipRange : 'none'}</div>
-						<div>Gateway: {config.gateway ? config.gateway : 'none'}</div>
+						<div> - Subnet: {config.subnet ? config.subnet : 'none'}</div>
+						<div> - IP Range: {config.ipRange ? config.ipRange : 'none'}</div>
+						<div> - Gateway: {config.gateway ? config.gateway : 'none'}</div>
 						{#if config.auxAddresses}
 							<div>Aux Addresses:</div>
 							<ul>

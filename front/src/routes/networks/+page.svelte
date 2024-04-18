@@ -1,7 +1,6 @@
 <script lang="ts">
     import NetworkBox from './NetworkBox.svelte';
     export let data;
-    export let refresh: () => void;
     let networks = data.networks;
     let search = '';
 
@@ -24,13 +23,6 @@
         return network.name.toLowerCase().includes(searchString) || network.id.includes(searchString);
     });
 
-    const refetchNetworks = async () => {
-        await fetch("/networks/api/list")
-            .then(response => response.json())
-            .then(data => {
-                networks = data.networks;
-            });
-    }
 </script>
 
 <h1 class="text-center text-4xl mb-5">
@@ -43,7 +35,7 @@
 
 <div class="flex flex-col gap-4">
     {#each visibleNetworks as network}
-        <NetworkBox {network} refresh={refetchNetworks} />
+        <NetworkBox {network}/>
     {/each}
 </div>
 
