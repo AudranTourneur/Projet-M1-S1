@@ -9,6 +9,8 @@
 	let highlight;
 
 	import { onMount } from 'svelte';
+	import Fa from 'svelte-fa';
+	import { faCube } from '@fortawesome/free-solid-svg-icons';
 
 	onMount(async () => {
 		hljs.registerLanguage('yaml', yaml);
@@ -30,8 +32,10 @@
 	let value = compose.fileContent;
 </script>
 
-<div>
-	{compose.filePath}
+<div class="flex justify-center items-center w-full">
+	<h1 class="border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token p-2">
+		{compose.filePath}
+	</h1>
 </div>
 
 {#if CodeJar && highlight}
@@ -47,13 +51,12 @@
 	Loading...
 {/if}
 
-<div class="bg-black">
-	{#each lines as line}
-		<span>{line}</span> <br />
+<div
+	class="flex items-center justify-center w-full border-token border-surface-300-600-token bg-surface-300/30 dark:bg-surface-600/30 shadow rounded-container-token">
+	{#each compose.containers as c}
+		<div class="flex flex-col p-8">
+			<Fa size="2x" icon={faCube}></Fa>
+			<span class="text-md">{c.names[0]}</span>
+		</div>
 	{/each}
 </div>
-{#each compose.containers as container}
-	<div>
-		{container.names.join(', ')}
-	</div>
-{/each}
