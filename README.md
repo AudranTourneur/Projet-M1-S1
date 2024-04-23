@@ -6,7 +6,6 @@ Designed in Rust and deployable via Docker, the application aims to simplify the
 
 Inside, you'll find management of your images, containers and volumes, as well as networks. The application comes with a topoligy so you can easily see your Dockers components.
 ![alt text](https://github.com/AudranTourneur/Projet-M1-S1/blob/main/front/static/logo.png?raw=true)
-front/static/logo.png
 
 ### Responsible teacher
 
