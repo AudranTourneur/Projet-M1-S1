@@ -2,6 +2,10 @@
 
 ## Description
 
+Designed in Rust and deployable via Docker, the application aims to simplify the lives of IT users. Compatible with all Linux distributions, it offers a simple, efficient experience for a range of IT tasks, making it easy to manage your server.
+
+Inside, you'll find management of your images, containers and volumes, as well as networks. The application comes with a topoligy so you can easily see your Dockers components.
+
 ### Responsible teacher
 
 Pierre CAPIOD
