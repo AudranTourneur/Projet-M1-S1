@@ -112,4 +112,17 @@ An idea we initially had was to add support for the NGINX reverse proxy to quick
 
 - NGINX does not expose an API to retrieve easily and edit the current configuration, requiring us to parse the configuration files using a non-trivial syntax 
 
-- SSL/TLS certificate management is not handled automatically by NGINX and we will need to manually call Let's Encrypt Certbot mechanism to obtain and manage certificates, which could be uncertain and error-prone. 
+- SSL/TLS certificate management is not handled automatically by NGINX and we will need to manually call Let's Encrypt Certbot mechanism to obtain and manage certificates, which could be uncertain and error-prone.
+
+
+As such, it will be easier to reach this objective by exclusively making use of the Caddy reverse proxy which already handles perfectly these three previous points. 
+
+We recommend for the next group to add support for Caddy. 
+
+### Screenshots
+
+![](https://github.com/AudranTourneur/Projet-M1-S1/blob/main/screenshots/topology.png)
+
+![](https://github.com/AudranTourneur/Projet-M1-S1/blob/main/screenshots/images.png)
+
+![](https://github.com/AudranTourneur/Projet-M1-S1/blob/main/screenshots/containers.png)
