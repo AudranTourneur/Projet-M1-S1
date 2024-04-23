@@ -1,13 +1,6 @@
-# Projet-M1-S1 - OkiDoki
+# Projet-M1-S1 - OkiDocky
 
-## Description
-
-Designed in Rust and deployable via Docker, the application aims to simplify the lives of IT users. Compatible with all Linux distributions, it offers a simple, efficient experience for a range of IT tasks, making it easy to manage your server.
-
-Inside, you'll find management of your images, containers and volumes, as well as networks. The application comes with a topoligy so you can easily see your Dockers components.
-
-
-![alt text](https://github.com/AudranTourneur/Projet-M1-S1/blob/main/front/static/logo.png?raw=true)
+<img src="https://github.com/AudranTourneur/Projet-M1-S1/blob/main/front/static/logo.png" width="200" height="200" />
 
 ### Responsible teacher
 
@@ -31,9 +24,9 @@ allows the user to create, start, stop, delete and monitor the images, container
 
 The project is containerized itself in three Docker containers:
 
-- `okidocky-db`: a clickhouse database to store and persist the statistics
-- `okidocky-core`: a rust application that communicates with the docker daemon, the database and the frontend
-- `okidocky-ui`: a svelte-kit web application that provides the user interface
+- `okidocky-core`: a Rust application which communicates with the Docker daemon, the database and the frontend
+- `okidocky-ui`: a SvelteKit web application which provides the user interface
+- `okidocky-db`: a Clickhouse database to store and persist statistics
 
 ## Setup
 
@@ -72,8 +65,6 @@ Sadly, this project hasn't reached full completion and some features initially p
 As such this project will very likely be continued in the near future to finish what has been started. 
 
 We will now reflect upon the choices we have made in regard of our newly acquired experience and give recommendations for the next group: 
-
-  
 
 #### Front-end 
 
